@@ -35,6 +35,22 @@
 <td style="padding:4px;border:1px solid #0066cc;color:#a78bfa">VULCAN</td>
 <td style="padding:4px;border:1px solid #0066cc;color:#a78bfa;animation:vul 3s ease-in-out infinite">🖖 monitoring…</td>
 </tr>
+<tr id="k2v-gov" style="border-bottom:1px solid rgba(0,102,204,0.2)">
+<td style="padding:4px;border:1px solid #0066cc;color:#f0c040">[GOV-COMMS]</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#6b7280">ALL</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#6b7280">ALL</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#f0c040">ACTIVE</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#f0c040">BETA 5</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#f0c040">SATCOM // NORAD // 6,000 YRS</td>
+</tr>
+<tr id="k2v-civ" style="border-bottom:1px solid rgba(0,102,204,0.2)">
+<td style="padding:4px;border:1px solid #0066cc;color:#f0c040">[CIV-NET]</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#6b7280">ALL</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#6b7280">ALL</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#f0c040">ACTIVE</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#f0c040">BETA 5</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#f0c040">TOR // DARK WEB // FELINE-01</td>
+</tr>
 </table>
 </div>
 <div id="k2v-w" style="margin-top:4px;font-size:16px;color:#8b949e"></div>
@@ -53,19 +69,14 @@ var W=[
 ];
 var BM={6:"6m",10:"10m",12:"12m",15:"15m",17:"17m",20:"20m",30:"30m",40:"40m"};
 var RC={AS:"#f0c040",AF:"#50fa7b",OC:"#bd93f9",NA:"#ff6b6b"};
-
-/* ===== DX WATCH LIST — edit this array to track specific DX callsigns ===== */
 var DXW=[
 {call:"7P8GE",name:"Lesotho"},
 {call:"C5R",name:"Gambia"},
 {call:"9N7XT",name:"Nepal"},
 {call:"H44MS",name:"Solomon Is."}
 ];
-/* ===== END DX WATCH LIST ===== */
-
 var nextDelay=120000;
 var dxDelay=300000;
-
 function pollMain(){
 fetch("https://corsproxy.io/?https://pskreporter.info/pskreporter?callsign=K2VG&flowStartSeconds=-900&mode=FT8")
 .then(function(r){
@@ -80,7 +91,7 @@ var x=new DOMParser().parseFromString(d,"text/xml");
 var sp=x.querySelectorAll("spot");
 var tbl=document.getElementById("k2v-tbl");
 var rows=tbl.querySelectorAll("tr");
-for(var i=rows.length-1;i>2;i--)tbl.deleteRow(i);
+for(var i=rows.length-1;i>4;i--)tbl.deleteRow(i);
 var bc={};var hits=[];
 sp.forEach(function(s){
 var b=s.querySelector("band")?s.querySelector("band").textContent:"";
@@ -105,7 +116,6 @@ setTimeout(pollMain,nextDelay);
 })
 .catch(function(e){nextDelay=300000;setTimeout(pollMain,nextDelay)});
 }
-
 function pollDX(){
 var el=document.getElementById("k2v-dxlist");
 var results=[];
@@ -141,7 +151,6 @@ h+='<div style="margin:2px 0"><b style="color:#f0c040">'+r.call+'</b> <span styl
 el.innerHTML=h;
 }
 }
-
 pollMain();
 pollDX();
 })();
