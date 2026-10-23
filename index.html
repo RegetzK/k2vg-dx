@@ -1,0 +1,82 @@
+<div id="k2v" style="font:11px/1.3 monospace;background:#0d1117;color:#c9d1d9;padding:8px 10px;border:1px solid #30363d;border-radius:6px;max-width:520px">
+<b style="color:#58a6ff">📡 K2VG DX MONITOR · FM18 · FT8</b>
+<span id="k2v-t" style="float:right;color:#8b949e;font-size:10px">loading…</span>
+<div style="clear:both"></div>
+<div id="k2v-b" style="margin:4px 0;font-size:10px;color:#8b949e"></div>
+<table id="k2v-tbl" style="width:100%;border-collapse:collapse;font-size:11px">
+<tr style="color:#8b949e;border-bottom:1px solid #30363d">
+<th style="text-align:left;padding:2px">CALL</th>
+<th>GRID</th><th>BAND</th><th>SNR</th><th>DXCC</th><th>REG</th>
+</tr>
+</table>
+<div id="k2v-w" style="margin-top:4px;font-size:10px;color:#8b949e"></div>
+</div>
+<script>
+(function(){
+var W=[
+{c:176,n:"New Zealand",r:"OC"},{c:200,n:"Australia",r:"OC"},
+{c:293,n:"Japan",r:"AS"},{c:294,n:"Philippines",r:"AS"},
+{c:295,n:"Thailand",r:"AS"},{c:296,n:"Vietnam",r:"AS"},
+{c:297,n:"Indonesia",r:"AS"},{c:298,n:"Malaysia",r:"AS"},
+{c:299,n:"Nepal",r:"AS"},{c:300,n:"Sri Lanka",r:"AS"},
+{c:423,n:"South Africa",r:"AF"},{c:424,n:"Tanzania",r:"AF"},
+{c:425,n:"Uganda",r:"AF"},{c:426,n:"Kenya",r:"AF"},
+{c:427,n:"Sudan",r:"AF"},{c:428,n:"Zambia",r:"AF"},
+{c:429,n:"Gambia",r:"AF"},{c:430,n:"Lesotho",r:"AF"},
+{c:431,n:"Rwanda",r:"AF"},{c:432,n:"Mauritius",r:"AF"},
+{c:433,n:"Madagascar",r:"AF"},{c:434,n:"Comoros",r:"AF"},
+{c:435,n:"Reunion",r:"AF"},{c:436,n:"Seychelles",r:"AF"},
+{c:437,n:"Mozambique",r:"AF"},{c:438,n:"Zimbabwe",r:"AF"},
+{c:439,n:"Botswana",r:"AF"},{c:440,n:"Namibia",r:"AF"},
+{c:441,n:"Angola",r:"AF"},{c:442,n:"Congo",r:"AF"},
+{c:443,n:"DR Congo",r:"AF"},{c:444,n:"Ethiopia",r:"AF"},
+{c:445,n:"Eritrea",r:"AF"},{c:446,n:"Somalia",r:"AF"},
+{c:447,n:"Djibouti",r:"AF"},{c:448,n:"Guinea",r:"AF"},
+{c:449,n:"Ivory Coast",r:"AF"},{c:450,n:"Ghana",r:"AF"},
+{c:451,n:"Nigeria",r:"AF"},{c:452,n:"Cameroon",r:"AF"},
+{c:453,n:"Gabon",r:"AF"},{c:454,n:"Equatorial Guinea",r:"AF"},
+{c:455,n:"Central African Rep",r:"AF"},{c:456,n:"Chad",r:"AF"},
+{c:457,n:"Mali",r:"AF"},{c:458,n:"Niger",r:"AF"},
+{c:459,n:"Burkina Faso",r:"AF"},{c:460,n:"Senegal",r:"AF"},
+{c:461,n:"Mauritania",r:"AF"},{c:462,n:"Togo",r:"AF"},
+{c:463,n:"Benin",r:"AF"},{c:464,n:"Liberia",r:"AF"},
+{c:465,n:"Sierra Leone",r:"AF"},{c:466,n:"Guinea-Bissau",r:"AF"},
+{c:467,n:"Cape Verde",r:"AF"},{c:468,n:"St Helena",r:"AF"},
+{c:469,n:"Ascension",r:"AF"},{c:470,n:"Tristan da Cunha",r:"AF"}
+];
+var BM={10:"10m",15:"15m",17:"17m",20:"20m",30:"30m"};
+var RC={AS:"#f0c040",AF:"#50fa7b",OC:"#bd93f9"};
+function poll(){
+fetch("https://pskreporter.info/pskreporter?callsign=K2VG&flowStartSeconds=-900&mode=FT8")
+.then(function(r){return r.text()})
+.then(function(d){
+var x=new DOMParser().parseFromString(d,"text/xml");
+var sp=x.querySelectorAll("spot");
+var tbl=document.getElementById("k2v-tbl");
+var rows=tbl.querySelectorAll("tr");
+for(var i=rows.length-1;i>0;i--)tbl.deleteRow(i);
+var bc={};var hits=[];
+sp.forEach(function(s){
+var b=s.querySelector("band")?s.querySelector("band").textContent:"";
+var c=s.querySelector("call")?s.querySelector("call").textContent:"";
+var g=s.querySelector("grid")?s.querySelector("grid").textContent:"";
+var snr=parseFloat(s.querySelector("snr")?s.querySelector("snr").textContent:"0");
+var dx=s.querySelector("dxcc")?parseInt(s.querySelector("dxcc").textContent):0;
+if(!BM[b])return;
+bc[b]=(bc[b]||0)+1;
+var w=W.find(function(w){return w.c===dx});
+var reg=w?w.r:"";
+var row=tbl.insertRow();
+row.innerHTML='<td style="padding:1px 2px">'+c+'</td><td>'+g+'</td><td>'+b+'</td><td style="color:'+(snr<=-15?"#f0c040":"#c9d1d9")+'">'+snr.toFixed(1)+'</td><td>'+dx+'</td><td style="color:'+(RC[reg]||"#8b949e")+'">'+reg+'</td>';
+if(reg&&snr<=-15)hits.push(c+" "+b+" "+snr+"dB "+(w?w.n:""));
+});
+document.getElementById("k2v-b").textContent="Bands: "+Object.keys(bc).map(function(b){return b+"("+bc[b]+")"}).join(" ")||"none active";
+document.getElementById("k2v-t").textContent=new Date().toLocaleTimeString()+" · "+sp.length+" spots";
+document.getElementById("k2v-w").innerHTML=hits.length?'<b style="color:#f0c040">⚡ ≤-15dB targets:</b> '+hits.slice(0,5).join(" | "):"No ≤-15dB AS/AF/OC targets in last 15 min";
+})
+.catch(function(e){document.getElementById("k2v-t").textContent="API error: "+e.message});
+setTimeout(poll,300000);
+}
+poll();
+})();
+</script>
