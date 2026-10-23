@@ -8,7 +8,7 @@
 <span id="k2v-t" style="float:right;color:#8b949e;font-size:10px">loading…</span>
 <div style="clear:both"></div>
 <div id="k2v-b" style="margin:4px 0;font-size:10px;color:#8b949e"></div>
-<div style="max-height:260px;overflow-y:auto">
+<div style="max-height:220px;overflow-y:auto">
 <table id="k2v-tbl" style="width:100%;border-collapse:collapse;font-size:11px">
 <tr style="color:#8b949e;border-bottom:1px solid #30363d">
 <th style="text-align:left;padding:2px">CALL</th>
@@ -25,6 +25,13 @@
 </table>
 </div>
 <div id="k2v-w" style="margin-top:4px;font-size:10px;color:#8b949e"></div>
+<div style="margin-top:6px;padding-top:6px;border-top:1px solid #1f2937;font-size:10px;color:#8b949e">
+<span style="color:#a78bfa">🖖 NCC-1701</span> ·
+<a href="https://startrektour.com" style="color:#58a6ff;text-decoration:none" target="_blank">Original Series Set Tour</a> ·
+Ticonderoga, NY ·
+<a href="https://www.facebook.com/StarTrekTour/" style="color:#58a6ff;text-decoration:none" target="_blank">Facebook</a> ·
+<span style="color:#50fa7b">✦ Galileo shuttlecraft now on display</span>
+</div>
 </div>
 <script>
 (function(){
@@ -62,7 +69,7 @@ if(reg&&snr<=-15)hits.push(c+" "+b+" "+snr+"dB "+(w?w.n:""));
 });
 var bd=Object.keys(bc).map(function(b){return b+"("+bc[b]+")"}).join(" ");
 document.getElementById("k2v-b").textContent="Bands: "+(bd||"none active");
-if(!sp.length){document.getElementById("k2v-w").innerHTML='<div style="text-align:center;padding:40px 0;color:#8b949e">📡 Waiting for FT8 spots…</div>'}
+if(!sp.length){document.getElementById("k2v-w").innerHTML='<div style="text-align:center;padding:30px 0;color:#8b949e">📡 Waiting for FT8 spots…</div>'}
 else{document.getElementById("k2v-w").innerHTML=hits.length?'<b style="color:#f0c040">⚡ ≤-15dB targets:</b> '+hits.slice(0,5).join(" | "):"No ≤-15dB AS/AF/OC targets in last 15 min"}
 document.getElementById("k2v-t").textContent=new Date().toLocaleTimeString()+" · "+sp.length+" spots";
 })
