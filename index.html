@@ -38,6 +38,10 @@
 </table>
 </div>
 <div id="k2v-w" style="margin-top:4px;font-size:16px;color:#8b949e"></div>
+<div id="k2v-dx" style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,102,204,0.25);font-size:16px;color:#8b949e">
+<b style="color:#f0c040">🎯 DX WATCH — HEARD NEAR FM18:</b>
+<div id="k2v-dxlist" style="margin-top:4px"></div>
+</div>
 <div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,102,204,0.25);font-size:16px;color:#8b949e">
 <span style="color:#3399ff">🖖 NCC-1701</span> ·
 <a href="https://startrektour.com" style="color:#3498db;text-decoration:none" target="_blank">Original Series Set Tour</a> ·
@@ -56,16 +60,28 @@ var W=[
 ];
 var BM={6:"6m",10:"10m",12:"12m",15:"15m",17:"17m",20:"20m",30:"30m",40:"40m"};
 var RC={AS:"#f0c040",AF:"#50fa7b",OC:"#bd93f9",NA:"#ff6b6b"};
+
+/* ===== DX WATCH LIST — edit this array to track specific DX callsigns ===== */
+var DXW=[
+{call:"7P8GE",name:"Lesotho"},
+{call:"C5R",name:"Gambia"},
+{call:"9N7XT",name:"Nepal"},
+{call:"H44MS",name:"Solomon Is."}
+];
+/* ===== END DX WATCH LIST ===== */
+
 var nextDelay=120000;
-function poll(){
+var dxDelay=300000;
+
+function pollMain(){
 fetch("https://corsproxy.io/?https://pskreporter.info/pskreporter?callsign=K2VG&flowStartSeconds=-900&mode=FT8")
 .then(function(r){
-if(r.status===429){nextDelay=300000;document.getElementById("k2v-t").textContent="Rate limited — retrying in 5 min";setTimeout(poll,nextDelay);return null}
+if(r.status===429){nextDelay=300000;document.getElementById("k2v-t").textContent="Rate limited — retrying in 5 min";setTimeout(pollMain,nextDelay);return null}
 return r.text()
 })
 .then(function(d){
 if(!d)return;
-if(d.trim().length<50){nextDelay=300000;document.getElementById("k2v-t").textContent="Empty response — backing off 5 min";setTimeout(poll,nextDelay);return}
+if(d.trim().length<50){nextDelay=300000;setTimeout(pollMain,nextDelay);return}
 nextDelay=120000;
 var x=new DOMParser().parseFromString(d,"text/xml");
 var sp=x.querySelectorAll("spot");
@@ -89,14 +105,52 @@ if(reg&&snr<=-15)hits.push(c+" "+b+" "+snr+"dB "+(w?w.n:""));
 });
 var bd=Object.keys(bc).map(function(b){return b+"("+bc[b]+")"}).join(" ");
 document.getElementById("k2v-b").textContent="Bands: "+(bd||"none active");
-if(!sp.length){document.getElementById("k2v-w").innerHTML='<div style="text-align:center;padding:30px 0;color:#8b949e">📡 Waiting for FT8 spots…</div>'}
+if(!sp.length){document.getElementById("k2v-w").innerHTML='<div style="text-align:center;padding:20px 0;color:#8b949e">📡 Waiting for FT8 spots…</div>'}
 else{document.getElementById("k2v-w").innerHTML=hits.length?'<b style="color:#f0c040">⚡ ≤-15dB targets:</b> '+hits.slice(0,5).join(" | "):"No ≤-15dB AS/AF/OC targets in last 15 min"}
 document.getElementById("k2v-t").textContent=new Date().toLocaleTimeString()+" · "+sp.length+" spots";
-setTimeout(poll,nextDelay);
+setTimeout(pollMain,nextDelay);
 })
-.catch(function(e){nextDelay=300000;document.getElementById("k2v-t").textContent="Error: "+e.message+" — retry 5 min";setTimeout(poll,nextDelay)});
+.catch(function(e){nextDelay=300000;setTimeout(pollMain,nextDelay)});
 }
-poll();
+
+function pollDX(){
+var el=document.getElementById("k2v-dxlist");
+var results=[];
+var done=0;
+DXW.forEach(function(dx){
+fetch("https://corsproxy.io/?https://pskreporter.info/pskreporter?callsign="+dx.call+"&flowStartSeconds=-900&mode=FT8")
+.then(function(r){return r.text()})
+.then(function(d){
+var x=new DOMParser().parseFromString(d,"text/xml");
+var sp=x.querySelectorAll("spot");
+sp.forEach(function(s){
+var rc=s.querySelector("rc")?s.querySelector("rc").textContent:"";
+var rg=s.querySelector("rg")?s.querySelector("rg").textContent:"";
+var b=s.querySelector("band")?s.querySelector("band").textContent:"";
+var snr=parseFloat(s.querySelector("snr")?s.querySelector("snr").textContent:"0");
+var f=s.querySelector("f")?s.querySelector("f").textContent:"";
+if(rg&&rg.indexOf("FM")===0&&BM[b]){
+results.push({call:dx.call,name:dx.name,rc:rc,rg:rg,band:b,snr:snr,freq:(f/1000000).toFixed(3)});
+}
+});
+done++;
+if(done===DXW.length){renderDX();setTimeout(pollDX,dxDelay)}
+})
+.catch(function(){done++;if(done===DXW.length){renderDX();setTimeout(pollDX,dxDelay)}});
+});
+function renderDX(){
+if(!results.length){el.innerHTML='<span style="color:#8b949e">No DX watch targets heard near FM18 in last 15 min</span>';return}
+results.sort(function(a,b){return b.snr-a.snr});
+var h="";
+results.slice(0,8).forEach(function(r){
+h+='<div style="margin:2px 0"><b style="color:#f0c040">'+r.call+'</b> <span style="color:#c9d1d9">('+r.name+')</span> — heard by <b>'+r.rc+'</b> <span style="color:#8b949e">('+r.rg+')</span> on <b style="color:#50fa7b">'+r.band+' '+r.freq+' MHz</b> @ <span style="color:'+(r.snr<=-15?"#f0c040":"#c9d1d9")+'">'+r.snr.toFixed(1)+' dB</span></div>';
+});
+el.innerHTML=h;
+}
+}
+
+pollMain();
+pollDX();
 })();
 </script>
 </body></html>   
