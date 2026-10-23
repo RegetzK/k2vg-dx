@@ -47,7 +47,7 @@ var W=[
 var BM={10:"10m",15:"15m",17:"17m",20:"20m",30:"30m"};
 var RC={AS:"#f0c040",AF:"#50fa7b",OC:"#bd93f9"};
 function poll(){
-fetch("https://pskreporter.info/pskreporter?callsign=K2VG&flowStartSeconds=-900&mode=FT8")
+fetch("https://corsproxy.io/?https://pskreporter.info/pskreporter?callsign=K2VG&flowStartSeconds=-900&mode=FT8")   
 .then(function(r){return r.text()})
 .then(function(d){
 var x=new DOMParser().parseFromString(d,"text/xml");
