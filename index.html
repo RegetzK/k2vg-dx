@@ -8,28 +8,32 @@
 <span id="k2v-t" style="float:right;color:#8b949e;font-size:16px">loading…</span>
 <div style="clear:both"></div>
 <div id="k2v-b" style="margin:4px 0;font-size:16px;color:#8b949e"></div>
-<div style="max-height:220px;overflow-y:auto;border:1px solid #0066cc;border-radius:6px;box-shadow:0 0 10px rgba(0,102,204,0.3);padding:4px">
-<table id="k2v-tbl" style="width:100%;border-collapse:collapse;font-size:20px;table-layout:fixed">
-<colgroup><col style="width:22%"><col style="width:14%"><col style="width:12%"><col style="width:14%"><col style="width:18%"><col style="width:20%"></colgroup>
+<div style="max-height:220px;overflow-y:auto;overflow-x:auto;border:1px solid #0066cc;border-radius:6px;box-shadow:0 0 10px rgba(0,102,204,0.3);padding:4px">
+<table id="k2v-tbl" style="width:100%;border-collapse:collapse;font-family:monospace;font-size:16px;table-layout:fixed">
+<colgroup><col style="width:20%"><col style="width:13%"><col style="width:11%"><col style="width:13%"><col style="width:19%"><col style="width:24%"></colgroup>
 <tr style="color:#3399ff;border-bottom:1px solid rgba(0,102,204,0.4)">
-<th style="text-align:left;padding:2px">CALL</th>
-<th>GRID</th><th>BAND</th><th>SNR</th><th>DXCC</th><th>REG</th>
+<th style="text-align:left;padding:4px;border:1px solid #0066cc">CALL</th>
+<th style="padding:4px;border:1px solid #0066cc">GRID</th>
+<th style="padding:4px;border:1px solid #0066cc">BAND</th>
+<th style="padding:4px;border:1px solid #0066cc">SNR</th>
+<th style="padding:4px;border:1px solid #0066cc">DXCC</th>
+<th style="padding:4px;border:1px solid #0066cc">REG</th>
 </tr>
 <tr id="k2v-ent" style="border-bottom:1px solid rgba(0,102,204,0.2)">
-<td style="padding:2px;color:#50fa7b">NCC-1701</td>
-<td style="color:#6b7280">EO-01</td>
-<td style="color:#6b7280">ALL</td>
-<td style="color:#50fa7b">LOCK</td>
-<td style="color:#50fa7b">USS ENTERPRISE</td>
-<td style="color:#50fa7b">UPLINK ESTABLISHED</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#50fa7b">NCC-1701</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#6b7280">EO-01</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#6b7280">ALL</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#50fa7b">LOCK</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#50fa7b">USS ENTERPRISE</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#50fa7b">UPLINK ACTIVE</td>
 </tr>
 <tr id="k2v-vul" style="border-bottom:1px solid rgba(0,102,204,0.2)">
-<td style="padding:2px;color:#a78bfa">★ 40 ERIDANI A</td>
-<td style="color:#6b7280">—</td>
-<td style="color:#6b7280">—</td>
-<td style="color:#6b7280">—</td>
-<td style="color:#a78bfa">VULCAN</td>
-<td style="color:#a78bfa;animation:vul 3s ease-in-out infinite">🖖 monitoring…</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#a78bfa">★ 40 ERIDANI A</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#6b7280">—</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#6b7280">—</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#6b7280">—</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#a78bfa">VULCAN</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#a78bfa;animation:vul 3s ease-in-out infinite">🖖 monitoring…</td>
 </tr>
 </table>
 </div>
@@ -52,10 +56,17 @@ var W=[
 ];
 var BM={6:"6m",10:"10m",12:"12m",15:"15m",17:"17m",20:"20m",30:"30m",40:"40m"};
 var RC={AS:"#f0c040",AF:"#50fa7b",OC:"#bd93f9",NA:"#ff6b6b"};
+var nextDelay=120000;
 function poll(){
 fetch("https://corsproxy.io/?https://pskreporter.info/pskreporter?callsign=K2VG&flowStartSeconds=-900&mode=FT8")
-.then(function(r){return r.text()})
+.then(function(r){
+if(r.status===429){nextDelay=300000;document.getElementById("k2v-t").textContent="Rate limited — retrying in 5 min";setTimeout(poll,nextDelay);return null}
+return r.text()
+})
 .then(function(d){
+if(!d)return;
+if(d.trim().length<50){nextDelay=300000;document.getElementById("k2v-t").textContent="Empty response — backing off 5 min";setTimeout(poll,nextDelay);return}
+nextDelay=120000;
 var x=new DOMParser().parseFromString(d,"text/xml");
 var sp=x.querySelectorAll("spot");
 var tbl=document.getElementById("k2v-tbl");
@@ -73,8 +84,7 @@ bc[b]=(bc[b]||0)+1;
 var w=W.find(function(w){return w.c===dx});
 var reg=w?w.r:"";
 var row=tbl.insertRow();
-row.style.borderBottom="1px solid rgba(0,102,204,0.15)";
-row.innerHTML='<td style="padding:2px">'+c+'</td><td>'+g+'</td><td>'+b+'</td><td style="color:'+(snr<=-15?"#f0c040":"#c9d1d9")+'">'+snr.toFixed(1)+'</td><td>'+dx+'</td><td style="color:'+(RC[reg]||"#8b949e")+'">'+reg+'</td>';
+row.innerHTML='<td style="padding:4px;border:1px solid #0066cc">'+c+'</td><td style="padding:4px;border:1px solid #0066cc">'+g+'</td><td style="padding:4px;border:1px solid #0066cc">'+b+'</td><td style="padding:4px;border:1px solid #0066cc;color:'+(snr<=-15?"#f0c040":"#c9d1d9")+'">'+snr.toFixed(1)+'</td><td style="padding:4px;border:1px solid #0066cc">'+dx+'</td><td style="padding:4px;border:1px solid #0066cc;color:'+(RC[reg]||"#8b949e")+'">'+reg+'</td>';
 if(reg&&snr<=-15)hits.push(c+" "+b+" "+snr+"dB "+(w?w.n:""));
 });
 var bd=Object.keys(bc).map(function(b){return b+"("+bc[b]+")"}).join(" ");
@@ -82,9 +92,9 @@ document.getElementById("k2v-b").textContent="Bands: "+(bd||"none active");
 if(!sp.length){document.getElementById("k2v-w").innerHTML='<div style="text-align:center;padding:30px 0;color:#8b949e">📡 Waiting for FT8 spots…</div>'}
 else{document.getElementById("k2v-w").innerHTML=hits.length?'<b style="color:#f0c040">⚡ ≤-15dB targets:</b> '+hits.slice(0,5).join(" | "):"No ≤-15dB AS/AF/OC targets in last 15 min"}
 document.getElementById("k2v-t").textContent=new Date().toLocaleTimeString()+" · "+sp.length+" spots";
+setTimeout(poll,nextDelay);
 })
-.catch(function(e){document.getElementById("k2v-t").textContent="API error: "+e.message});
-setTimeout(poll,300000);
+.catch(function(e){nextDelay=300000;document.getElementById("k2v-t").textContent="Error: "+e.message+" — retry 5 min";setTimeout(poll,nextDelay)});
 }
 poll();
 })();
