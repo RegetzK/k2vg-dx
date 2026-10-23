@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
-<style>body{margin:0;padding:0;background:#0d1117}</style>
+<style>body{margin:0;padding:0;background:#0d1117}
+@keyframes vul{0%,100%{opacity:.6}50%{opacity:1}}</style>
 </head><body>
 <div id="k2v" style="font:11px/1.3 monospace;background:#0d1117;color:#c9d1d9;padding:8px 10px;border-radius:6px;max-width:540px">
 <b style="color:#58a6ff">📡 K2VG DX MONITOR · FM18 · FT8</b>
@@ -12,6 +13,14 @@
 <tr style="color:#8b949e;border-bottom:1px solid #30363d">
 <th style="text-align:left;padding:2px">CALL</th>
 <th>GRID</th><th>BAND</th><th>SNR</th><th>DXCC</th><th>REG</th>
+</tr>
+<tr id="k2v-vul" style="border-bottom:1px solid #1f2937">
+<td style="padding:1px 2px;color:#a78bfa">★ 40 ERI A</td>
+<td style="color:#6b7280">—</td>
+<td style="color:#6b7280">—</td>
+<td style="color:#6b7280">—</td>
+<td style="color:#a78bfa">VULCAN</td>
+<td style="color:#a78bfa;animation:vul 3s ease-in-out infinite">🖖 monitoring…</td>
 </tr>
 </table>
 </div>
@@ -35,7 +44,7 @@ var x=new DOMParser().parseFromString(d,"text/xml");
 var sp=x.querySelectorAll("spot");
 var tbl=document.getElementById("k2v-tbl");
 var rows=tbl.querySelectorAll("tr");
-for(var i=rows.length-1;i>0;i--)tbl.deleteRow(i);
+for(var i=rows.length-1;i>1;i--)tbl.deleteRow(i);
 var bc={};var hits=[];
 sp.forEach(function(s){
 var b=s.querySelector("band")?s.querySelector("band").textContent:"";
@@ -53,8 +62,8 @@ if(reg&&snr<=-15)hits.push(c+" "+b+" "+snr+"dB "+(w?w.n:""));
 });
 var bd=Object.keys(bc).map(function(b){return b+"("+bc[b]+")"}).join(" ");
 document.getElementById("k2v-b").textContent="Bands: "+(bd||"none active");
-if(!sp.length){tbl.style.display="none";document.getElementById("k2v-w").innerHTML='<div style="text-align:center;padding:40px 0;color:#8b949e">📡 Waiting for FT8 spots…</div>'}
-else{tbl.style.display="";document.getElementById("k2v-w").innerHTML=hits.length?'<b style="color:#f0c040">⚡ ≤-15dB targets:</b> '+hits.slice(0,5).join(" | "):"No ≤-15dB AS/AF/OC targets in last 15 min"}
+if(!sp.length){document.getElementById("k2v-w").innerHTML='<div style="text-align:center;padding:40px 0;color:#8b949e">📡 Waiting for FT8 spots…</div>'}
+else{document.getElementById("k2v-w").innerHTML=hits.length?'<b style="color:#f0c040">⚡ ≤-15dB targets:</b> '+hits.slice(0,5).join(" | "):"No ≤-15dB AS/AF/OC targets in last 15 min"}
 document.getElementById("k2v-t").textContent=new Date().toLocaleTimeString()+" · "+sp.length+" spots";
 })
 .catch(function(e){document.getElementById("k2v-t").textContent="API error: "+e.message});
