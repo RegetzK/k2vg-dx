@@ -2,27 +2,35 @@
 <html><head><meta charset="utf-8">
 <style>html,body{margin:0;padding:0;overflow-x:hidden;background:#000000;font-family:Arial,Helvetica,sans-serif}
 @keyframes vul{0%,100%{opacity:.6}50%{opacity:1}}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}</style>
+@keyframes radarSweep{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes barGrow{from{height:0}to{height:var(--h)}}
+</style>
 </head><body>
 <div id="k2v" style="font-size:20px;line-height:1.3;background:#000000;color:#c9d1d9;padding:10px 12px;border-radius:6px;width:100%;box-sizing:border-box">
 <div style="display:flex;justify-content:space-between;align-items:center">
-<b style="color:#3399ff;font-size:20px">📡 <span style="color:#ffffff">(SL9)</span> K2VG/BETA 5 CURRENT ACTIVE UPLINKS, SUBSPACE & TERRESTRIAL DX MONITORING</b>   
+<b style="color:#3399ff;font-size:20px">📡 <span style="color:#ffffff">(SL9)</span> K2VG/B5 CURRENT ACTIVE UPLINKS, SUBSPACE & TERRESTRIAL DX MONITORING</b>
 <div style="display:flex;align-items:center;gap:8px">
 <span id="k2v-utc" style="color:#50fa7b;font-family:monospace;font-size:14px"></span>
 <span id="k2v-t" style="color:#8b949e;font-size:14px">loading…</span>
 <button onclick="initAudio();playAlert()" style="font-size:10px;background:#0066cc;color:#fff;border:1px solid #3399ff;border-radius:3px;padding:2px 6px;cursor:pointer">TEST</button>
+<button onclick="pullNow()" style="font-size:10px;background:#2ecc71;color:#000;border:1px solid #27ae60;border-radius:3px;padding:2px 6px;cursor:pointer;font-weight:bold">⟳ PULL</button>
 </div>
 </div>
 <div style="clear:both"></div>
 <div id="k2v-sfi" style="display:none;margin:4px 0;font-size:14px;font-family:monospace;color:#50fa7b"></div>
 <div id="k2v-gl" style="display:none;margin:4px 0;font-size:14px;font-family:monospace;color:#f0c040"></div>
+<div id="k2v-gl-arc" style="display:none;margin:2px 0"></div>
+<div id="k2v-dxcc" style="display:none;margin:4px 0;font-size:13px;font-family:monospace"></div>
+<div id="k2v-streak" style="display:none;margin:2px 0;font-size:13px;font-family:monospace;color:#50fa7b"></div>
+<div id="k2v-bars" style="display:none;margin:4px 0;align-items:flex-end;gap:2px;height:30px"></div>
 <div id="k2v-ctl" style="display:none;margin:4px 0;font-size:12px;align-items:center;gap:6px">
 <button id="k2v-pause" onclick="togglePause()" style="font-size:11px;background:#333;color:#fff;border:1px solid #555;border-radius:3px;padding:2px 8px;cursor:pointer">⏸ PAUSE</button>
 <label style="color:#8b949e">VOL</label>
 <input id="k2v-vol" type="range" min="0" max="100" value="50" style="width:60px">
 <button onclick="toggleFS()" style="font-size:11px;background:#333;color:#fff;border:1px solid #555;border-radius:3px;padding:2px 8px;cursor:pointer">⛶</button>
 </div>
-<div id="k2v-b" style="margin:4px 0;font-size:16px;color:#50fa7b;font-weight:bold"></div>
+<div id="k2v-b" style="margin:4px 0;font-size:16px;color:#50fa7b;font-weight:bold">CONNECTING…</div>
 <div style="border:1px solid #0066cc;border-radius:6px;box-shadow:0 0 10px rgba(0,102,204,0.3);padding:4px;overflow:hidden">
 <table id="k2v-tbl" style="width:100%;border-collapse:collapse;font-family:monospace;font-size:16px;table-layout:fixed">
 <colgroup><col style="width:19%"><col style="width:13%"><col style="width:11%"><col style="width:13%"><col style="width:20%"><col style="width:24%"></colgroup>
@@ -48,7 +56,7 @@
 <td style="padding:4px;border:1px solid #0066cc;color:#a78bfa">ALL</td>
 <td style="padding:4px;border:1px solid #0066cc;color:#a78bfa">STATIC</td>
 <td style="padding:4px;border:1px solid #0066cc;color:#a78bfa">VULCAN</td>
-<td style="padding:4px;border:1px solid #0066cc;color:#a78bfa;animation:vul 3s ease-in-out infinite">🖖 SCANNING</td>
+<td style="padding:4px;border:1px solid #0066cc;color:#a78bfa"><span style="display:inline-block;background:linear-gradient(90deg,transparent 30%,#00e5ff 50%,transparent 70%);background-size:200% 100%;animation:radarSweep 2s linear infinite;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">🖖 SCANNING</span></td>
 </tr>
 <tr id="k2v-gov" style="border-bottom:1px solid rgba(0,102,204,0.2)">
 <td style="padding:4px;border:1px solid #0066cc;color:#f0c040">[GOV-COMMS]</td>
@@ -69,6 +77,7 @@
 </table>
 </div>
 <div id="k2v-w" style="margin-top:4px;font-size:16px;color:#8b949e"></div>
+<div id="k2v-last5" style="display:none;margin-top:2px;font-size:12px;font-family:monospace;color:#8b949e"></div>
 <div id="k2v-last" style="display:none;margin-top:2px;font-size:13px;color:#f0c040"></div>
 <div id="k2v-dx" style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,102,204,0.25);font-size:16px;color:#8b949e">
 <b style="color:#f0c040">🎯 DX WATCH — DX HEARD NEAR FM18:</b>
@@ -98,14 +107,24 @@ var seenMain={};
 var seenDX={};
 var audioCtx=null;
 var paused=false;
-var vol=0.5;
 var lastAlertMsg="";
+var prevSFI=null;
+var sfiTrend="";
+var sessionQSOs=[];
+var lastQSOtime=null;
+var mainTimer=null;
+var dxTimer=null;
 
 if(STANDALONE){
 document.getElementById("k2v-sfi").style.display="block";
 document.getElementById("k2v-gl").style.display="block";
+document.getElementById("k2v-gl-arc").style.display="block";
+document.getElementById("k2v-dxcc").style.display="block";
+document.getElementById("k2v-streak").style.display="block";
+document.getElementById("k2v-bars").style.display="flex";
 document.getElementById("k2v-ctl").style.display="flex";
 document.getElementById("k2v-last").style.display="block";
+document.getElementById("k2v-last5").style.display="block";
 document.getElementById("k2v-tbl").style.fontSize="18px";
 document.getElementById("k2v").style.fontSize="22px";
 }
@@ -145,11 +164,22 @@ paused=!paused;
 var btn=document.getElementById("k2v-pause");
 btn.textContent=paused?"▶ RESUME":"⏸ PAUSE";
 btn.style.background=paused?"#2ecc71":"#333";
+document.getElementById("k2v").style.opacity=paused?"0.5":"1";
+document.getElementById("k2v-t").textContent=paused?"⏸ PAUSED":"loading…";
+document.getElementById("k2v-t").style.color=paused?"#f0c040":"#8b949e";
 }
 
 function toggleFS(){
 if(!document.fullscreenElement)document.documentElement.requestFullscreen();
 else document.exitFullscreen();
+}
+
+function pullNow(){
+if(mainTimer)clearTimeout(mainTimer);
+if(dxTimer)clearTimeout(dxTimer);
+document.getElementById("k2v-t").textContent="PULLING…";
+pollMain();
+pollDX();
 }
 
 document.addEventListener("click",initAudio,{once:true});
@@ -159,6 +189,11 @@ setInterval(function(){
 var now=new Date();
 var utc=now.toUTCString().slice(17,22);
 document.getElementById("k2v-utc").textContent=utc+" UTC";
+if(STANDALONE&&lastQSOtime){
+var mins=Math.floor((Date.now()-lastQSOtime)/60000);
+var streak=document.getElementById("k2v-streak");
+streak.textContent="LAST QSO: "+mins+"m ago | SESSION: "+sessionQSOs.length+" QSOs";
+}
 },1000);
 
 function fetchSFI(){
@@ -169,8 +204,14 @@ fetch("https://corsproxy.io/?https://services.swpc.noaa.gov/text/solar-wx-foreca
 var sfi=d.match(/SFI[:\s]*(\d+)/i);
 var kp=d.match(/Kp[:\s]*(\d)/i);
 var el=document.getElementById("k2v-sfi");
-if(sfi)el.textContent="SFI: "+sfi[1]+(kp?" | Kp: "+kp[1]:"");
-else el.textContent="SFI: loading…";
+if(sfi){
+var val=parseInt(sfi[1]);
+if(prevSFI!==null){
+sfiTrend=val<prevSFI?" ↘":val>prevSFI?" ↗":" →";
+}
+prevSFI=val;
+el.textContent="SFI: "+val+sfiTrend+(kp?" | Kp: "+kp[1]:"");
+}else el.textContent="SFI: loading…";
 })
 .catch(function(){document.getElementById("k2v-sfi").textContent="SFI: unavailable"});
 }
@@ -184,33 +225,69 @@ var windows=[
 {name:"AF-EQ",start:9.5,end:12.5}
 ];
 var parts=[];
+var arcParts=[];
 windows.forEach(function(w){
-if(nowUTC>=w.start&&nowUTC<=w.end){
+var active=nowUTC>=w.start&&nowUTC<=w.end;
+if(active){
 parts.push(w.name+": <span style='color:#2ecc71'>ACTIVE</span>");
+arcParts.push({name:w.name,active:true});
 }else{
 var diff;
 if(nowUTC<w.start)diff=w.start-nowUTC;
 else diff=24-nowUTC+w.start;
 var hrs=Math.floor(diff);var mins=Math.round((diff-hrs)*60);
 parts.push(w.name+":"+hrs+"h"+mins+"m");
+arcParts.push({name:w.name,active:false});
 }
 });
 document.getElementById("k2v-gl").textContent="GRAYLINE: "+parts.join(" | ");
+var svg='<svg width="200" height="40" style="display:block;margin:0 auto">';
+var colors={NZ:"#bd93f9","JP/AS":"#f0c040","AF-EQ":"#50fa7b"};
+arcParts.forEach(function(a,i){
+var y=8+i*12;
+var stroke=colors[a.name]||"#888";
+var opacity=a.active?"1":"0.3";
+svg+='<line x1="10" y1="'+y+'" x2="190" y2="'+y+'" stroke="'+stroke+'" stroke-width="2" opacity="'+opacity+'"/>';
+svg+='<text x="2" y="'+(y+4)+'" fill="'+stroke+'" font-size="8" font-family="monospace">'+a.name+'</text>';
+if(a.active)svg+='<circle cx="190" cy="'+y+'" r="3" fill="'+stroke+'"><animate attributeName="r" values="2;5;2" dur="1s" repeatCount="indefinite"/></circle>';
+});
+svg+='</svg>';
+document.getElementById("k2v-gl-arc").innerHTML=svg;
 }
 
 setInterval(fetchSFI,3600000);
 setInterval(updateGrayline,60000);
 fetchSFI();updateGrayline();
 
+function updateDXCC(){
+if(!STANDALONE)return;
+document.getElementById("k2v-dxcc").innerHTML='<span style="color:#2ecc71">CENTURY: 100/100 ✅</span> <span style="color:#8b949e">→ hunting 101+</span>';
+}
+updateDXCC();
+
+function updateBars(bc){
+if(!STANDALONE)return;
+var el=document.getElementById("k2v-bars");
+var labels={6:"6",10:"10",12:"12",15:"15",17:"17",20:"20",30:"30",40:"40"};
+var max=1;
+Object.keys(bc).forEach(function(b){if(bc[b]>max)max=bc[b]});
+var html="";
+Object.keys(labels).forEach(function(b){
+var h=bc[b]?Math.max(4,Math.round(bc[b]/max*28)):2;
+var col=bc[b]>=max*0.8?"#50fa7b":bc[b]>=max*0.4?"#f0c040":"#8b949e";
+html+='<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><div style="width:14px;height:'+h+'px;background:'+col+';border-radius:2px;transition:height 0.5s"></div><span style="font-size:8px;color:#8b949e;font-family:monospace">'+labels[b]+'</span></div>';
+});
+el.innerHTML=html;
+}
+
 function getBandRec(bc){
-var bands=Object.keys(bc).sort(function(a,b){return bc[b]-bc[a]});
+var bands=Object.keys(bc);
 if(!bands.length)return "";
-var rec="TUNE: ";
-var labels={6:"6m",10:"10m",12:"12m",15:"15m",17:"17m",20:"20m",30:"30m",40:"40m"};
 var counts={};
 bands.forEach(function(b){counts[b]=bc[b]});
 var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]});
 var max=counts[sorted[0]]||1;
+var labels={6:"6m",10:"10m",12:"12m",15:"15m",17:"17m",20:"20m",30:"30m",40:"40m"};
 var str=sorted.slice(0,4).map(function(b){
 var lvl=counts[b]>=max*0.8?"HIGH":counts[b]>=max*0.4?"MED":"LOW";
 return labels[b]+"("+lvl+")";
@@ -219,15 +296,15 @@ return "TUNE: "+str;
 }
 
 function pollMain(){
-if(paused){setTimeout(pollMain,nextDelay);return}
+if(paused){mainTimer=setTimeout(pollMain,nextDelay);return}
 fetch("https://corsproxy.io/?https://pskreporter.info/pskreporter?callsign=K2VG&flowStartSeconds=-900&mode=FT8")
 .then(function(r){
-if(r.status===429){nextDelay=300000;document.getElementById("k2v-t").textContent="Rate limited";setTimeout(pollMain,nextDelay);return null}
+if(r.status===429){nextDelay=300000;document.getElementById("k2v-t").textContent="Rate limited";mainTimer=setTimeout(pollMain,nextDelay);return null}
 return r.text()
 })
 .then(function(d){
 if(!d)return;
-if(d.trim().length<50){nextDelay=300000;setTimeout(pollMain,nextDelay);return}
+if(d.trim().length<50){nextDelay=300000;mainTimer=setTimeout(pollMain,nextDelay);return}
 nextDelay=300000;
 var x=new DOMParser().parseFromString(d,"text/xml");
 var sp=x.querySelectorAll("spot");
@@ -254,7 +331,13 @@ if(!seenMain[key]){
 newAlert=true;seenMain[key]=1;
 var msg=c+" "+b+" "+snr+"dB "+(w?w.n:"");
 lastAlertMsg=new Date().toLocaleTimeString()+" — "+msg;
+if(STANDALONE){
 document.getElementById("k2v-last").textContent="⚡ Last: "+lastAlertMsg;
+sessionQSOs.unshift(c+" "+b+" "+snr+"dB");
+if(sessionQSOs.length>5)sessionQSOs.pop();
+document.getElementById("k2v-last5").textContent="RECENT: "+sessionQSOs.join(" | ");
+lastQSOtime=Date.now();
+}
 fireNotification(msg);
 }
 }
@@ -264,14 +347,15 @@ document.getElementById("k2v-b").textContent=rec||"Bands: none active";
 if(!sp.length){document.getElementById("k2v-w").innerHTML='<div style="text-align:center;padding:20px 0;color:#8b949e">📡 Waiting for FT8 spots…</div>'}
 else{document.getElementById("k2v-w").innerHTML=hits.length?'<b style="color:#f0c040">⚡ ≤-15dB targets:</b> '+hits.slice(0,5).join(" | "):"No ≤-15dB AS/AF/OC targets in last 15 min"}
 document.getElementById("k2v-t").textContent=new Date().toLocaleTimeString()+" · "+sp.length+" spots";
+if(STANDALONE)updateBars(bc);
 if(newAlert&&audioCtx)playAlert();
-setTimeout(pollMain,nextDelay);
+mainTimer=setTimeout(pollMain,nextDelay);
 })
-.catch(function(e){nextDelay=300000;setTimeout(pollMain,nextDelay)});
+.catch(function(e){document.getElementById("k2v-t").textContent="ERR: "+e.message;document.getElementById("k2v-b").textContent="RETRY IN 5 MIN";nextDelay=300000;mainTimer=setTimeout(pollMain,nextDelay)});
 }
 
 function pollDX(){
-if(paused){setTimeout(pollDX,dxDelay);return}
+if(paused){dxTimer=setTimeout(pollDX,dxDelay);return}
 var el=document.getElementById("k2v-dxlist");
 var results=[];
 var done=0;
@@ -292,9 +376,9 @@ results.push({call:dx.call,name:dx.name,rc:rc,rg:rg,band:b,snr:snr,freq:(f/10000
 }
 });
 done++;
-if(done===DXW.length){renderDX();setTimeout(pollDX,dxDelay)}
+if(done===DXW.length){renderDX();dxTimer=setTimeout(pollDX,dxDelay)}
 })
-.catch(function(){done++;if(done===DXW.length){renderDX();setTimeout(pollDX,dxDelay)}});
+.catch(function(){done++;if(done===DXW.length){renderDX();dxTimer=setTimeout(pollDX,dxDelay)}});
 });
 function renderDX(){
 if(!results.length){el.innerHTML='<span style="color:#8b949e">No DX watch targets heard near FM18 in last 15 min</span>';return}
@@ -306,7 +390,7 @@ if(!seenDX[key]){
 newAlert=true;seenDX[key]=1;
 var msg=r.call+" ("+r.name+") "+r.band+" "+r.freq+"MHz via "+r.rc;
 lastAlertMsg=new Date().toLocaleTimeString()+" — "+msg;
-document.getElementById("k2v-last").textContent="⚡ Last: "+lastAlertMsg;
+if(STANDALONE)document.getElementById("k2v-last").textContent="⚡ Last: "+lastAlertMsg;
 fireNotification(msg);
 }
 h+='<div style="margin:2px 0"><b style="color:#f0c040">'+r.call+'</b> <span style="color:#c9d1d9">('+r.name+')</span> — heard by <b>'+r.rc+'</b> <span style="color:#8b949e">('+r.rg+')</span> on <b style="color:#50fa7b">'+r.band+' '+r.freq+' MHz</b> @ <span style="color:'+(r.snr<=-15?"#f0c040":"#c9d1d9")+'">'+r.snr.toFixed(1)+' dB</span></div>';
@@ -315,10 +399,12 @@ el.innerHTML=h;
 if(newAlert&&audioCtx)playAlert();
 }
 }
+
 window.initAudio=initAudio;
 window.playAlert=playAlert;
 window.togglePause=togglePause;
 window.toggleFS=toggleFS;
+window.pullNow=pullNow;
 pollMain();
 pollDX();
 })();
