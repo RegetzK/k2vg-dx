@@ -4,55 +4,78 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K2VG Mission Control</title>
-    <!-- ZERO TRUST CONTENT SECURITY POLICY (PERMITS LOCAL DATA FETCH) -->
+    <!-- ZERO TRUST CONTENT SECURITY POLICY (PERMITS ARCHITECTURAL LOOPS) -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://corsproxy.io https://allorigins.win; style-src 'self' 'unsafe-inline';">
     <style>
         html,body{margin:0;padding:0;overflow-x:hidden;background:#000000;font-family:monospace;color:#00ff00;font-size:13px;padding:10px;}
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; max-width: 800px; margin: auto; }
-        .box { border: 1px solid #00ff00; padding: 10px; border-radius: 4px; background: #030703; box-shadow: 0 0 8px rgba(0,255,0,0.2); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; max-width: 900px; margin: auto; }
+        .box { border: 1px solid #00ff00; padding: 12px; border-radius: 4px; background: #030703; box-shadow: 0 0 8px rgba(0,255,0,0.2); }
         .header { font-weight: bold; color: #fff; text-align: center; border-bottom: 1px solid #00ff00; margin-bottom: 8px; padding-bottom: 4px; letter-spacing: 1px; }
-        .data-line { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .data-line { display: flex; justify-content: space-between; margin-bottom: 5px; }
         .val { color: #fff; font-weight: bold; }
         .alert { color: #ffff00; animation: blink 2s infinite; }
         ul { margin: 0; padding-left: 15px; color: #fff; }
-        li { margin-bottom: 3px; }
+        li { margin-bottom: 4px; }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
     </style>
 </head>
 <body>
     <div class="grid">
-        <!-- STATION REGISTRATION CORE -->
+        <!-- STATION DATA ELEMENT -->
         <div class="box">
             <div class="header">STATION LOGS</div>
             <div class="data-line">CALLSIGN: <span class="val">K2VG</span></div>
             <div class="data-line">GRID SQR: <span class="val">FM18</span></div>
+            <div class="data-line">TOTAL CONTACTS: <span id="total-qsos" class="val">124</span></div>
+            <div class="data-line">QRZ CONFIRMED: <span id="confirmed-qrz" class="val">100</span></div>
             <div class="data-line">SYS DATA: <span id="status" class="alert">INITIALIZING</span></div>
         </div>
-        <!-- SOLAR PROPAGATION TELEMETRY -->
+
+        <!-- RE-ENGINEERED SPACE WEATHER VECTOR ARRAY -->
         <div class="box">
-            <div class="header">SOLAR ARRAY</div>
+            <div class="header">SOLAR ARRAY [SL9]</div>
             <div class="data-line">FLUX (SFI): <span id="sfi" class="val">145</span></div>
             <div class="data-line">PLANET Kp: <span id="kp" class="val">4</span></div>
+            <div class="data-line">GEOMAGNETIC: <span id="geomag" class="val">STABLE</span></div>
+            <div class="data-line">FLARE RISK: <span id="flare" class="val">QUIET</span></div>
         </div>
-        <!-- DECODIUM MATRIX PLOTTER -->
+
+        <!-- RE-ENGINEERED LUNAR TELEMETRY NODE -->
+        <div class="box">
+            <div class="header">LUNAR ORBIT TRACK</div>
+            <div class="data-line">CURRENT PHASE: <span id="phase" class="val">--</span></div>
+            <div class="data-line">ILLUMINATION: <span id="illum" class="val">--</span></div>
+            <div class="data-line">IONOSPHERE INFL: <span id="infl" class="val">--</span></div>
+        </div>
+
+        <!-- INTEGRATED LIVE DECODIUM TARGET WINDOW -->
         <div class="box" style="grid-column: 1 / -1;">
             <div class="header">DECODIUM TARGET MATRIX [-15 TO -19 dB]</div>
-            <div id="dx-list">Awaiting incoming cloud telemetry synchronization...</div>
+            <div id="dx-list">Awaiting incoming cloud telemetry synchronization loop...</div>
         </div>
     </div>
 
-    <!-- SUBSPACE ENGINE LAYER -->
+    <!-- SUBSPACE PARSER LOGIC LAYER -->
     <script>
         function refreshTelemetry() {
-            // Relative fetch targets the local data folder inside /docs/data/
+            // Pulls directly from the static data cache file built by Python
             fetch('data/telemetry.json?t=' + Date.now())
                 .then(res => {
-                    if (!res.ok) throw new Error('Pending data drop');
+                    if (!res.ok) throw new Error('Cache synchronization pending');
                     return res.json();
                 })
                 .then(data => {
+                    // Injecting live variables directly into view matrix nodes
+                    document.getElementById('total-qsos').innerText = data.station.total_qsos || '124';
+                    document.getElementById('confirmed-qrz').innerText = data.station.confirmed_qrz || '100';
                     document.getElementById('sfi').innerText = data.solar.sfi || '145';
                     document.getElementById('kp').innerText = data.solar.kp || '4';
+                    document.getElementById('geomag').innerText = data.solar.geomag || 'STABLE';
+                    document.getElementById('flare').innerText = data.solar.flare_risk || 'QUIET';
+                    document.getElementById('phase').innerText = data.lunar.phase || 'Unknown';
+                    document.getElementById('illum').innerText = data.lunar.illumination || 'N/A';
+                    document.getElementById('infl').innerText = data.lunar.muf_impact || 'MINIMAL';
+                    
                     document.getElementById('status').innerText = data.telemetry.status || 'ONLINE';
                     document.getElementById('status').className = 'val';
                     
@@ -69,15 +92,12 @@
                     }
                 })
                 .catch(err => { 
-                    // Fail-safe protection: keeps screen green and alert active during initial data cache generation
                     document.getElementById('status').innerText = "SYNC PENDING"; 
                     document.getElementById('status').className = 'alert';
                 });
         }
         refreshTelemetry();
-        setInterval(refreshTelemetry, 60000); // Poll local cache file once per minute
+        setInterval(refreshTelemetry, 60000); // Local frontend viewport polling interval
     </script>
 </body>
 </html>
-
-
