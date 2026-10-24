@@ -1,8 +1,8 @@
 name: Update Subspace Telemetry Array
 on:
   schedule:
-    - cron: '*/15 * * * *' # Fires the collection loop precisely every 15 minutes
-  workflow_dispatch: # Mounts the grey manual execution override button to your panel
+    - cron: '*/15 * * * *' # Automated execution loop running every 15 minutes
+  workflow_dispatch: # Forces the grey manual override button to surface on your panel
 
 jobs:
   refresh-telemetry:
