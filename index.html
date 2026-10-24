@@ -1,14 +1,79 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8">
-<!-- ZERO TRUST SECURITY ENGINE PROTOCOL -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src https://corsproxy.io; style-src 'self' 'unsafe-inline';">
-<style>html,body{margin:0;padding:0;overflow-x:hidden;background:#000000;font-family:Arial,Helvetica,sans-serif}
-@keyframes vul{0%,100%{opacity:.6}50%{opacity:1}}
-@keyframes radarSweep{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-@keyframes barGrow{from{height:0}to{height:var(--h)}}
-</style>
-</head><body>
-<!-- [TABLE PLACEHOLDERS FROM ORIGINAL PARTS 1 & 2 HERE] -->
-<script src="js/monitor.js"></script>
-</body></html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K2VG Mission Control</title>
+    <!-- ZERO TRUST SECURITY ENGINE PROTOCOL (CORRECTED CONNECT-SRC) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://corsproxy.io https://allorigins.win; style-src 'self' 'unsafe-inline';">
+    <style>
+        html,body{margin:0;padding:0;overflow-x:hidden;background:#000000;font-family:monospace;color:#00ff00;font-size:13px;padding:10px;}
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; max-width: 800px; margin: auto; }
+        .box { border: 1px solid #00ff00; padding: 10px; border-radius: 4px; background: #030703; box-shadow: 0 0 8px rgba(0,255,0,0.2); }
+        .header { font-weight: bold; color: #fff; text-align: center; border-bottom: 1px solid #00ff00; margin-bottom: 8px; padding-bottom: 4px; letter-spacing: 1px; }
+        .data-line { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .val { color: #fff; font-weight: bold; }
+        .alert { color: #ffff00; animation: blink 2s infinite; }
+        ul { margin: 0; padding-left: 15px; color: #fff; }
+        li { margin-bottom: 3px; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    </style>
+</head>
+<body>
+    <div class="grid">
+        <!-- STATION DATA ELEMENT -->
+        <div class="box">
+            <div class="header">STATION LOGS</div>
+            <div class="data-line">CALLSIGN: <span class="val">K2VG</span></div>
+            <div class="data-line">GRID SQR: <span class="val">FM18</span></div>
+            <div class="data-line">SYS DATA: <span id="status" class="alert">INITIALIZING</span></div>
+        </div>
+        <!-- SPACE WEATHER METRICS ARRAY -->
+        <div class="box">
+            <div class="header">SOLAR ARRAY</div>
+            <div class="data-line">FLUX (SFI): <span id="sfi" class="val">145</span></div>
+            <div class="data-line">PLANET Kp: <span id="kp" class="val">4</span></div>
+        </div>
+        <!-- LIVE DECODIUM MATRIX -->
+        <div class="box" style="grid-column: 1 / -1;">
+            <div class="header">DECODIUM TARGET MATRIX [-15 TO -19 dB]</div>
+            <div id="dx-list">Awaiting incoming cloud telemetry synchronization...</div>
+        </div>
+    </div>
+
+    <!-- INLINE TELEMETRY ENGINE LAYER -->
+    <script>
+        function refreshTelemetry() {
+            fetch('data/telemetry.json?t=' + Date.now())
+                .then(res => {
+                    if (!res.ok) throw new Error('Pending data drop');
+                    return res.json();
+                })
+                .then(data => {
+                    document.getElementById('sfi').innerText = data.solar.sfi || '145';
+                    document.getElementById('kp').innerText = data.solar.kp || '4';
+                    document.getElementById('status').innerText = data.telemetry.status || 'ONLINE';
+                    document.getElementById('status').className = 'val';
+                    
+                    const listContainer = document.getElementById('dx-list');
+                    if (data.telemetry.dx_tracks && data.telemetry.dx_tracks.length > 0) {
+                        let html = '<ul>';
+                        data.telemetry.dx_tracks.slice(0, 5).forEach(track => {
+                            html += `<li><b>${track.call}</b> (${track.grid}) | <span style="color:#ffff00">${track.db} dB</span> @ ${track.freq} MHz</li>`;
+                        });
+                        html += '</ul>';
+                        listContainer.innerHTML = html;
+                    } else {
+                        listContainer.innerHTML = "<span style='color:#888;'>Zero tracks caught within Decodium Shannon bounds.</span>";
+                    }
+                })
+                .catch(err => { 
+                    document.getElementById('status').innerText = "SYNC PENDING"; 
+                    document.getElementById('status').className = 'alert';
+                });
+        }
+        refreshTelemetry();
+        setInterval(refreshTelemetry, 60000); // 60-second frontend monitor poll loop
+    </script>
+</body>
+</html>
