@@ -315,7 +315,8 @@ el.innerHTML=h;
 if(newAlert&&audioCtx)playAlert();
 }
 }
-
+window.initAudio=initAudio;
+window.playAlert=playAlert;
 pollMain();
 pollDX();
 })();
