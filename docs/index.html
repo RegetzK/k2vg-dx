@@ -3,69 +3,109 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K2VG Mission Control</title>
+    <title>K2VG Mission Control Matrix</title>
     <!-- ZERO TRUST CONTENT SECURITY POLICY (PERMITS ARCHITECTURAL LOOPS) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://corsproxy.io https://allorigins.win; style-src 'self' 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://corsproxy.io https://allorigins.win; style-src 'self' 'unsafe-inline'; img-src 'self' https://noaa.gov data:;">
     <style>
-        html,body{margin:0;padding:0;overflow-x:hidden;background:#000000;font-family:monospace;color:#00ff00;font-size:13px;padding:10px;}
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; max-width: 900px; margin: auto; }
-        .box { border: 1px solid #00ff00; padding: 12px; border-radius: 4px; background: #030703; box-shadow: 0 0 8px rgba(0,255,0,0.2); }
-        .header { font-weight: bold; color: #fff; text-align: center; border-bottom: 1px solid #00ff00; margin-bottom: 8px; padding-bottom: 4px; letter-spacing: 1px; }
-        .data-line { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .val { color: #fff; font-weight: bold; }
-        .alert { color: #ffff00; animation: blink 2s infinite; }
-        ul { margin: 0; padding-left: 15px; color: #fff; }
-        li { margin-bottom: 4px; }
+        html,body{margin:0;padding:0;background:#000000;font-family:monospace;color:#00ff00;font-size:13px;overflow-x:hidden;}
+        table { width: 100%; border-collapse: collapse; border: 2px solid #00ff00; background: #020502; box-shadow: 0 0 10px rgba(0,255,0,0.3); table-layout: fixed; }
+        th, td { border: 1px solid #00ff00; padding: 10px; text-align: left; vertical-align: top; }
+        th { background: #002200; color: #ffffff; font-weight: bold; text-align: center; font-size: 14px; letter-spacing: 1px; }
+        .neon-green { color: #00ff00; text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; }
+        .neon-red { color: #ff0000; text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000; }
+        .neon-blue { color: #00ffff; text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; }
+        .val { color: #ffffff; font-weight: bold; }
+        .alert { color: #ffff00; font-weight: bold; animation: blink 2s infinite; }
+        .radar-sweep { background: linear-gradient(90deg, transparent, rgba(0,255,0,0.05) 50%, transparent); background-size: 200% 100%; animation: sweep 4s linear infinite; }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+        @keyframes sweep { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        ul { margin: 0; padding-left: 15px; color: #ffffff; }
+        li { margin-bottom: 4px; }
     </style>
 </head>
 <body>
-    <div class="grid">
-        <!-- STATION DATA ELEMENT -->
-        <div class="box">
-            <div class="header">STATION LOGS</div>
-            <div class="data-line">CALLSIGN: <span class="val">K2VG</span></div>
-            <div class="data-line">GRID SQR: <span class="val">FM18</span></div>
-            <div class="data-line">TOTAL CONTACTS: <span id="total-qsos" class="val">124</span></div>
-            <div class="data-line">QRZ CONFIRMED: <span id="confirmed-qrz" class="val">100</span></div>
-            <div class="data-line">SYS DATA: <span id="status" class="alert">INITIALIZING</span></div>
+    <table class="radar-sweep">
+        <thead>
+            <tr>
+                <th colspan="3" class="neon-green" style="font-size: 16px; border-bottom: 2px solid #00ff00;">BETA 5 INTERSTELLAR MONITORING STATION PANEL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <!-- COLUMN 1: PHYSICAL OPERATION LAYOUT -->
+                <td>
+                    <div class="neon-green" style="font-weight: bold; border-bottom: 1px solid #00ff00; margin-bottom: 8px; padding-bottom: 2px;">STATION LOGS</div>
+                    <div class="data-line">CALLSIGN: <span class="val">K2VG</span></div>
+                    <div class="data-line">GRID SQR: <span class="val">FM18</span></div>
+                    <div class="data-line">TOTAL CONTACTS: <span id="total-qsos" class="val">--</span></div>
+                    <div class="data-line">QRZ CONFIRMED: <span id="confirmed-qrz" class="val">--</span></div>
+                    <div class="data-line">SYS DATA: <span id="status" class="alert">INITIALIZING</span></div>
+                </td>
+                
+                <!-- COLUMN 2: SUBSPACE ENVIRONMENT MATRIX -->
+                <td>
+                    <div class="neon-green" style="font-weight: bold; border-bottom: 1px solid #00ff00; margin-bottom: 8px; padding-bottom: 2px;">SOLAR ARRAY [SL9]</div>
+                    <div class="data-line">FLUX (SFI): <span id="sfi" class="val">--</span></div>
+                    <div class="data-line">PLANET Kp: <span id="kp" class="val">--</span></div>
+                    <div class="data-line">GEOMAGNETIC: <span id="geomag" class="val">--</span></div>
+                    <div class="data-line">FLARE RISK: <span id="flare" class="val">--</span></div>
+                </td>
+                
+                <!-- COLUMN 3: SPACE TIME VECTOR ELEMENT -->
+                <td>
+                    <div class="neon-green" style="font-weight: bold; border-bottom: 1px solid #00ff00; margin-bottom: 8px; padding-bottom: 2px;">LUNAR ORBIT TRACK</div>
+                    <div class="data-line">CURRENT PHASE: <span id="phase" class="val">--</span></div>
+                    <div class="data-line">ILLUMINATION: <span id="illum" class="val">--</span></div>
+                    <div class="data-line">IONOSPHERE INFL: <span id="infl" class="val">--</span></div>
+                </td>
+            </tr>
+            <!-- CHUNK 7 INTEGRATION: MERGED TARGET ENVELOPE -->
+            <tr>
+                <td colspan="3" style="border-top: 2px solid #00ff00;">
+                    <div class="neon-green" style="font-weight: bold; border-bottom: 1px solid #00ff00; margin-bottom: 8px; padding-bottom: 4px; letter-spacing: 1px;">
+                        DECODIUM TARGET MATRIX [-15 TO -19 dB] — SECURE DATA INTERCEPT
+                    </div>
+                    <div id="dx-list">Awaiting incoming cloud telemetry synchronization loop...</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+        <!-- ADJUSTABLE RATE CONTROLLER INTERFACE LAYER -->
+    <div style="max-width: 900px; margin: 10px auto; display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: #011401; border: 1px solid #00ff00; border-radius: 4px; box-sizing: border-box;">
+        <div>
+            <span class="neon-green" style="font-weight: bold;">TELEMETRY REFRESH INTERVAL:</span>
+            <select id="poll-rate" style="background: #000; color: #00ff00; border: 1px solid #00ff00; font-family: monospace; font-size: 12px; padding: 2px; border-radius: 2px;" onchange="updatePollingInterval()">
+                <option value="300000" selected>5 MINUTES (OPTIMAL/SAFE)</option>
+                <option value="240000">4 MINUTES</option>
+                <option value="180000">3 MINUTES</option>
+                <option value="120000">2 MINUTES</option>
+                <option value="60000">1 MINUTE (ALERT RISK)</option>
+            </select>
         </div>
-
-        <!-- RE-ENGINEERED SPACE WEATHER VECTOR ARRAY -->
-        <div class="box">
-            <div class="header">SOLAR ARRAY [SL9]</div>
-            <div class="data-line">FLUX (SFI): <span id="sfi" class="val">145</span></div>
-            <div class="data-line">PLANET Kp: <span id="kp" class="val">4</span></div>
-            <div class="data-line">GEOMAGNETIC: <span id="geomag" class="val">STABLE</span></div>
-            <div class="data-line">FLARE RISK: <span id="flare" class="val">QUIET</span></div>
-        </div>
-
-        <!-- RE-ENGINEERED LUNAR TELEMETRY NODE -->
-        <div class="box">
-            <div class="header">LUNAR ORBIT TRACK</div>
-            <div class="data-line">CURRENT PHASE: <span id="phase" class="val">--</span></div>
-            <div class="data-line">ILLUMINATION: <span id="illum" class="val">--</span></div>
-            <div class="data-line">IONOSPHERE INFL: <span id="infl" class="val">--</span></div>
-        </div>
-
-        <!-- INTEGRATED LIVE DECODIUM TARGET WINDOW -->
-        <div class="box" style="grid-column: 1 / -1;">
-            <div class="header">DECODIUM TARGET MATRIX [-15 TO -19 dB]</div>
-            <div id="dx-list">Awaiting incoming cloud telemetry synchronization loop...</div>
-        </div>
+        <div id="rate-warning" style="font-weight: bold; display: none;" class="neon-red">⚠️ SECURITY ALERT: UPSTREAM REQUEST THROTTLED / REFUSED</div>
     </div>
 
-    <!-- SUBSPACE PARSER LOGIC LAYER -->
+    <!-- SUBSPACE ENGINE LAYER -->
     <script>
+        let pollingTimer = null;
+
         function refreshTelemetry() {
-            // Pulls directly from the static data cache file built by Python
+            const warningEl = document.getElementById('rate-warning');
+            
+            // Target the clean cache data folder relative path built by Python
             fetch('data/telemetry.json?t=' + Date.now())
                 .then(res => {
+                    // CATCH EXPLICIT HTTP 429 / 403 THROTTLING BLOCKS
+                    if (res.status === 429 || res.status === 403) {
+                        warningEl.style.display = 'block';
+                        throw new Error('Request Refused / Throttled by Server Platform');
+                    }
                     if (!res.ok) throw new Error('Cache synchronization pending');
                     return res.json();
                 })
                 .then(data => {
-                    // Injecting live variables directly into view matrix nodes
+                    warningEl.style.display = 'none'; // Clear warning on successful link status
+                    
                     document.getElementById('total-qsos').innerText = data.station.total_qsos || '124';
                     document.getElementById('confirmed-qrz').innerText = data.station.confirmed_qrz || '100';
                     document.getElementById('sfi').innerText = data.solar.sfi || '145';
@@ -82,8 +122,13 @@
                     const listContainer = document.getElementById('dx-list');
                     if (data.telemetry.dx_tracks && data.telemetry.dx_tracks.length > 0) {
                         let html = '<ul>';
-                        data.telemetry.dx_tracks.slice(0, 5).forEach(track => {
-                            html += `<li><b>${track.call}</b> (${track.grid}) | <span style="color:#ffff00">${track.db} dB</span> @ ${track.freq} MHz</li>`;
+                        data.telemetry.dx_tracks.forEach(track => {
+                            let style = '';
+                            if (track.call === "NCC-1701") style = 'class="neon-blue"';
+                            else if (track.call.startsWith("GOV-") || track.call.startsWith("CIV-")) style = 'class="neon-red"';
+                            else style = 'style="color:#ffff00;"';
+                            
+                            html += `<li><span ${style}><b>${track.call}</b></span> (${track.grid}) | ${track.db} dB @ ${track.freq} MHz | <span style="color:#888;">${track.time}</span></li>`;
                         });
                         html += '</ul>';
                         listContainer.innerHTML = html;
@@ -94,10 +139,22 @@
                 .catch(err => { 
                     document.getElementById('status').innerText = "SYNC PENDING"; 
                     document.getElementById('status').className = 'alert';
+                    console.log("Telemetry exception logged: " + err.message);
                 });
         }
+
+        function updatePollingInterval() {
+            const currentInterval = parseInt(document.getElementById('poll-rate').value);
+            console.log("Beta 5 recalibrating terminal clock to interval: " + currentInterval + "ms");
+            
+            clearInterval(pollingTimer);
+            pollingTimer = setInterval(refreshTelemetry, currentInterval);
+            refreshTelemetry(); // Instantly fire a verification track check upon rate change
+        }
+
+        // Initialize system loops with standard 5-minute guardrail timer active
         refreshTelemetry();
-        setInterval(refreshTelemetry, 60000); // Local frontend viewport polling interval
+        pollingTimer = setInterval(refreshTelemetry, 300000);
     </script>
 </body>
 </html>
