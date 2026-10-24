@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K2VG Advanced Control Deck</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://corsproxy.io https://allorigins.win; style-src 'self' 'unsafe-inline'; img-src 'self' https://noaa.gov https://hamqsl.com data:;">
+    <style>
+        html,body{margin:0;padding:0;background:#000;font-family:monospace;color:#00ff00;font-size:13px;padding:15px;}
+        .desktop-layout { display: grid; grid-template-columns: 300px 1fr; gap: 15px; max-width: 1400px; margin: auto; }
+        .sidebar, .main-deck { display: flex; flex-direction: column; gap: 15px; }
+        .box { border: 1px solid #00ff00; padding: 12px; border-radius: 4px; background: #030703; box-shadow: 0 0 8px rgba(0,255,0,0.2); }
+        .header { font-weight: bold; color: #fff; text-align: center; border-bottom: 1px solid #00ff00; margin-bottom: 8px; padding-bottom: 4px; letter-spacing: 1px; }
+        .data-line { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .val { color: #fff; font-weight: bold; }
+        .feed-img { width: 100%; border: 1px solid #00ff00; border-radius: 2px; margin-top: 5px; }
+        ul { margin: 0; padding-left: 15px; color: #fff; }
+        li { margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <div class="desktop-layout">
+        <div class="sidebar">
+            <div class="box">
+                <div class="header">STATION INDEX</div>
+                <div class="data-line">CALLSIGN: <span class="val">K2VG</span></div>
+                <div class="data-line">LOCATOR: <span class="val">FM18</span></div>
+                <div class="data-line">LOGGED: <span id="d-total" class="val">--</span></div>
+                <div class="data-line">CONFIRMED: <span id="d-conf" class="val">--</span></div>
+                <div class="data-line">ARRAY SYS: <span id="d-status" style="color:#ff0;">SYNC PENDING</span></div>
+            </div>
+            <div class="box">
+                <div class="header">SPACE WEATHER [SL9]</div>
+                <div class="data-line">SFI INDEX: <span id="d-sfi" class="val">--</span></div>
+                <div class="data-line">PLANET Kp: <span id="d-kp" class="val">--</span></div>
+                <div class="data-line">GEOMAGNETIC: <span id="d-geo" class="val">--</span></div>
+                <div class="data-line">FLARE RISK: <span id="d-flare" class="val">--</span></div>
+            </div>
+        </div>
+        <div class="main-deck">
+            <div class="box">
+                <div class="header">DECODIUM ADVISORY TRACKS</div>
+                <div id="d-dx-list">Awaiting master packet sequence...</div>
+            </div>
+            <div class="box">
+                <div class="header">REAL-TIME PROPAGATION FEEDS</div>
+                <div class="data-line">NOAA OVATION Northern Auroral Oval View:</div>
+                <img src="https://noaa.gov/images/animations/ovation/north/latest.jpg" class="feed-img" alt="Auroral Oval Telemetry">
+            </div>
+        </div>
+    </div>
+    <script>
+        function updateDeck() {
+            fetch('data/telemetry.json?t=' + Date.now())
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('d-total').innerText = data.station.total_qsos;
+                    document.getElementById('d-conf').innerText = data.station.confirmed_qrz;
+                    document.getElementById('d-sfi').innerText = data.solar.sfi;
+                    document.getElementById('d-kp').innerText = data.solar.kp;
+                    document.getElementById('d-geo').innerText = data.solar.geomag;
+                    document.getElementById('d-flare').innerText = data.solar.flare_risk;
+                    document.getElementById('d-status').innerText = data.telemetry.status;
+                    document.getElementById('d-status').style.color = '#fff';
+                    
+                    const container = document.getElementById('d-dx-list');
+                    if (data.telemetry.dx_tracks && data.telemetry.dx_tracks.length > 0) {
+                        let html = '<ul>';
+                        data.telemetry.dx_tracks.forEach(t => {
+                            html += `<li><b>${t.call}</b> (${t.grid}) | <span style="color:#ff0">${t.db} dB</span> @ ${t.freq} MHz</li>`;
+                        });
+                        html += '</ul>';
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = "<span style='color:#888;'>Zero tracks inside active filters.</span>";
+                    }
+                }).catch(() => { document.getElementById('d-status').innerText = "LINK FAULT"; });
+        }
+        updateDeck();
+        setInterval(updateDeck, 60000);
+    </script>
+</body>
+</html>
