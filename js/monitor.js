@@ -1,192 +1,36 @@
-setInterval(fetchSFI,3600000);
-setInterval(updateGrayline,60000);
-fetchSFI();updateGrayline();
-
-function updateDXCC(){
-if(!STANDALONE)return;
-document.getElementById("k2v-dxcc").innerHTML='<span style="color:#2ecc71">CENTURY: 100/100 ✅</span> <span style="color:#8b949e">→ hunting 101+</span>';
-}
-updateDXCC();
-
-function updateBars(bc){
-if(!STANDALONE)return;
-var el=document.getElementById("k2v-bars");
-var labels={6:"6",10:"10",12:"12",15:"15",17:"17",20:"20",30:"30",40:"40"};
-var max=1;
-Object.keys(bc).forEach(function(b){if(bc[b]>max)max=bc[b]});
-var html="";
-Object.keys(labels).forEach(function(b){
-var h=bc[b]?Math.max(4,Math.round(bc[b]/max*28)):2;
-var col=bc[b]>=max*0.8?"#50fa7b":bc[b]>=max*0.4?"#f0c040":"#8b949e";
-html+='<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><div style="width:14px;height:'+h+'px;background:'+col+';border-radius:2px;transition:height 0.5s"></div><span style="font-size:8px;color:#8b949e;font-family:monospace">'+labels[b]+'</span></div>';
-});
-el.innerHTML=html;
-}
-
-function getBandRec(bc){
-var bands=Object.keys(bc);
-if(!bands.length)return "";
-var counts={};
-bands.forEach(function(b){counts[b]=bc[b]});
-var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]});
-var max=counts[sorted[0]]||1;
-var labels={6:"6m",10:"10m",12:"12m",15:"15m",17:"17m",20:"20m",30:"30m",40:"40m"};
-var str=sorted.slice(0,4).map(function(b){
-var lvl=counts[b]>=max*0.8?"HIGH":counts[b]>=max*0.4?"MED":"LOW";
-return labels[b]+"("+lvl+")";
-}).join(" → ");
-return "TUNE: "+str;
-}
-
-function pollMain(){
-if(paused){mainTimer=setTimeout(pollMain,nextDelay);return}
-fetch("https://corsproxy.io")
-.then(function(r){
-if(r.status===429){nextDelay=300000;document.getElementById("k2v-t").textContent="Rate limited";mainTimer=setTimeout(pollMain,nextDelay);return null}
-return r.text()
-})
-.then(function(d){
-if(!d)return;
-if(d.trim().length<50){nextDelay=300000;mainTimer=setTimeout(pollMain,nextDelay);return}
-nextDelay=300000;
-var x=new DOMParser().parseFromString(d,"text/xml");
-var sp=x.querySelectorAll("spot");
-var tbl=document.getElementById("k2v-tbl");
-var rows=tbl.querySelectorAll("tr");
-for(var i=rows.length-1;i>4;i--)tbl.deleteRow(i);
-var bc={};var hits=[];var newAlert=false;
-sp.forEach(function(s){
-var b=s.querySelector("band")?s.querySelector("band").textContent:"";
-var c=s.querySelector("call")?s.querySelector("call").textContent:"";
-var g=s.querySelector("grid")?s.querySelector("grid").textContent:"";
-var snr=parseFloat(s.querySelector("snr")?s.querySelector("snr").textContent:"0");
-var dx=s.querySelector("dxcc")?parseInt(s.querySelector("dxcc").textContent):0;
-if(!BM[b])return;
-bc[b]=(bc[b]||0)+1;
-var w=W.find(function(w){return w.c===dx});
-var reg=w?w.r:"";
-var key=c+b+g;
-var row=tbl.insertRow();
-
-var c1=row.insertCell(0);c1.style.padding="4px";c1.style.border="1px solid #0066cc";c1.textContent=c;
-var c2=row.insertCell(1);c2.style.padding="4px";c2.style.border="1px solid #0066cc";c2.textContent=g;
-var c3=row.insertCell(2);c3.style.padding="4px";c3.style.border="1px solid #0066cc";c3.textContent=b;
-var c4=row.insertCell(3);c4.style.padding="4px";c4.style.border="1px solid #0066cc";c4.style.color=snr<=-15?"#f0c040":"#c9d1d9";c4.textContent=snr.toFixed(1);
-var c5=row.insertCell(4);c5.style.padding="4px";c5.style.border="1px solid #0066cc";c5.textContent=dx;
-var c6=row.insertCell(5);c6.style.padding="4px";c6.style.border="1px solid #0066cc";c6.style.color=RC[reg]||"#8b949e";c6.textContent=reg;
-
-if(reg&&snr<=-15){
-hits.push(c+" "+b+" "+snr+"dB "+(w?w.n:""));
-if(!seenMain[key]){
-newAlert=true;seenMain[key]=1;
-var msg=c+" "+b+" "+snr+"dB "+(w?w.n:"");
-lastAlertMsg=new Date().toLocaleTimeString()+" — "+msg;
+(function(){
+var STANDALONE=new URLSearchParams(window.location.search).has('s');
+var W=[
+{c:1,n:"Antarctica",r:"OC"},{c:176,n:"New Zealand",r:"OC"},{c:200,n:"Australia",r:"OC"},{c:237,n:"Fiji",r:"OC"},{c:251,n:"Kiribati",r:"OC"},{c:234,n:"FSM",r:"OC"},{c:308,n:"Marshall Is.",r:"OC"},{c:312,n:"Nauru",r:"OC"},{c:318,n:"Palau",r:"OC"},{c:344,n:"Samoa",r:"OC"},{c:347,n:"Solomon Is.",r:"OC"},{c:348,n:"PNG",r:"OC"},{c:350,n:"Tonga",r:"OC"},{c:351,n:"Tuvalu",r:"OC"},{c:352,n:"Vanuatu",r:"OC"},{c:354,n:"Timor-Leste",r:"OC"},
+{c:240,n:"Hong Kong",r:"AS"},{c:281,n:"Cambodia",r:"AS"},{c:284,n:"Brunei",r:"AS"},{c:289,n:"Bangladesh",r:"AS"},{c:291,n:"S. Korea",r:"AS"},{c:292,n:"N. Korea",r:"AS"},{c:293,n:"Japan",r:"AS"},{c:294,n:"Philippines",r:"AS"},{c:295,n:"Thailand",r:"AS"},{c:296,n:"Vietnam",r:"AS"},{c:297,n:"Indonesia",r:"AS"},{c:298,n:"Malaysia",r:"AS"},{c:299,n:"Nepal",r:"AS"},{c:300,n:"Sri Lanka",r:"AS"},{c:305,n:"Mongolia",r:"AS"},{c:307,n:"Myanmar",r:"AS"},{c:310,n:"India",r:"AS"},{c:315,n:"Pakistan",r:"AS"},{c:342,n:"Taiwan",r:"AS"},{c:345,n:"Singapore",r:"AS"},{c:256,n:"Laos",r:"AS"},
+{c:227,n:"Algeria",r:"AF"},{c:230,n:"Egypt",r:"AF"},{c:257,n:"Libya",r:"AF"},{c:306,n:"Morocco",r:"AF"},{c:353,n:"Tunisia",r:"AF"},{c:413,n:"São Tomé",r:"AF"},{c:423,n:"South Africa",r:"AF"},{c:424,n:"Tanzania",r:"AF"},{c:425,n:"Uganda",r:"AF"},{c:426,n:"Kenya",r:"AF"},{c:427,n:"Sudan",r:"AF"},{c:428,n:"Zambia",r:"AF"},{c:429,n:"Gambia",r:"AF"},{c:430,n:"Lesotho",r:"AF"},{c:431,n:"Rwanda",r:"AF"},{c:432,n:"Mauritius",r:"AF"},{c:433,n:"Madagascar",r:"AF"},{c:434,n:"Comoros",r:"AF"},{c:435,n:"Reunion",r:"AF"},{c:436,n:"Seychelles",r:"AF"},{c:437,n:"Mozambique",r:"AF"},{c:438,n:"Zimbabwe",r:"AF"},{c:439,n:"Botswana",r:"AF"},{c:440,n:"Namibia",r:"AF"},{c:441,n:"Angola",r:"AF"},{c:442,n:"Congo",r:"AF"},{c:443,n:"DR Congo",r:"AF"},{c:444,n:"Ethiopia",r:"AF"},{c:445,n:"Eritrea",r:"AF"},{c:446,n:"Somalia",r:"AF"},{c:447,n:"Djibouti",r:"AF"},{c:448,n:"Guinea",r:"AF"},{c:449,n:"Ivory Coast",r:"AF"},{c:450,n:"Ghana",r:"AF"},{c:451,n:"Nigeria",r:"AF"},{c:452,n:"Cameroon",r:"AF"},{c:453,n:"Gabon",r:"AF"},{c:454,n:"Eq. Guinea",r:"AF"},{c:455,n:"C. African Rep",r:"AF"},{c:456,n:"Chad",r:"AF"},{c:457,n:"Mali",r:"AF"},{c:458,n:"Niger",r:"AF"},{c:459,n:"Burkina Faso",r:"AF"},{c:460,n:"Senegal",r:"AF"},{c:461,n:"Mauritania",r:"AF"},{c:462,n:"Togo",r:"AF"},{c:463,n:"Benin",r:"AF"},{c:464,n:"Liberia",r:"AF"},{c:465,n:"Sierra Leone",r:"AF"},{c:466,n:"Guinea-Bissau",r:"AF"},{c:467,n:"Cape Verde",r:"AF"},{c:468,n:"St Helena",r:"AF"},
+{c:268,n:"Greenland",r:"NA"}
+];
+var BM={6:"6m",10:"10m",12:"12m",15:"15m",17:"17m",20:"20m",30:"30m",40:"40m"};
+var RC={AS:"#f0c040",AF:"#50fa7b",OC:"#bd93f9",NA:"#ff6b6b"};
+var DXW=[{call:"7P8GE",name:"Lesotho"},{call:"C5R",name:"Gambia"},{call:"9N7XT",name:"Nepal"},{call:"H44MS",name:"Solomon Is."}];
+var nextDelay=300000;var dxDelay=300000;var seenMain={};var seenDX={};var audioCtx=null;var paused=false;var lastAlertMsg="";var prevSFI=null;var sfiTrend="";var sessionQSOs=[];var lastQSOtime=null;var mainTimer=null;var dxTimer=null;
 if(STANDALONE){
-document.getElementById("k2v-last").textContent="⚡ Last: "+lastAlertMsg;
-sessionQSOs.unshift(c+" "+b+" "+snr+"dB");
-if(sessionQSOs.length>5)sessionQSOs.pop();
-document.getElementById("k2v-last5").textContent="RECENT: "+sessionQSOs.join(" | ");
-lastQSOtime=Date.now();
+document.getElementById("k2v-sfi").style.display="block";document.getElementById("k2v-gl").style.display="block";document.getElementById("k2v-gl-arc").style.display="block";document.getElementById("k2v-dxcc").style.display="block";document.getElementById("k2v-streak").style.display="block";document.getElementById("k2v-bars").style.display="flex";document.getElementById("k2v-ctl").style.display="flex";document.getElementById("k2v-last").style.display="block";document.getElementById("k2v-last5").style.display="block";document.getElementById("k2v-tbl").style.fontSize="18px";document.getElementById("k2v").style.fontSize="22px";
 }
-fireNotification(msg);
-}
-}
-});
-var rec=getBandRec(bc);
-document.getElementById("k2v-b").textContent=rec||"Bands: none active";
-var wEl=document.getElementById("k2v-w");
-wEl.textContent="";
-if(!sp.length){
-wEl.style.textAlign="center";wEl.style.padding="20px 0";wEl.style.color="#8b949e";wEl.textContent="📡 Waiting for FT8 spots…";
-}else{
-if(hits.length){
-wEl.style.textAlign="left";wEl.style.padding="0";wEl.style.color="#f0c040";
-var bld=document.createElement("b");bld.textContent="⚡ ≤-15dB targets: ";wEl.appendChild(bld);
-var txt=document.createTextNode(hits.slice(0,5).join(" | "));wEl.appendChild(txt);
-}else{
-wEl.style.textAlign="left";wEl.style.padding="0";wEl.style.color="#8b949e";wEl.textContent="No ≤-15dB AS/AF/OC targets in last 15 min";
-}
-}
-document.getElementById("k2v-t").textContent=new Date().toLocaleTimeString()+" · "+sp.length+" spots";
-if(STANDALONE)updateBars(bc);
-if(newAlert&&audioCtx)playAlert();
-mainTimer=setTimeout(pollMain,nextDelay);
-})
-.catch(function(e){document.getElementById("k2v-t").textContent="ERR: "+e.message;document.getElementById("k2v-b").textContent="RETRY IN 5 MIN";nextDelay=300000;mainTimer=setTimeout(pollMain,nextDelay)});
-}
-
-function pollDX(){
-if(paused){dxTimer=setTimeout(pollDX,dxDelay);return}
-var el=document.getElementById("k2v-dxlist");
-var results=[];
-var done=0;
-DXW.forEach(function(dx){
-fetch("https://corsproxy.io"+dx.call+"&flowStartSeconds=-900&mode=FT8")
-.then(function(r){return r.text()})
-.then(function(d){
-var x=new DOMParser().parseFromString(d,"text/xml");
-var sp=x.querySelectorAll("spot");
-sp.forEach(function(s){
-var rc=s.querySelector("rc")?s.querySelector("rc").textContent:"";
-var rg=s.querySelector("rg")?s.querySelector("rg").textContent:"";
-var b=s.querySelector("band")?s.querySelector("band").textContent:"";
-var snr=parseFloat(s.querySelector("snr")?s.querySelector("snr").textContent:"0");
-var f=s.querySelector("f")?s.querySelector("f").textContent:"";
-if(rg&&rg.indexOf("FM")===0&&BM[b]){
-results.push({call:dx.call,name:dx.name,rc:rc,rg:rg,band:b,snr:snr,freq:(f/1000000).toFixed(3)});
-}
-});
-done++;
-if(done===DXW.length){renderDX();dxTimer=setTimeout(pollDX,dxDelay)}
-})
-.catch(function(){done++;if(done===DXW.length){renderDX();dxTimer=setTimeout(pollDX,dxDelay)}});
-});
-
-function renderDX(){
-el.textContent="";
-if(!results.length){
-el.style.color="#8b949e";el.textContent="No DX watch targets heard near FM18 in last 15 min";return;
-}
-results.sort(function(a,b){return b.snr-a.snr});
-var newAlert=false;
-results.slice(0,8).forEach(function(r){
-var key=r.call+r.rc+r.band;
-if(!seenDX[key]){
-newAlert=true;seenDX[key]=1;
-var msg=r.call+" ("+r.name+") "+r.band+" "+r.freq+"MHz via "+r.rc;
-lastAlertMsg=new Date().toLocaleTimeString()+" — "+msg;
-if(STANDALONE)document.getElementById("k2v-last").textContent="⚡ Last: "+lastAlertMsg;
-fireNotification(msg);
-}
-var div=document.createElement("div");div.style.margin="2px 0";
-var bCall=document.createElement("b");bCall.style.color="#f0c040";bCall.textContent=r.call;div.appendChild(bCall);
-var sName=document.createElement("span");sName.style.color="#c9d1d9";sName.textContent=" ("+r.name+") — heard by ";div.appendChild(sName);
-var bRc=document.createElement("b");bRc.textContent=r.rc;div.appendChild(bRc);
-var sRg=document.createElement("span");sRg.style.color="#8b949e";sRg.textContent=" ("+r.rg+") on ";div.appendChild(sRg);
-var bBand=document.createElement("b");bBand.style.color="#50fa7b";bBand.textContent=r.band+" "+r.freq+" MHz ";div.appendChild(bBand);
-var sAt=document.createTextNode("@ ");div.appendChild(sAt);
-var sSnr=document.createElement("span");sSnr.style.color=r.snr<=-15?"#f0c040":"#c9d1d9";sSnr.textContent=r.snr.toFixed(1)+" dB";div.appendChild(sSnr);
-el.appendChild(div);
-});
-if(newAlert&&audioCtx)playAlert();
-}
-}
-
-document.getElementById("k2v-btn-test").addEventListener("click",function(){initAudio();playAlert()});
-document.getElementById("k2v-btn-pull").addEventListener("click",pullNow);
-document.getElementById("k2v-pause").addEventListener("click",togglePause);
-document.getElementById("k2v-fs").addEventListener("click",toggleFS);
-document.addEventListener("click",initAudio,{once:true});
-document.addEventListener("keydown",initAudio,{once:true});
-
-window.initAudio=initAudio;
-window.playAlert=playAlert;
-window.togglePause=togglePause;
-window.toggleFS=toggleFS;
-window.pullNow=pullNow;
-pollMain();
-pollDX();
+function initAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(STANDALONE&&"Notification" in window&&Notification.permission==="default")Notification.requestPermission();}
+function playAlert(){if(!audioCtx)return;if(audioCtx.state==="suspended")audioCtx.resume();var v=STANDALONE?document.getElementById("k2v-vol").value/100:0.5;var t=audioCtx.currentTime;var o1=audioCtx.createOscillator();var g1=audioCtx.createGain();o1.type="sine";o1.frequency.setValueAtTime(880,t);o1.frequency.setValueAtTime(660,t+0.15);g1.gain.setValueAtTime(0.3*v,t);g1.gain.exponentialRampToValueAtTime(0.01,t+0.3);o1.connect(g1);g1.connect(audioCtx.destination);o1.start(t);o1.stop(t+0.3);var o2=audioCtx.createOscillator();var g2=audioCtx.createGain();o2.type="sine";o2.frequency.setValueAtTime(1100,t+0.35);o2.frequency.setValueAtTime(880,t+0.5);g2.gain.setValueAtTime(0.25*v,t+0.35);g2.gain.exponentialRampToValueAtTime(0.01,t+0.65);o2.connect(g2);g2.connect(audioCtx.destination);o2.start(t+0.35);o2.stop(t+0.65);var o3=audioCtx.createOscillator();var g3=audioCtx.createGain();o3.type="triangle";o3.frequency.setValueAtTime(440,t+0.7);g3.gain.setValueAtTime(0.15*v,t+0.7);g3.gain.exponentialRampToValueAtTime(0.01,t+1.0);o3.connect(g3);g3.connect(audioCtx.destination);o3.start(t+0.7);o3.stop(t+1.0);}
+function fireNotification(msg){if(STANDALONE&&"Notification" in window&&Notification.permission==="granted"){new Notification("📡 K2VG DX ALERT",{body:msg,icon:"data:image/svg+xml,<svg xmlns='http://w3.org' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>"});}}
+function togglePause(){paused=!paused;var btn=document.getElementById("k2v-pause");btn.textContent=paused?"▶ RESUME":"⏸ PAUSE";btn.style.background=paused?"#2ecc71":"#333";document.getElementById("k2v").style.opacity=paused?"0.5":"1";document.getElementById("k2v-t").textContent=paused?"⏸ PAUSED":"loading…";document.getElementById("k2v-t").style.color=paused?"#f0c040":"#8b949e";}
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+function pullNow(){if(mainTimer)clearTimeout(mainTimer);if(dxTimer)clearTimeout(dxTimer);document.getElementById("k2v-t").textContent="PULLING…";pollMain();pollDX();}
+function fetchSFI(){if(!STANDALONE)return;fetch("https://corsproxy.io").then(function(r){return r.text()}).then(function(d){var sfi=d.match(/SFI[:\s]*(\d+)/i);var kp=d.match(/Kp[:\s]*(\d)/i);var el=document.getElementById("k2v-sfi");if(sfi){var val=parseInt(sfi[1]);if(prevSFI!==null){sfiTrend=val<prevSFI?" ↘":val>prevSFI?" ↗":" →";}prevSFI=val;el.textContent="SFI: "+val+sfiTrend+(kp?" | Kp: "+kp[1]:"");}else el.textContent="SFI: loading…";}).catch(function(){document.getElementById("k2v-sfi").textContent="SFI: unavailable"});}
+function updateGrayline(){if(!STANDALONE)return;var nowUTC=new Date().getUTCHours()+new Date().getUTCMinutes()/60;var windows=[{name:"NZ",start:16.5,end:19.5},{name:"JP/AS",start:2.0,end:5.5},{name:"AF-EQ",start:9.5,end:12.5}];var parts=[];var arcParts=[];windows.forEach(function(w){var active=nowUTC>=w.start&&nowUTC<=w.end;if(active){parts.push(w.name+": ACTIVE");arcParts.push({name:w.name,active:true});}else{var diff;if(nowUTC<w.start)diff=w.start-nowUTC;else diff=24-nowUTC+w.start;var hrs=Math.floor(diff);var mins=Math.round((diff-hrs)*60);parts.push(w.name+":"+hrs+"h"+mins+"m");arcParts.push({name:w.name,active:false});}});document.getElementById("k2v-gl").textContent="GRAYLINE: "+parts.join(" | ");var svg='<svg width="200" height="40" style="display:block;margin:0 auto">';var colors={NZ:"#bd93f9","JP/AS":"#f0c040","AF-EQ":"#50fa7b"};arcParts.forEach(function(a,i){var y=8+i*12;var stroke=colors[a.name]||"#888";var opacity=a.active?"1":"0.3";svg+='<line x1="10" y1="'+y+'" x2="190" y2="'+y+'" stroke="'+stroke+'" stroke-width="2" opacity="'+opacity+'"/>';svg+='<text x="2" y="'+(y+4)+'" fill="'+stroke+'" font-size="8" font-family="monospace">'+a.name+'</text>';if(a.active)svg+='<circle cx="190" cy="'+y+'" r="3" fill="'+stroke+'"><animate attributeName="r" values="2;5;2" dur="1s" repeatCount="indefinite"/></circle>';});svg+='</svg>';document.getElementById("k2v-gl-arc").innerHTML=svg;}
+setInterval(fetchSFI,3600000);setInterval(updateGrayline,60000);fetchSFI();updateGrayline();
+function updateDXCC(){if(!STANDALONE)return;document.getElementById("k2v-dxcc").innerHTML='<span style="color:#2ecc71">CENTURY: 100/100 ✅</span> <span style="color:#8b949e">→ hunting 101+</span>';}
+updateDXCC();
+function updateBars(bc){if(!STANDALONE)return;var el=document.getElementById("k2v-bars");var labels={6:"6",10:"10",12:"12",15:"15",17:"17",20:"20",30:"30",40:"40"};var max=1;Object.keys(bc).forEach(function(b){if(bc[b]>max)max=bc[b]});var html="";Object.keys(labels).forEach(function(b){var h=bc[b]?Math.max(4,Math.round(bc[b]/max*28)):2;var col=bc[b]>=max*0.8?"#50fa7b":bc[b]>=max*0.4?"#f0c040":"#8b949e";html+='<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><div style="width:14px;height:'+h+'px;background:'+col+';border-radius:2px;transition:height 0.5s"></div><span style="font-size:8px;color:#8b949e;font-family:monospace">'+labels[b]+'</span></div>';});el.innerHTML=html;}
+function getBandRec(bc){var bands=Object.keys(bc);if(!bands.length)return "";var counts={};bands.forEach(function(b){counts[b]=bc[b]});var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]});var max=counts[sorted[0]]||1;var labels={6:"6m",10:"10m",12:"12m",15:"15m",17:"17m",20:"20m",30:"30m",40:"40m"};var str=sorted.slice(0,4).map(function(b){var lvl=counts[b]>=max*0.8?"HIGH":counts[b]>=max*0.4?"MED":"LOW";return labels[b]+"("+lvl+")";}).join(" → ");return "TUNE: "+str;}
+function pollMain(){if(paused){mainTimer=setTimeout(pollMain,nextDelay);return}fetch("https://corsproxy.io").then(function(r){if(r.status===429){nextDelay=300000;document.getElementById("k2v-t").textContent="Rate limited";mainTimer=setTimeout(pollMain,nextDelay);return null}return r.text()}).then(function(d){if(!d)return;if(d.trim().length<50){nextDelay=300000;mainTimer=setTimeout(pollMain,nextDelay);return}nextDelay=300000;var x=new DOMParser().parseFromString(d,"text/xml");var sp=x.querySelectorAll("spot");var tbl=document.getElementById("k2v-tbl");var rows=tbl.querySelectorAll("tr");for(var i=rows.length-1;i>4;i--)tbl.deleteRow(i);var bc={};var hits=[];var newAlert=false;sp.forEach(function(s){var b=s.querySelector("band")?s.querySelector("band").textContent:"";var c=s.querySelector("call")?s.querySelector("call").textContent:"";var g=s.querySelector("grid")?s.querySelector("grid").textContent:"";var snr=parseFloat(s.querySelector("snr")?s.querySelector("snr").textContent:"0");var dx=s.querySelector("dxcc")?parseInt(s.querySelector("dxcc").textContent):0;if(!BM[b])return;bc[b]=(bc[b]||0)+1;var w=W.find(function(w){return w.c===dx});var reg=w?w.r:"";var key=c+b+g;var row=tbl.insertRow();var c1=row.insertCell(0);c1.style.padding="4px";c1.style.border="1px solid #0066cc";c1.textContent=c;var c2=row.insertCell(1);c2.style.padding="4px";c2.style.border="1px solid #0066cc";c2.textContent=g;var c3=row.insertCell(2);c3.style.padding="4px";c3.style.border="1px solid #0066cc";c3.textContent=b;var c4=row.insertCell(3);c4.style.padding="4px";c4.style.border="1px solid #0066cc";c4.style.color=snr<=-15?"#f0c040":"#c9d1d9";c4.textContent=snr.toFixed(1);var c5=row.insertCell(4);c5.style.padding="4px";c5.style.border="1px solid #0066cc";c5.textContent=dx;var c6=row.insertCell(5);c6.style.padding="4px";c6.style.border="1px solid #0066cc";c6.style.color=RC[reg]||"#8b949e";c6.textContent=reg;if(reg&&snr<=-15){hits.push(c+" "+b+" "+snr+"dB "+(w?w.n:""));if(!seenMain[key]){newAlert=true;seenMain[key]=1;var msg=c+" "+b+" "+snr+"dB "+(w?w.n:"");lastAlertMsg=new Date().toLocaleTimeString()+" — "+msg;if(STANDALONE){document.getElementById("k2v-last").textContent="⚡ Last: "+lastAlertMsg;sessionQSOs.unshift(c+" "+b+" "+snr+"dB");if(sessionQSOs.length>5)sessionQSOs.pop();document.getElementById("k2v-last5").textContent="RECENT: "+sessionQSOs.join(" | ");lastQSOtime=Date.now();}fireNotification(msg);}}} );var rec=getBandRec(bc);document.getElementById("k2v-b").textContent=rec||"Bands: none active";var wEl=document.getElementById("k2v-w");wEl.textContent="";if(!sp.length){wEl.style.textAlign="center";wEl.style.padding="20px 0";wEl.style.color="#8b949e";wEl.textContent="📡 Waiting for FT8 spots…";}else{if(hits.length){wEl.style.textAlign="left";wEl.style.padding="0";wEl.style.color="#f0c040";var bld=document.createElement("b");bld.textContent="⚡ ≤-15dB targets: ";wEl.appendChild(bld);var txt=document.createTextNode(hits.slice(0,5).join(" | "));wEl.appendChild(txt);}else{wEl.style.textAlign="left";wEl.style.padding="0";wEl.style.color="#8b949e";wEl.textContent="No ≤-15dB AS/AF/OC targets in last 15 min";}}document.getElementById("k2v-t").textContent=new Date().toLocaleTimeString()+" · "+sp.length+" spots";if(STANDALONE)updateBars(bc);if(newAlert&&audioCtx)playAlert();mainTimer=setTimeout(pollMain,nextDelay);}).catch(function(e){document.getElementById("k2v-t").textContent="ERR: "+e.message;document.getElementById("k2v-b").textContent="RETRY IN 5 MIN";nextDelay=300000;mainTimer=setTimeout(pollMain,nextDelay);});}
+function pollDX(){if(paused){dxTimer=setTimeout(pollDX,dxDelay);return}var el=document.getElementById("k2v-dxlist");var results=[];var done=0;DXW.forEach(function(dx){fetch("https://corsproxy.io"+dx.call+"&flowStartSeconds=-900&mode=FT8").then(function(r){return r.text()}).then(function(d){var x=new DOMParser().parseFromString(d,"text/xml");var sp=x.querySelectorAll("spot");sp.forEach(function(s){var rc=s.querySelector("rc")?s.querySelector("rc").textContent:"";var rg=s.querySelector("rg")?s.querySelector("rg").textContent:"";var b=s.querySelector("band")?s.querySelector("band").textContent:"";var snr=parseFloat(s.querySelector("snr")?s.querySelector("snr").textContent:"0");var f=s.querySelector("f")?s.querySelector("f").textContent:"";if(rg&&rg.indexOf("FM")===0&&BM[b]){results.push({call:dx.call,name:dx.name,rc:rc,rg:rg,band:b,snr:snr,freq:(f/1000000).toFixed(3)});}});done++;if(done===DXW.length){renderDX();dxTimer=setTimeout(pollDX,dxDelay);}}).catch(function(){done++;if(done===DXW.length){renderDX();dxTimer=setTimeout(pollDX,dxDelay);}});});
+function renderDX(){el.textContent="";if(!results.length){el.style.color="#8b949e";el.textContent="No DX watch targets heard near FM18 in last 15 min";return;}results.sort(function(a,b){return b.snr-a.snr});var newAlert=false;results.slice(0,8).forEach(function(r){var key=r.call+r.rc+r.band;if(!seenDX[key]){newAlert=true;seenDX[key]=1;var msg=r.call+" ("+r.name+") "+r.band+" "+r.freq+"MHz via "+r.rc;lastAlertMsg=new Date().toLocaleTimeString()+" — "+msg;if(STANDALONE)document.getElementById("k2v-last").textContent="⚡ Last: "+lastAlertMsg;fireNotification(msg);}var div=document.createElement("div");div.style.margin="2px 0";var bCall=document.createElement("b");bCall.style.color="#f0c040";bCall.textContent=r.call;div.appendChild(bCall);var sName=document.createElement("span");sName.style.color="#c9d1d9";sName.textContent=" ("+r.name+") — heard by ";div.appendChild(sName);var bRc=document.createElement("b");bRc.textContent=r.rc;div.appendChild(bRc);var sRg=document.createElement("span");sRg.style.color="#8b949e";sRg.textContent=" ("+r.rg+") on ";div.appendChild(sRg);var bBand=document.createElement("b");bBand.style.color="#50fa7b";bBand.textContent=r.band+" "+r.freq+" MHz ";div.appendChild(bBand);var sAt=document.createTextNode("@ ");div.appendChild(sAt);var sSnr=document.createElement("span");sSnr.style.color=r.snr<=-15?"#f0c040":"#c9d1d9";sSnr.textContent=r.snr.toFixed(1)+" dB";div.appendChild(sSnr);el.appendChild(div);});if(newAlert&&audioCtx)playAlert();}}
+setInterval(function(){var now=new Date();var utc=now.toUTCString().slice(17,22);document.getElementById("k2v-utc").textContent=utc+" UTC";if(STANDALONE&&lastQSOtime){var mins=Math.floor((Date.now()-lastQSOtime)/60000);var streak=document.getElementById("k2v-streak");streak.textContent="LAST QSO: "+mins+"m ago | SESSION: "+sessionQSOs.length+" QSOs";}},1000);
+document.getElementById("k2v-btn-test").addEventListener("click",function(){initAudio();playAlert()});document.getElementById("k2v-btn-pull").addEventListener("click",pullNow);document.getElementById("k2v-pause").addEventListener("click",togglePause);document.getElementById("k2v-fs").addEventListener("click",toggleFS);document.addEventListener("click",initAudio,{once:true});document.addEventListener("keydown",initAudio,{once:true});
+window.initAudio=initAudio;window.playAlert=playAlert;window.togglePause=togglePause;window.toggleFS=toggleFS;window.pullNow=pullNow;
+pollMain();pollDX();
 })();
-</script>
-</body></html>
-
