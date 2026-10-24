@@ -1,6 +1,6 @@
 (function(){
 var STANDALONE = new URLSearchParams(window.location.search).has('s');
-var PROXY = "https://corsproxy.io?";
+var PROXY = "https://allorigins.win";
 var ADDR_SFI = "https://noaa.gov";
 var ADDR_PSK = "https://pskreporter.info";
 
