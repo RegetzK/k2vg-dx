@@ -1,14 +1,28 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
-<style>body{margin:0;padding:0;overflow-x:hidden;background:#12141c;font-family:Arial,Helvetica,sans-serif}
-@keyframes vul{0%,100%{opacity:.6}50%{opacity:1}}</style>
+<style>html,body{margin:0;padding:0;overflow-x:hidden;background:#000000;font-family:Arial,Helvetica,sans-serif}
+@keyframes vul{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}</style>
 </head><body>
-<div id="k2v" style="font-size:20px;line-height:1.3;background:#12141c;color:#c9d1d9;padding:10px 12px;border-radius:6px;width:100%;box-sizing:border-box">
+<div id="k2v" style="font-size:20px;line-height:1.3;background:#000000;color:#c9d1d9;padding:10px 12px;border-radius:6px;width:100%;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center">
 <b style="color:#3399ff;font-size:20px">📡 K2VG/BETA 5 CURRENT ACTIVE UPLINKS AND DX MONITORING</b>
-<span id="k2v-t" style="float:right;color:#8b949e;font-size:16px">loading…</span>
-<button onclick="playAlert()" style="float:right;margin-right:8px;font-size:10px;background:#0066cc;color:#fff;border:1px solid #3399ff;border-radius:3px;padding:2px 6px;cursor:pointer">TEST TONE</button>   
+<div style="display:flex;align-items:center;gap:8px">
+<span id="k2v-utc" style="color:#50fa7b;font-family:monospace;font-size:14px"></span>
+<span id="k2v-t" style="color:#8b949e;font-size:14px">loading…</span>
+<button onclick="playAlert()" style="font-size:10px;background:#0066cc;color:#fff;border:1px solid #3399ff;border-radius:3px;padding:2px 6px;cursor:pointer">TEST</button>
+</div>
+</div>
 <div style="clear:both"></div>
-<div id="k2v-b" style="margin:4px 0;font-size:16px;color:#8b949e"></div>
+<div id="k2v-sfi" style="display:none;margin:4px 0;font-size:14px;font-family:monospace;color:#50fa7b"></div>
+<div id="k2v-gl" style="display:none;margin:4px 0;font-size:14px;font-family:monospace;color:#f0c040"></div>
+<div id="k2v-ctl" style="display:none;margin:4px 0;font-size:12px;align-items:center;gap:6px">
+<button id="k2v-pause" onclick="togglePause()" style="font-size:11px;background:#333;color:#fff;border:1px solid #555;border-radius:3px;padding:2px 8px;cursor:pointer">⏸ PAUSE</button>
+<label style="color:#8b949e">VOL</label>
+<input id="k2v-vol" type="range" min="0" max="100" value="50" style="width:60px">
+<button onclick="toggleFS()" style="font-size:11px;background:#333;color:#fff;border:1px solid #555;border-radius:3px;padding:2px 8px;cursor:pointer">⛶</button>
+</div>
+<div id="k2v-b" style="margin:4px 0;font-size:16px;color:#50fa7b;font-weight:bold"></div>
 <div style="border:1px solid #0066cc;border-radius:6px;box-shadow:0 0 10px rgba(0,102,204,0.3);padding:4px;overflow:hidden">
 <table id="k2v-tbl" style="width:100%;border-collapse:collapse;font-family:monospace;font-size:16px;table-layout:fixed">
 <colgroup><col style="width:19%"><col style="width:13%"><col style="width:11%"><col style="width:13%"><col style="width:20%"><col style="width:24%"></colgroup>
@@ -55,6 +69,7 @@
 </table>
 </div>
 <div id="k2v-w" style="margin-top:4px;font-size:16px;color:#8b949e"></div>
+<div id="k2v-last" style="display:none;margin-top:2px;font-size:13px;color:#f0c040"></div>
 <div id="k2v-dx" style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,102,204,0.25);font-size:16px;color:#8b949e">
 <b style="color:#f0c040">🎯 DX WATCH — HEARD NEAR FM18:</b>
 <div id="k2v-dxlist" style="margin-top:4px"></div>
@@ -62,6 +77,7 @@
 </div>
 <script>
 (function(){
+var STANDALONE=new URLSearchParams(window.location.search).has('s');
 var W=[
 {c:1,n:"Antarctica",r:"OC"},{c:176,n:"New Zealand",r:"OC"},{c:200,n:"Australia",r:"OC"},{c:237,n:"Fiji",r:"OC"},{c:251,n:"Kiribati",r:"OC"},{c:234,n:"FSM",r:"OC"},{c:308,n:"Marshall Is.",r:"OC"},{c:312,n:"Nauru",r:"OC"},{c:318,n:"Palau",r:"OC"},{c:344,n:"Samoa",r:"OC"},{c:347,n:"Solomon Is.",r:"OC"},{c:348,n:"PNG",r:"OC"},{c:350,n:"Tonga",r:"OC"},{c:351,n:"Tuvalu",r:"OC"},{c:352,n:"Vanuatu",r:"OC"},{c:354,n:"Timor-Leste",r:"OC"},
 {c:240,n:"Hong Kong",r:"AS"},{c:281,n:"Cambodia",r:"AS"},{c:284,n:"Brunei",r:"AS"},{c:289,n:"Bangladesh",r:"AS"},{c:291,n:"S. Korea",r:"AS"},{c:292,n:"N. Korea",r:"AS"},{c:293,n:"Japan",r:"AS"},{c:294,n:"Philippines",r:"AS"},{c:295,n:"Thailand",r:"AS"},{c:296,n:"Vietnam",r:"AS"},{c:297,n:"Indonesia",r:"AS"},{c:298,n:"Malaysia",r:"AS"},{c:299,n:"Nepal",r:"AS"},{c:300,n:"Sri Lanka",r:"AS"},{c:305,n:"Mongolia",r:"AS"},{c:307,n:"Myanmar",r:"AS"},{c:310,n:"India",r:"AS"},{c:315,n:"Pakistan",r:"AS"},{c:342,n:"Taiwan",r:"AS"},{c:345,n:"Singapore",r:"AS"},{c:256,n:"Laos",r:"AS"},
@@ -81,46 +97,132 @@ var dxDelay=300000;
 var seenMain={};
 var seenDX={};
 var audioCtx=null;
+var paused=false;
+var vol=0.5;
+var lastAlertMsg="";
+
+if(STANDALONE){
+document.getElementById("k2v-sfi").style.display="block";
+document.getElementById("k2v-gl").style.display="block";
+document.getElementById("k2v-ctl").style.display="flex";
+document.getElementById("k2v-last").style.display="block";
+document.getElementById("k2v-tbl").style.fontSize="18px";
+document.getElementById("k2v").style.fontSize="22px";
+}
+
 function initAudio(){
 if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+if(STANDALONE&&"Notification" in window&&Notification.permission==="default")Notification.requestPermission();
 }
+
 function playAlert(){
 if(!audioCtx)return;
 if(audioCtx.state==="suspended")audioCtx.resume();
+var v=STANDALONE?document.getElementById("k2v-vol").value/100:0.5;
 var t=audioCtx.currentTime;
-var o1=audioCtx.createOscillator();
-var g1=audioCtx.createGain();
-o1.type="sine";
-o1.frequency.setValueAtTime(880,t);
-o1.frequency.setValueAtTime(660,t+0.15);
-g1.gain.setValueAtTime(0.3,t);
-g1.gain.exponentialRampToValueAtTime(0.01,t+0.3);
-o1.connect(g1);g1.connect(audioCtx.destination);
-o1.start(t);o1.stop(t+0.3);
-var o2=audioCtx.createOscillator();
-var g2=audioCtx.createGain();
-o2.type="sine";
-o2.frequency.setValueAtTime(1100,t+0.35);
-o2.frequency.setValueAtTime(880,t+0.5);
-g2.gain.setValueAtTime(0.25,t+0.35);
-g2.gain.exponentialRampToValueAtTime(0.01,t+0.65);
-o2.connect(g2);g2.connect(audioCtx.destination);
-o2.start(t+0.35);o2.stop(t+0.65);
-var o3=audioCtx.createOscillator();
-var g3=audioCtx.createGain();
-o3.type="triangle";
-o3.frequency.setValueAtTime(440,t+0.7);
-g3.gain.setValueAtTime(0.15,t+0.7);
-g3.gain.exponentialRampToValueAtTime(0.01,t+1.0);
-o3.connect(g3);g3.connect(audioCtx.destination);
-o3.start(t+0.7);o3.stop(t+1.0);
+var o1=audioCtx.createOscillator();var g1=audioCtx.createGain();
+o1.type="sine";o1.frequency.setValueAtTime(880,t);o1.frequency.setValueAtTime(660,t+0.15);
+g1.gain.setValueAtTime(0.3*v,t);g1.gain.exponentialRampToValueAtTime(0.01,t+0.3);
+o1.connect(g1);g1.connect(audioCtx.destination);o1.start(t);o1.stop(t+0.3);
+var o2=audioCtx.createOscillator();var g2=audioCtx.createGain();
+o2.type="sine";o2.frequency.setValueAtTime(1100,t+0.35);o2.frequency.setValueAtTime(880,t+0.5);
+g2.gain.setValueAtTime(0.25*v,t+0.35);g2.gain.exponentialRampToValueAtTime(0.01,t+0.65);
+o2.connect(g2);g2.connect(audioCtx.destination);o2.start(t+0.35);o2.stop(t+0.65);
+var o3=audioCtx.createOscillator();var g3=audioCtx.createGain();
+o3.type="triangle";o3.frequency.setValueAtTime(440,t+0.7);
+g3.gain.setValueAtTime(0.15*v,t+0.7);g3.gain.exponentialRampToValueAtTime(0.01,t+1.0);
+o3.connect(g3);g3.connect(audioCtx.destination);o3.start(t+0.7);o3.stop(t+1.0);
 }
+
+function fireNotification(msg){
+if(STANDALONE&&"Notification" in window&&Notification.permission==="granted"){
+new Notification("📡 K2VG DX ALERT",{body:msg,icon:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>"});
+}
+}
+
+function togglePause(){
+paused=!paused;
+var btn=document.getElementById("k2v-pause");
+btn.textContent=paused?"▶ RESUME":"⏸ PAUSE";
+btn.style.background=paused?"#2ecc71":"#333";
+}
+
+function toggleFS(){
+if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+else document.exitFullscreen();
+}
+
 document.addEventListener("click",initAudio,{once:true});
 document.addEventListener("keydown",initAudio,{once:true});
+
+setInterval(function(){
+var now=new Date();
+var utc=now.toUTCString().slice(17,22);
+document.getElementById("k2v-utc").textContent=utc+" UTC";
+},1000);
+
+function fetchSFI(){
+if(!STANDALONE)return;
+fetch("https://corsproxy.io/?https://services.swpc.noaa.gov/text/solar-wx-forecasts.txt")
+.then(function(r){return r.text()})
+.then(function(d){
+var sfi=d.match(/SFI[:\s]*(\d+)/i);
+var kp=d.match(/Kp[:\s]*(\d)/i);
+var el=document.getElementById("k2v-sfi");
+if(sfi)el.textContent="SFI: "+sfi[1]+(kp?" | Kp: "+kp[1]:"");
+else el.textContent="SFI: loading…";
+})
+.catch(function(){document.getElementById("k2v-sfi").textContent="SFI: unavailable"});
+}
+
+function updateGrayline(){
+if(!STANDALONE)return;
+var nowUTC=new Date().getUTCHours()+new Date().getUTCMinutes()/60;
+var windows=[
+{name:"NZ",start:16.5,end:19.5},
+{name:"JP/AS",start:2.0,end:5.5},
+{name:"AF-EQ",start:9.5,end:12.5}
+];
+var parts=[];
+windows.forEach(function(w){
+if(nowUTC>=w.start&&nowUTC<=w.end){
+parts.push(w.name+": <span style='color:#2ecc71'>ACTIVE</span>");
+}else{
+var diff;
+if(nowUTC<w.start)diff=w.start-nowUTC;
+else diff=24-nowUTC+w.start;
+var hrs=Math.floor(diff);var mins=Math.round((diff-hrs)*60);
+parts.push(w.name+":"+hrs+"h"+mins+"m");
+}
+});
+document.getElementById("k2v-gl").textContent="GRAYLINE: "+parts.join(" | ");
+}
+
+setInterval(fetchSFI,3600000);
+setInterval(updateGrayline,60000);
+fetchSFI();updateGrayline();
+
+function getBandRec(bc){
+var bands=Object.keys(bc).sort(function(a,b){return bc[b]-bc[a]});
+if(!bands.length)return "";
+var rec="TUNE: ";
+var labels={6:"6m",10:"10m",12:"12m",15:"15m",17:"17m",20:"20m",30:"30m",40:"40m"};
+var counts={};
+bands.forEach(function(b){counts[b]=bc[b]});
+var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]});
+var max=counts[sorted[0]]||1;
+var str=sorted.slice(0,4).map(function(b){
+var lvl=counts[b]>=max*0.8?"HIGH":counts[b]>=max*0.4?"MED":"LOW";
+return labels[b]+"("+lvl+")";
+}).join(" → ");
+return "TUNE: "+str;
+}
+
 function pollMain(){
+if(paused){setTimeout(pollMain,nextDelay);return}
 fetch("https://corsproxy.io/?https://pskreporter.info/pskreporter?callsign=K2VG&flowStartSeconds=-900&mode=FT8")
 .then(function(r){
-if(r.status===429){nextDelay=300000;document.getElementById("k2v-t").textContent="Rate limited — retrying in 5 min";setTimeout(pollMain,nextDelay);return null}
+if(r.status===429){nextDelay=300000;document.getElementById("k2v-t").textContent="Rate limited";setTimeout(pollMain,nextDelay);return null}
 return r.text()
 })
 .then(function(d){
@@ -148,11 +250,17 @@ var row=tbl.insertRow();
 row.innerHTML='<td style="padding:4px;border:1px solid #0066cc">'+c+'</td><td style="padding:4px;border:1px solid #0066cc">'+g+'</td><td style="padding:4px;border:1px solid #0066cc">'+b+'</td><td style="padding:4px;border:1px solid #0066cc;color:'+(snr<=-15?"#f0c040":"#c9d1d9")+'">'+snr.toFixed(1)+'</td><td style="padding:4px;border:1px solid #0066cc">'+dx+'</td><td style="padding:4px;border:1px solid #0066cc;color:'+(RC[reg]||"#8b949e")+'">'+reg+'</td>';
 if(reg&&snr<=-15){
 hits.push(c+" "+b+" "+snr+"dB "+(w?w.n:""));
-if(!seenMain[key]){newAlert=true;seenMain[key]=1}
+if(!seenMain[key]){
+newAlert=true;seenMain[key]=1;
+var msg=c+" "+b+" "+snr+"dB "+(w?w.n:"");
+lastAlertMsg=new Date().toLocaleTimeString()+" — "+msg;
+document.getElementById("k2v-last").textContent="⚡ Last: "+lastAlertMsg;
+fireNotification(msg);
+}
 }
 });
-var bd=Object.keys(bc).map(function(b){return b+"("+bc[b]+")"}).join(" ");
-document.getElementById("k2v-b").textContent="Bands: "+(bd||"none active");
+var rec=getBandRec(bc);
+document.getElementById("k2v-b").textContent=rec||"Bands: none active";
 if(!sp.length){document.getElementById("k2v-w").innerHTML='<div style="text-align:center;padding:20px 0;color:#8b949e">📡 Waiting for FT8 spots…</div>'}
 else{document.getElementById("k2v-w").innerHTML=hits.length?'<b style="color:#f0c040">⚡ ≤-15dB targets:</b> '+hits.slice(0,5).join(" | "):"No ≤-15dB AS/AF/OC targets in last 15 min"}
 document.getElementById("k2v-t").textContent=new Date().toLocaleTimeString()+" · "+sp.length+" spots";
@@ -161,7 +269,9 @@ setTimeout(pollMain,nextDelay);
 })
 .catch(function(e){nextDelay=300000;setTimeout(pollMain,nextDelay)});
 }
+
 function pollDX(){
+if(paused){setTimeout(pollDX,dxDelay);return}
 var el=document.getElementById("k2v-dxlist");
 var results=[];
 var done=0;
@@ -192,13 +302,20 @@ results.sort(function(a,b){return b.snr-a.snr});
 var h="";var newAlert=false;
 results.slice(0,8).forEach(function(r){
 var key=r.call+r.rc+r.band;
-if(!seenDX[key]){newAlert=true;seenDX[key]=1}
+if(!seenDX[key]){
+newAlert=true;seenDX[key]=1;
+var msg=r.call+" ("+r.name+") "+r.band+" "+r.freq+"MHz via "+r.rc;
+lastAlertMsg=new Date().toLocaleTimeString()+" — "+msg;
+document.getElementById("k2v-last").textContent="⚡ Last: "+lastAlertMsg;
+fireNotification(msg);
+}
 h+='<div style="margin:2px 0"><b style="color:#f0c040">'+r.call+'</b> <span style="color:#c9d1d9">('+r.name+')</span> — heard by <b>'+r.rc+'</b> <span style="color:#8b949e">('+r.rg+')</span> on <b style="color:#50fa7b">'+r.band+' '+r.freq+' MHz</b> @ <span style="color:'+(r.snr<=-15?"#f0c040":"#c9d1d9")+'">'+r.snr.toFixed(1)+' dB</span></div>';
 });
 el.innerHTML=h;
 if(newAlert&&audioCtx)playAlert();
 }
 }
+
 pollMain();
 pollDX();
 })();
