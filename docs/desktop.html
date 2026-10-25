@@ -154,6 +154,7 @@ tr.telemetry td.snr{
   <label>Volume:</label>
   <input type="range" id="volSlider" min="0" max="100" value="50">
   <button id="testAlert">Test Alert</button>
+  <button id="pollNow">Poll Now</button>   
 </div>
 
 <table>
@@ -204,7 +205,8 @@ function playAlert(){
   });
 }
 document.getElementById('testAlert').addEventListener('click',playAlert);
-
+document.getElementById('pollNow').addEventListener('click',load);   
+  
 const SNR_MIN=-24;
 const SNR_MAX=-15;
 const MAX_ROWS=20;
