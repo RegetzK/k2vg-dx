@@ -75,6 +75,7 @@ body::after{
   cursor:pointer;
 }
 .controls button:hover{background:#f1c40f}
+.controls button.polling{background:#00ff66;color:#000}   
 table{
   border-collapse:collapse;
   border:1px solid #00ff66;
@@ -205,7 +206,7 @@ function playAlert(){
   });
 }
 document.getElementById('testAlert').addEventListener('click',playAlert);
-document.getElementById('pollNow').addEventListener('click',load);   
+document.getElementById('pollNow').addEventListener('click',function(){this.textContent='POLLING...';this.classList.add('polling');load();setTimeout(()=>{this.textContent='Poll Now';this.classList.remove('polling');},1500);});   
   
 const SNR_MIN=-24;
 const SNR_MAX=-15;
