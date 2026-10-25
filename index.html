@@ -11,18 +11,27 @@ body{
   color:#f4f4f4;
   font-family:'Century Gothic','AppleGothic','Futura',sans-serif;
   overflow:hidden;
-  height:280px;
+  height:430px;
   width:100%;
-  padding:6px 8px;
+  padding:8px 10px;
+  position:relative;
+}
+body::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,102,0.03) 2px,rgba(0,255,102,0.03) 4px);
+  pointer-events:none;
+  z-index:999;
 }
 .panel-label{
   color:#00ff66;
-  font-size:9px;
+  font-size:10px;
   font-weight:bold;
   letter-spacing:1px;
   text-transform:uppercase;
   text-align:center;
-  margin-bottom:4px;
+  margin-bottom:6px;
   text-shadow:0 0 6px rgba(0,255,102,0.5);
   white-space:nowrap;
   overflow:hidden;
@@ -33,21 +42,21 @@ table{
   border:1px solid #00ff66;
   width:100%;
   font-family:monospace;
-  font-size:11px;
+  font-size:18px;
 }
 th,td{
   border:1px solid #1f2937;
-  padding:2px 5px;
+  padding:3px 6px;
   text-align:left;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  max-width:120px;
+  max-width:140px;
 }
 th{
   border-bottom:2px solid #00ff66;
   color:#00ff66;
-  font-size:9px;
+  font-size:12px;
   letter-spacing:1px;
   text-transform:uppercase;
   background:#0b0c10;
@@ -65,12 +74,19 @@ tr.telemetry td{
 tr.telemetry td.snr{
   color:#ffcc00;
 }
+.empty-state{
+  color:#666666;
+  text-align:center;
+  font-size:14px;
+  font-style:italic;
+  padding:8px 4px;
+}
 .status-bar{
   display:flex;
   justify-content:space-between;
-  margin-top:4px;
+  margin-top:6px;
   font-family:monospace;
-  font-size:9px;
+  font-size:10px;
   color:#666666;
 }
 .status-bar .live{color:#00ff66}
@@ -95,7 +111,6 @@ tr.telemetry td.snr{
     <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>MONITORING 🖖</td></tr>
     <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORING</td></tr>
     <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORING</td></tr>
-    <tbody>
   </tbody>
 </table>
 <div class="status-bar">
@@ -103,7 +118,7 @@ tr.telemetry td.snr{
   <span id="timestamp">--:--:--Z</span>
 </div>
 <script>
-const MAX_ROWS=7;
+const MAX_ROWS=8;
 const SNR_MIN=-24;
 const SNR_MAX=-15;
 function bandFromFreq(mhz){
@@ -123,7 +138,6 @@ function bandFromFreq(mhz){
 function iaruRegion(grid){
   const c=grid.substring(0,2);
   const col=parseInt(c[0],36);
-  const row=parseInt(c[1],36);
   if(col<=18)return'R1';
   if(col<=22)return'R2';
   return'R3';
@@ -134,14 +148,15 @@ async function load(){
     if(!r.ok)throw r.status;
     const d=await r.json();
     const tb=document.querySelector('tbody');
+    tb.querySelectorAll('tr.telemetry').forEach(r=>r.remove());
     const tracks=d.telemetry.dx_tracks||[];
-    const filtered=tracks.filter(t=>t.db>=SNR_MIN&&t.db<=SNR_MAX).slice(0,MAX_ROWS);
+    const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX).slice(0,MAX_ROWS);
     let html='';
     for(const t of filtered){
       const reg=iaruRegion(t.grid);
-      html+=`<tr class="telemetry"><td>${t.call}</td><td>${t.grid}</td><td>${t.band||bandFromFreq(t.freq)}</td><td class="snr">${t.db}dB</td><td>${t.dxcc||t.call.substring(0,2)}</td><td>${reg}</td></tr>`;
+      html+='<tr class="telemetry"><td>'+t.call+'</td><td>'+t.grid+'</td><td>'+(t.band||bandFromFreq(t.freq))+'</td><td class="snr">'+t.db+'dB</td><td>'+(t.dxcc||t.call.substring(0,2))+'</td><td>'+reg+'</td></tr>';
     }
-    if(!filtered.length)html='<tr class="telemetry"><td colspan="6" style="color:#666;text-align:center">SCANNING... NO SIGNALS IN RANGE</td></tr>';
+    if(!filtered.length)html='<tr class="telemetry"><td colspan="6" class="empty-state">// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE</td></tr>';
     tb.insertAdjacentHTML('beforeend',html);
     document.getElementById('status').textContent=d.telemetry.status||'ONLINE';
     document.getElementById('status').className=d.telemetry.status==='ONLINE'?'live':'degraded';
