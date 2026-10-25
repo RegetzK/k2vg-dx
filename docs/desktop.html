@@ -1,1 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K2VG BETA 5 Console — Desktop</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#0b0c10;
+  color:#f4f4f4;
+  font-family:'Century Gothic','AppleGothic','Futura',sans-serif;
+  min-height:100vh;
+  padding:16px 20px;
+}
+.panel-label{
+  color:#00ff66;
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  text-align:center;
+  margin-bottom:10px;
+  text-shadow:0 0 8px rgba(0,255,102,0.5);
+}
+.controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:12px;
+  padding:8px 12px;
+  background:#12141c;
+  border:1px solid #1f2937;
+  border-radius:6px;
+}
+.controls label{
+  font-size:10px;
+  color:#666;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.controls select{
+  background:#0b0c10;
+  color:#00ff66;
+  border:1px solid #0066cc;
+  border-radius:4px;
+  padding:4px 8px;
+  font-family:monospace;
+  font-size:12px;
+}
+.controls input[type=range]{
+  width:100px;
+  accent-color:#ffcc00;
+}
+.controls button{
+  background:#ffcc00;
+  color:#000;
+  border:none;
+  border-radius:4px;
+  padding:5px 12px;
+  font-size:10px;
+  font-weight:bold;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.controls button:hover{background:#f1c40f}
+table{
+  border-collapse:collapse;
+  border:1px solid #00ff66;
+  width:100%;
+  font-family:monospace;
+  font-size:12px;
+  margin-bottom:10px;
+}
+th,td{
+  border:1px solid #1f2937;
+  padding:4px 8px;
+  text-align:left;
+  white-space:nowrap;
+}
+th{
+  border-bottom:2px solid #00ff66;
+  color:#00ff66;
+  font-size:10px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  background:#0b0c10;
+}
+tr.lore td{color:#00ff66;font-weight:bold}
+tr.lore td:last-child{color:#00e5ff}
+tr.telemetry td{color:#f4f4f4}
+tr.telemetry td.snr{color:#ffcc00}
+.status-bar{
+  display:flex;
+  justify-content:space-between;
+  font-family:monospace;
+  font-size:10px;
+  color:#666;
+  margin-bottom:6px;
+}
+.status-bar .live{color:#00ff66}
+.status-bar .degraded{color:#e74c3c}
+.snr-note{
+  font-family:monospace;
+  font-size:9px;
+  color:rgba(244,244,244,0.4);
+  text-align:center;
+  margin-top:8px;
+  letter-spacing:0.5px;
+}
+</style>
+</head>
+<body>
+<div class="panel-label">DEEP COVER IC-7300 &amp; BETA 5 TRANSCEIVER ARRAY INTERSTELLAR MONITORING STATION PANEL</div>
 
+<div class="controls">
+  <label>Refresh:</label>
+  <select id="refreshInterval">
+    <option value="300000" selected>5 min</option>
+    <option value="240000">4 min</option>
+    <option value="180000">3 min</option>
+    <option value="120000">2 min</option>
+    <option value="60000">1 min</option>
+  </select>
+  <label>Volume:</label>
+  <input type="range" id="volSlider" min="0" max="100" value="50">
+  <button id="testAlert">Test Alert</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>CALL</th>
+      <th>GRID</th>
+      <th>BAND</th>
+      <th>SNR</th>
+      <th>DXCC</th>
+      <th>STATUS</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="lore"><td>NCC-1701</td><td>GSO-FM18</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>UPLINK ACTIVE</td></tr>
+    <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>MONITORING 🖖</td></tr>
+    <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORING</td></tr>
+    <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORING</td></tr>
+  </tbody>
+</table>
+
+<div class="status-bar">
+  <span id="status">INITIALIZING...</span>
+  <span id="timestamp">--:--:--Z</span>
+</div>
+
+<div class="snr-note">// SNR RANGE -15 TO -24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) VS SINGLE-PASS DECODERS</div>
+
+<script>
+// 3-TONE TOS ALERT (Web Audio API — no external files)
+let audioCtx=null;
+function playAlert(){
+  const vol=document.getElementById('volSlider').value/100;
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  const freqs=[880,880,1320];
+  const dur=0.15;
+  const gap=0.05;
+  freqs.forEach((f,i)=>{
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.type='sine';
+    osc.frequency.value=f;
+    gain.gain.value=vol*0.6;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const t=audioCtx.currentTime+i*(dur+gap);
+    osc.start(t);
+    osc.stop(t+dur);
+  });
+}
+document.getElementById('testAlert').addEventListener('click',playAlert);
+
+// DATA LOADING
+const SNR_MIN=-24;
+const SNR_MAX=-15;
+const MAX_ROWS=20;
+let refreshTimer=null;
+
+function bandFromFreq(mhz){
+  if(mhz>=1.8&&mhz<2)return'160M';
+  if(mhz>=3.5&&mhz<4)return'80M';
+  if(mhz>=5.3&&mhz<5.4)return'60M';
+  if(mhz>=7&&mhz<7.3)return'40M';
+  if(mhz>=10.1&&mhz<10.15)return'30M';
+  if(mhz>=14&&mhz<14.35)return'20M';
+  if(mhz>=18&&mhz<18.16)return'17M';
+  if(mhz>=21&&mhz<21.45)return'15M';
+  if(mhz>=24.89&&mhz<24.99)return'12M';
+  if(mhz>=28&&mhz<29.7)return'10M';
+  if(mhz>=50&&mhz<54)return'6M';
+  return Math.round(mhz)+'M';
+}
+function iaruRegion(grid){
+  const c=grid.substring(0,2);
+  const col=parseInt(c[0],36);
+  if(col<=18)return'R1';
+  if(col<=22)return'R2';
+  return'R3';
+}
+async function load(){
+  try{
+    const r=await fetch('../data/telemetry.json?t='+Date.now());
+    if(!r.ok)throw r.status;
+    const d=await r.json();
+    const tb=document.querySelector('tbody');
+    const loreRows=tb.querySelectorAll('tr.lore');
+    tb.querySelectorAll('tr.telemetry').forEach(r=>r.remove());
+    const tracks=d.telemetry.dx_tracks||[];
+    const filtered=tracks.filter(t=>t.db>=SNR_MIN&&t.db<=SNR_MAX).slice(0,MAX_ROWS);
+    let hadNew=false;
+    let html='';
+    for(const t of filtered){
+      const reg=iaruRegion(t.grid);
+      hadNew=true;
+      html+=`<tr class="telemetry"><td>${t.call}</td><td>${t.grid}</td><td>${t.band||bandFromFreq(t.freq)}</td><td class="snr">${t.db}dB</td><td>${t.dxcc||t.call.substring(0,2)}</td><td>${reg}</td></tr>`;
+    }
+    if(!filtered.length)html='<tr class="telemetry"><td colspan="6" style="color:#666;text-align:center">SCANNING... NO SIGNALS IN RANGE</td></tr>';
+    tb.insertAdjacentHTML('beforeend',html);
+    document.getElementById('status').textContent=d.telemetry.status||'ONLINE';
+    document.getElementById('status').className=d.telemetry.status==='ONLINE'?'live':'degraded';
+    document.getElementById('timestamp').textContent=d.timestamp||'--:--:--Z';
+    if(hadNew)playAlert();
+  }catch(e){
+    document.getElementById('status').textContent='DEGRADED';
+    document.getElementById('status').className='degraded';
+  }
+}
+function scheduleRefresh(){
+  if(refreshTimer)clearInterval(refreshTimer);
+  const ms=parseInt(document.getElementById('refreshInterval').value);
+  refreshTimer=setInterval(load,ms);
+}
+document.getElementById('refreshInterval').addEventListener('change',scheduleRefresh);
+load();
+scheduleRefresh();
+</script>
+</body>
+</html>   
