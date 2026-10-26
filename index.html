@@ -157,7 +157,7 @@ async function load(){
       const reg=iaruRegion(t.grid);
       html+='<tr class="telemetry"><td>'+t.call+'</td><td>'+t.grid+'</td><td>'+(t.band||bandFromFreq(t.freq))+'</td><td class="snr">'+t.db+'dB</td><td>'+(t.dxcc||t.call.substring(0,2))+'</td><td>'+reg+'</td></tr>';
     }
-    if(!filtered.length)html='<tr class="telemetry"><td colspan="6" class="empty-state">// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE</td></tr>';
+    //if(!filtered.length)html='<tr class="telemetry"><td colspan="6" class="empty-state">// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE</td></tr>';
     tb.insertAdjacentHTML('beforeend',html);
     document.getElementById('status').textContent=d.telemetry.status||'ONLINE';
     document.getElementById('status').className=d.telemetry.status==='ONLINE'?'live':'degraded';
