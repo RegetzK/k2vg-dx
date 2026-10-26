@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-10-26T01:26:07Z",
+  "station": {
+    "callsign": "K2VG",
+    "grid": "FM18",
+    "total_qsos": 124,
+    "confirmed_qrz": 100
+  },
+  "solar": {
+    "sfi": "N/A",
+    "kp": "N/A",
+    "geomag": "STABLE",
+    "flare_risk": "N/A"
+  },
+  "telemetry": {
+    "status": "DEGRADED",
+    "dx_tracks": [
+      {
+        "call": "NCC-1701",
+        "grid": "GSO-FM18",
+        "band": "ALL",
+        "db": null,
+        "freq": null,
+        "dxcc": "USS ENTERPRISE",
+        "status": "UPLINK ACTIVE",
+        "lore": true
+      },
+      {
+        "call": "N/A",
+        "grid": "40 ERIDANI A",
+        "band": "ALL",
+        "db": null,
+        "freq": null,
+        "dxcc": "VULCAN",
+        "status": "MONITORING \ud83d\udd96",
+        "lore": true
+      },
+      {
+        "call": "IC/MIL/GOV COMMS",
+        "grid": "ALL",
+        "band": "ALL",
+        "db": null,
+        "freq": null,
+        "dxcc": "EARTH",
+        "status": "MONITORING",
+        "lore": true
+      },
+      {
+        "call": "CIV WEB/DARK WEB/COMMS",
+        "grid": "ALL",
+        "band": "ALL",
+        "db": null,
+        "freq": null,
+        "dxcc": "EARTH",
+        "status": "MONITORING",
+        "lore": true
+      }
+    ]
+  }
+}
