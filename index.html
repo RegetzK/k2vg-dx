@@ -24,18 +24,33 @@ body::after{
   pointer-events:none;
   z-index:999;
 }
-.panel-label{
-  color:#00ff66;
+.wd-header{
+  margin-bottom:6px;
+  padding-bottom:6px;
+  border-bottom:1px solid #1f2937;
+}
+.wd-title{
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:3px;
+}
+.wd-sub{
+  color:#f4f4f4;
+  font-size:11px;
+  margin-bottom:4px;
+}
+.wd-cmd{
+  color:#ffffff;
   font-size:10px;
   font-weight:bold;
-  letter-spacing:1px;
-  text-transform:uppercase;
   text-align:center;
-  margin-bottom:6px;
-  text-shadow:0 0 6px rgba(0,255,102,0.5);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  line-height:1.4;
+}
+.wd-warn{
+  color:#ff6b6b;
+  font-size:10px;
+  text-align:center;
+  line-height:1.3;
 }
 table{
   border-collapse:collapse;
@@ -91,11 +106,16 @@ tr.telemetry td.snr{
 }
 .status-bar .live{color:#00ff66}
 .status-bar .degraded{color:#ff0000;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,0,0,0.7)}
-@keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}   
+@keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}
 </style>
 </head>
 <body>
-<div class="panel-label">DEEP COVER IC-7300 &amp; BETA 5 TRANSCEIVER ARRAY INTERSTELLAR MONITORING STATION PANEL</div>
+<div class="wd-header">
+<div class="wd-title"><span style="color:#f1c40f">&bull; </span><span style="color:#ffffff">(SL9) INTERSTELLAR &amp; TERRESTRIAL DX WATCHLIST &amp; TELEMETRY</span></div>
+<div class="wd-sub">Live FT8 signal monitoring from grid FM18 — 6M–40M, targeting DX AS/AF/OC (≤ −15 dB to −24, Decodium 4.0 Shannon priority decode), Earth orbital &amp; subspace comms:</div>
+<div class="wd-cmd">(SL9) STARFLEET COMMAND // ASTROMETRICS // TERRESTRIAL DXCC &amp; EXTRA-SOLAR SUBSPACE SIGNAL MONITORING</div>
+<div class="wd-warn">⚠ SECURITY LEVEL 9 (SL9) — AUTHORIZED EYES ONLY ⚠<br>UNAUTHORIZED ACCESS WILL BE REPORTED TO STARFLEET SECURITY</div>
+</div>
 <table>
   <thead>
     <tr>
@@ -157,7 +177,6 @@ async function load(){
       const reg=iaruRegion(t.grid);
       html+='<tr class="telemetry"><td>'+t.call+'</td><td>'+t.grid+'</td><td>'+(t.band||bandFromFreq(t.freq))+'</td><td class="snr">'+t.db+'dB</td><td>'+(t.dxcc||t.call.substring(0,2))+'</td><td>'+reg+'</td></tr>';
     }
-    //if(!filtered.length)html='<tr class="telemetry"><td colspan="6" class="empty-state">// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE</td></tr>';
     tb.insertAdjacentHTML('beforeend',html);
     document.getElementById('status').textContent=d.telemetry.status||'ONLINE';
     document.getElementById('status').className=d.telemetry.status==='ONLINE'?'live':'degraded';
