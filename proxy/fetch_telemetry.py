@@ -14,7 +14,7 @@ import html  # CRITICAL: Added for XSS sanitization
 
 # ─── CONFIG ───────────────────────────────────────────────────────────
 STATION_CALL = "K2VG"
-MY_GRID = "FM18"  # NOTE: Verify against QRZ page (FM05 vs FM18)
+MY_GRID = "FM05"  # NOTE: Verify against QRZ page (FM05)
 QSO_TOTAL = 124
 QSO_CONFIRMED_QRZ = 100
 SNR_MIN = -24
@@ -22,7 +22,7 @@ SNR_MAX = -15
 LAST_SECONDS = 1800  # 30 min window
 
 FICTIONAL_STATIONS = [
-    {"call": "NCC-1701", "grid": "GSO-FM18", "band": "ALL", "db": None, "freq": None, "dxcc": "USS ENTERPRISE", "status": "UPLINK ACTIVE", "lore": True},
+    {"call": "NCC-1701", "grid": "GSO-FM05", "band": "ALL", "db": None, "freq": None, "dxcc": "USS ENTERPRISE", "status": "UPLINK ACTIVE", "lore": True},
     {"call": "N/A", "grid": "40 ERIDANI A", "band": "ALL", "db": None, freq": None, "dxcc": "VULCAN", "status": "MONITORING 🖖", "lore": True},
     {"call": "IC/MIL/GOV COMMS", "grid": "ALL", "band": "ALL", "db": None, "freq": None, "dxcc": "EARTH", "status": "MONITORING", "lore": True},
     {"call": "CIV WEB/DARK WEB/COMMS", "grid": "ALL", "band": "ALL", "db": None, "freq": None, "dxcc": "EARTH", "status": "MONITORING", "lore": True},
