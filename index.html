@@ -11,11 +11,11 @@ body{
   color:#f4f4f4;
   font-family:'Century Gothic','AppleGothic','Futura',sans-serif;
   overflow:hidden;
-  height:430px;
+  height:500px;
   width:100%;
   padding:8px 10px;
   position:relative;
-}
+}     
 body::after{
   content:'';
   position:absolute;
@@ -168,7 +168,9 @@ async function load(){
     const tb=document.querySelector('tbody');
     tb.querySelectorAll('tr.telemetry').forEach(r=>r.remove());
     const tracks=d.telemetry.dx_tracks||[];
-    const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX).sort((a,b)=>b.db-a.db).slice(0,MAX_ROWS);
+    const strong=tracks.filter(t=>!t.lore&&t.db>=0&&t.db<=SNR_MAX).sort((a,b)=>b.db-a.db);
+    const weak=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<0).sort((a,b)=>b.db-a.db);
+    const filtered=strong.slice(0,MAX_ROWS-2).concat(weak.slice(0,2));   
     let html='';
     for(const t of filtered){
       const reg=iaruRegion(t.grid);
