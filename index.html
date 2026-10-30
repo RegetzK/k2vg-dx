@@ -178,20 +178,34 @@ async function load(){
     const strong=tracks.filter(t=>!t.lore&&t.db>=0&&t.db<=SNR_MAX).sort((a,b)=>b.db-a.db);
     const weak=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<0).sort((a,b)=>b.db-a.db);
     const filtered=strong.slice(0,MAX_ROWS-2).concat(weak.slice(0,2));
-    let html='';
     for(const t of filtered){
       const reg=iaruRegion(t.grid);
       const zl=isZL(t.grid)?' zl':'';
-      html+='<tr class="telemetry'+zl+'"><td>'+t.call+'</td><td>'+t.grid+'</td><td>'+(t.band||bandFromFreq(t.freq))+'</td><td class="snr">'+t.db+'dB</td><td>'+(t.dxcc||t.call.substring(0,2))+'</td><td>'+reg+'</td></tr>';
+      const tr=document.createElement('tr');
+      tr.className='telemetry'+zl;
+      [t.call,t.grid,(t.band||bandFromFreq(t.freq)),t.db+'dB',(t.dxcc||t.call.substring(0,2)),reg].forEach((v,i)=>{
+        const td=document.createElement('td');
+        if(i===3)td.className='snr';
+        td.textContent=v;
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
     }
-    if(!filtered.length)html='<tr class="telemetry"><td colspan="6" class="empty-state">// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE</td></tr>';
-    tb.insertAdjacentHTML('beforeend',html);
+    if(!filtered.length){
+      const tr=document.createElement('tr');
+      tr.className='telemetry';
+      const td=document.createElement('td');
+      td.colSpan=6;
+      td.className='empty-state';
+      td.textContent='// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE';
+      tr.appendChild(td);
+      tb.appendChild(tr);
+    }
     document.getElementById('status').textContent=d.telemetry.status||'ONLINE';
     document.getElementById('status').className=d.telemetry.status==='ONLINE'?'live':'degraded';
     document.getElementById('timestamp').textContent=d.timestamp||'--:--:--Z';
     const zlPresent=filtered.some(t=>isZL(t.grid));
-    if(zlPresent)document.getElementById('status').textContent='ZL ACQUIRED';
-    if(zlPresent)document.getElementById('status').className='live';
+    if(zlPresent){document.getElementById('status').textContent='ZL ACQUIRED';document.getElementById('status').className='live';}
   }catch(e){
     document.getElementById('status').textContent='DEGRADED';
     document.getElementById('status').className='degraded';
@@ -201,4 +215,4 @@ load();
 setInterval(load,300000);
 </script>
 </body>
-</html>   
+</html>
