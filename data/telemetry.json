@@ -2,7 +2,7 @@
   "timestamp": "2026-10-30T15:47:59Z",
   "station": {
     "callsign": "K2VG",
-    "grid": "FM18",
+    "grid": "FM05",
     "total_qsos": 124,
     "confirmed_qrz": 100
   },
@@ -17,7 +17,7 @@
     "dx_tracks": [
       {
         "call": "NCC-1701",
-        "grid": "GSO-FM18",
+        "grid": "GSO-FM05",
         "band": "ALL",
         "db": null,
         "freq": null,
