@@ -144,10 +144,18 @@ tr.zl td{
   margin-top:8px;
   letter-spacing:0.5px;
 }
+.prime-directive{
+  color:#e74c3c;
+  font-size:9px;
+  text-align:center;
+  margin-top:4px;
+  font-family:monospace;
+  letter-spacing:1px;
+}
 </style>
 </head>
 <body>
-<div class="panel-label">DEEP COVER IC-7300 &amp; BETA 5 TRANSCEIVER ARRAY INTERSTELLAR MONITORING STATION PANEL</div>
+<div class="panel-label">DEEP COVER IC-7300 &amp; BETA 5 TRANSCEIVER ARRAY SUBSPACE MONITORING STATION PANEL</div>
 
 <div class="controls">
   <label>Refresh:</label>
@@ -191,6 +199,8 @@ tr.zl td{
 
 <div class="snr-note">// SNR RANGE -15 TO -24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) VS SINGLE-PASS DECODERS</div>
 
+<div class="prime-directive">PRIME DIRECTIVE EXCEPTION ACTIVE // INTERVENTION AUTHORIZED</div>
+
 <script>
 let audioCtx=null;
 let audioArmed=false;
@@ -233,18 +243,30 @@ const MAX_ROWS=20;
 const STALE_THRESHOLD_MS=3600000; // 60 minutes
 let refreshTimer=null;
 
+function getStardate(){
+  const now=new Date();
+  const year=now.getUTCFullYear();
+  const start=new Date(year,0,0);
+  const diff=now-start;
+  const oneDay=1000*60*60*24;
+  const day=Math.floor(diff/oneDay);
+  const hour=String(now.getUTCHours()).padStart(2,'0');
+  const min=String(now.getUTCMinutes()).padStart(2,'0');
+  return `${year}.${String(day).padStart(3,'0')}.${hour}${min}`;
+}
+
 function bandFromFreq(mhz){
-  if(mhz>=1.8&&mhz<2)return'160M';
-  if(mhz>=3.5&&mhz<4)return'80M';
-  if(mhz>=5.3&&mhz<5.4)return'60M';
-  if(mhz>=7&&mhz<7.3)return'40M';
-  if(mhz>=10.1&&mhz<10.15)return'30M';
-  if(mhz>=14&&mhz<14.35)return'20M';
-  if(mhz>=18&&mhz<18.16)return'17M';
-  if(mhz>=21&&mhz<21.45)return'15M';
-  if(mhz>=24.89&&mhz<24.99)return'12M';
-  if(mhz>=28&&mhz<29.7)return'10M';
-  if(mhz>=50&&mhz<54)return'6M';
+  if(mhz>=1.8&&mhz<2)return'🌑 160M';
+  if(mhz>=3.5&&mhz<4)return'🌑 80M';
+  if(mhz>=5.3&&mhz<5.4)return'🌑 60M';
+  if(mhz>=7&&mhz<7.3)return'☀️ 40M';
+  if(mhz>=10.1&&mhz<10.15)return'☀️ 30M';
+  if(mhz>=14&&mhz<14.35)return'☀️ 20M';
+  if(mhz>=18&&mhz<18.16)return'☀️ 17M';
+  if(mhz>=21&&mhz<21.45)return'⚡ 15M';
+  if(mhz>=24.89&&mhz<24.99)return'⚡ 12M';
+  if(mhz>=28&&mhz<29.7)return'⚡ 10M';
+  if(mhz>=50&&mhz<54)return'⚡ 6M';
   return Math.round(mhz)+'M';
 }
 function iaruRegion(grid){
@@ -257,6 +279,13 @@ function iaruRegion(grid){
 function isZL(grid){
   return grid && (grid.startsWith('RY55')||grid.startsWith('RY56'));
 }
+function getEmptyStateMsg(){
+  const hour=new Date().getHours();
+  if(hour>=6&&hour<18)return '// SCANNING IONOSPHERIC LAYERS // SOLAR FLUX NOMINAL //';
+  if(hour>=18||hour<6)return '// MONITORING NIGHTSIDE PROPAGATION // D-LAYER COLLAPSED //';
+  return '// TERMINATOR CROSSING DETECTED // OPTIMIZE FOR DX //';
+}
+
 async function load(){
   try{
     const r=await fetch('../data/telemetry.json?t='+Date.now());
@@ -270,7 +299,6 @@ async function load(){
     for(const t of filtered){
       const reg=iaruRegion(t.grid);
       const zl=isZL(t.grid)?' zl':'';
-      hadNew=true;
       const tr=document.createElement('tr');
       tr.className='telemetry'+zl;
       [t.call,t.grid,(t.band||bandFromFreq(t.freq)),t.db+'dB',(t.dxcc||t.call.substring(0,2)),reg].forEach((v,i)=>{
@@ -287,7 +315,7 @@ async function load(){
       const td=document.createElement('td');
       td.colSpan=6;
       td.className='empty-state';
-      td.textContent='// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE';
+      td.textContent=getEmptyStateMsg()+'// STANDING BY FOR DIRECTIVE';
       tr.appendChild(td);
       tb.appendChild(tr);
     }
@@ -297,7 +325,10 @@ async function load(){
     const stalenessMinutes=(now-lastUpdate)/60000;
     const statusEl=document.getElementById('status');
     const timestampEl=document.getElementById('timestamp');
-    timestampEl.textContent=d.timestamp||'--:--:--Z';
+    
+    // #8: Stardate Format
+    timestampEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp||'--:--:--Z'}`;
+    
     if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
       statusEl.textContent='ONLINE';
       statusEl.className='live';
@@ -305,7 +336,7 @@ async function load(){
       statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';
       statusEl.className='stale';
     } else if(d.telemetry.status==='DEGRADED'){
-      statusEl.textContent='DEGRADED';
+      statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED'; // #2
       statusEl.className='degraded';
     } else {
       statusEl.textContent=d.telemetry.status||'ONLINE';
@@ -326,5 +357,8 @@ document.getElementById('refreshInterval').addEventListener('change',scheduleRef
 load();
 scheduleRefresh();
 </script>
+</body>
+</html>
+``````html
 </body>
 </html>
