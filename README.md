@@ -1,7 +1,7 @@
 # K2VG DX Monitor — BETA 5 Interstellar Monitoring Station Panel
 
 Deep cover IC-7300 & BETA 5 Transceiver Array.
-Live PSKReporter + NOAA SWPC telemetry for FM18 (Alexandria, VA).
+Live PSKReporter + NOAA SWPC telemetry for FM05 (Raleigh/Cary, NC)
 
 ## Endpoints
 
