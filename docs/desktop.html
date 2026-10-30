@@ -113,6 +113,10 @@ tr.telemetry td{
 tr.telemetry td.snr{
   color:#ffcc00;
 }
+tr.zl td{
+  color:#ff00ff;
+  font-weight:bold;
+}
 .empty-state{
   color:#666666;
   text-align:center;
@@ -170,7 +174,7 @@ tr.telemetry td.snr{
     </tr>
   </thead>
   <tbody>
-    <tr class="lore"><td>NCC-1701</td><td>GSO-FM18</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>UPLINK ACTIVE</td></tr>
+    <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>UPLINK ACTIVE</td></tr>
     <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>MONITORING 🖖</td></tr>
     <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORING</td></tr>
     <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORING</td></tr>
@@ -234,6 +238,9 @@ function iaruRegion(grid){
   if(col<=22)return'R2';
   return'R3';
 }
+function isZL(grid){
+  return grid && (grid.startsWith('RY55')||grid.startsWith('RY56'));
+}
 async function load(){
   try{
     const r=await fetch('../data/telemetry.json?t='+Date.now());
@@ -247,10 +254,11 @@ async function load(){
     let html='';
     for(const t of filtered){
       const reg=iaruRegion(t.grid);
+      const zl=isZL(t.grid)?' zl':'';
       hadNew=true;
-      html+='<tr class="telemetry"><td>'+t.call+'</td><td>'+t.grid+'</td><td>'+(t.band||bandFromFreq(t.freq))+'</td><td class="snr">'+t.db+'dB</td><td>'+(t.dxcc||t.call.substring(0,2))+'</td><td>'+reg+'</td></tr>';
+      html+='<tr class="telemetry'+zl+'"><td>'+t.call+'</td><td>'+t.grid+'</td><td>'+(t.band||bandFromFreq(t.freq))+'</td><td class="snr">'+t.db+'dB</td><td>'+(t.dxcc||t.call.substring(0,2))+'</td><td>'+reg+'</td></tr>';
     }
-    //if(!filtered.length)html='<tr class="telemetry"><td colspan="6" class="empty-state">// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE</td></tr>';
+    if(!filtered.length)html='<tr class="telemetry"><td colspan="6" class="empty-state">// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE</td></tr>';
     tb.insertAdjacentHTML('beforeend',html);
     document.getElementById('status').textContent=d.telemetry.status||'ONLINE';
     document.getElementById('status').className=d.telemetry.status==='ONLINE'?'live':'degraded';
@@ -271,4 +279,4 @@ load();
 scheduleRefresh();
 </script>
 </body>
-</html>   
+</html>
