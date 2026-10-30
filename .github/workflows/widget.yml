@@ -25,6 +25,14 @@ jobs:
       - name: Fetch telemetry
         run: python proxy/fetch_telemetry.py
 
+      - name: Upload telemetry artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: telemetry-json
+          path: data/telemetry.json
+          retention-days: 3
+
       - name: Commit and push
         run: |
           git config user.name "BETA 5"
@@ -33,4 +41,4 @@ jobs:
           git add data/telemetry.json
           git diff --cached --quiet || git commit -m "Telemetry update $(date -u +%Y%m%dT%H%M%SZ)"
           git pull --rebase origin main
-          git push   
+          git push
