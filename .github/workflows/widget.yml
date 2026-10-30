@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: telemetry-update
+  cancel-in-progress: true
+
 jobs:
   update-telemetry:
     runs-on: ubuntu-latest
