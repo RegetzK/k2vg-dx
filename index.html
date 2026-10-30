@@ -138,7 +138,7 @@ tr.telemetry td.snr{
 <script>
 const MAX_ROWS=8;
 const SNR_MIN=-24;
-const SNR_MAX=-15;
+const SNR_MAX=24;
 function bandFromFreq(mhz){
   if(mhz>=1.8&&mhz<2)return'160M';
   if(mhz>=3.5&&mhz<4)return'80M';
@@ -168,7 +168,7 @@ async function load(){
     const tb=document.querySelector('tbody');
     tb.querySelectorAll('tr.telemetry').forEach(r=>r.remove());
     const tracks=d.telemetry.dx_tracks||[];
-    const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX).slice(0,MAX_ROWS);
+    const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX).sort((a,b)=>b.db-a.db).slice(0,MAX_ROWS);
     let html='';
     for(const t of filtered){
       const reg=iaruRegion(t.grid);
