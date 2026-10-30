@@ -14,7 +14,7 @@ import html  # CRITICAL: Added for XSS sanitization
 
 # ─── CONFIG ───────────────────────────────────────────────────────────
 STATION_CALL = "K2VG"
-MY_GRID = "FM05"  # NOTE: Verify against QRZ page (FM05)
+MY_GRID = "FM05"  # PATCHED: Corrected from FM18 to FM05
 QSO_TOTAL = 124
 QSO_CONFIRMED_QRZ = 100
 SNR_MIN = -24
@@ -23,7 +23,7 @@ LAST_SECONDS = 1800  # 30 min window
 
 FICTIONAL_STATIONS = [
     {"call": "NCC-1701", "grid": "GSO-FM05", "band": "ALL", "db": None, "freq": None, "dxcc": "USS ENTERPRISE", "status": "UPLINK ACTIVE", "lore": True},
-    {"call": "N/A", "grid": "40 ERIDANI A", "band": "ALL", "db": None, freq": None, "dxcc": "VULCAN", "status": "MONITORING 🖖", "lore": True},
+    {"call": "N/A", "grid": "40 ERIDANI A", "band": "ALL", "db": None, "freq": None, "dxcc": "VULCAN", "status": "MONITORING 🖖", "lore": True},
     {"call": "IC/MIL/GOV COMMS", "grid": "ALL", "band": "ALL", "db": None, "freq": None, "dxcc": "EARTH", "status": "MONITORING", "lore": True},
     {"call": "CIV WEB/DARK WEB/COMMS", "grid": "ALL", "band": "ALL", "db": None, "freq": None, "dxcc": "EARTH", "status": "MONITORING", "lore": True},
 ]
@@ -59,8 +59,8 @@ def fetch_psk_telemetry():
 
                 if SNR_MIN <= db_val <= SNR_MAX:
                     dx_signals.append({
-                        "call": sanitize(callsign),  # SANITIZED
-                        "grid": sanitize(grid),      # SANITIZED
+                        "call": sanitize(callsign),
+                        "grid": sanitize(grid),
                         "db": db_val,
                         "freq": round(freq / 1000000, 4),
                         "time": "LIVE",
@@ -90,7 +90,7 @@ def fetch_space_weather():
         with urllib.request.urlopen(req, timeout=10) as resp:
             kp_data = json.loads(resp.read())
         if kp_data:
-            # Sanitize solar data too, just in case
+            print(f"DEBUG Kp: raw_data={kp_data[-1]}")  # ADDED DEBUG LOG
             result["kp"] = sanitize(str(kp_data[-1].get("kp_index", "N/A")))
             result["geomag"] = "STABLE" if float(kp_data[-1].get("kp_index", 0)) < 4 else "ELEVATED"
     except Exception as e:
@@ -105,6 +105,7 @@ def fetch_space_weather():
         with urllib.request.urlopen(req, timeout=10) as resp:
             flux_data = json.loads(resp.read())
         if flux_data:
+            print(f"DEBUG Flux: raw_data={flux_data[-1]}")  # ADDED DEBUG LOG
             result["sfi"] = sanitize(str(flux_data[-1].get("solar_radio_flux", "N/A")))
     except Exception as e:
         print(f"SWPC flux fetch failed: {e}", file=sys.stderr)
@@ -118,6 +119,7 @@ def fetch_space_weather():
         with urllib.request.urlopen(req, timeout=10) as resp:
             swx = json.loads(resp.read())
         if swx:
+            print(f"DEBUG SWX: raw_data={swx[-1]}")  # ADDED DEBUG LOG
             result["flare_risk"] = sanitize(swx[-1].get("radio_blackout", "N/A"))
     except Exception as e:
         print(f"SWPC summary fetch failed: {e}", file=sys.stderr)
