@@ -30,6 +30,8 @@ Live PSKReporter + NOAA SWPC telemetry for FM05 (Raleigh/Cary, NC)
 
 - Range: -15 to -24 dB
 - Accounts for Decodium 4.0 Shannon multi-cycle integration gain (~3-5 dB)
+
+ BETA 5: My custom telemetry dashboard, styled after Star Trek TOS
   vs single-pass decoders reporting to PSKReporter
 
 ## Maintenance
