@@ -108,6 +108,7 @@ tr.zl td{
 }
 .status-bar .live{color:#00ff66}
 .status-bar .degraded{color:#ff0000;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,0,0,0.7)}
+.status-bar .stale{color:#ff6b6b;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,107,107,0.7)}
 @keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}
 </style>
 </head>
@@ -143,6 +144,7 @@ tr.zl td{
 const MAX_ROWS=8;
 const SNR_MIN=-24;
 const SNR_MAX=24;
+const STALE_THRESHOLD_MS=3600000; // 60 minutes
 function bandFromFreq(mhz){
   if(mhz>=1.8&&mhz<2)return'160M';
   if(mhz>=3.5&&mhz<4)return'80M';
@@ -201,11 +203,28 @@ async function load(){
       tr.appendChild(td);
       tb.appendChild(tr);
     }
-    document.getElementById('status').textContent=d.telemetry.status||'ONLINE';
-    document.getElementById('status').className=d.telemetry.status==='ONLINE'?'live':'degraded';
-    document.getElementById('timestamp').textContent=d.timestamp||'--:--:--Z';
+    // STALENESS CHECK
+    const now=Date.now();
+    const lastUpdate=new Date(d.timestamp).getTime();
+    const stalenessMinutes=(now-lastUpdate)/60000;
+    const statusEl=document.getElementById('status');
+    const timestampEl=document.getElementById('timestamp');
+    timestampEl.textContent=d.timestamp||'--:--:--Z';
+    if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
+      statusEl.textContent='ONLINE';
+      statusEl.className='live';
+    } else if(stalenessMinutes>60){
+      statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';
+      statusEl.className='stale';
+    } else if(d.telemetry.status==='DEGRADED'){
+      statusEl.textContent='DEGRADED';
+      statusEl.className='degraded';
+    } else {
+      statusEl.textContent=d.telemetry.status||'ONLINE';
+      statusEl.className='live';
+    }
     const zlPresent=filtered.some(t=>isZL(t.grid));
-    if(zlPresent){document.getElementById('status').textContent='ZL ACQUIRED';document.getElementById('status').className='live';}
+    if(zlPresent){statusEl.textContent='ZL ACQUIRED';statusEl.className='live';}
   }catch(e){
     document.getElementById('status').textContent='DEGRADED';
     document.getElementById('status').className='degraded';
