@@ -110,12 +110,20 @@ tr.zl td{
 .status-bar .degraded{color:#ff0000;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,0,0,0.7)}
 .status-bar .stale{color:#ff6b6b;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,107,107,0.7)}
 @keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.prime-directive{
+  color:#e74c3c;
+  font-size:9px;
+  text-align:center;
+  margin-top:4px;
+  font-family:monospace;
+  letter-spacing:1px;
+}
 </style>
 </head>
 <body>
 <div class="wd-header">
-<div class="wd-title"><span style="color:#ffffff">(SL9) INTERSTELLAR &amp; TERRESTRIAL DX WATCHLIST &amp; TELEMETRY</span></div>
-<div class="wd-cmd">(SL9) STARFLEET COMMAND // ASTROMETRICS // TERRESTRIAL DXCC &amp; EXTRA-SOLAR SUBSPACE SIGNAL MONITORING</div>
+<div class="wd-title"><span style="color:#ffffff">(SL9) SUBSPACE &amp; TERRESTRIAL DXCC MONITOR</span></div>
+<div class="wd-cmd">(SL9) STARFLEET COMMAND // ASTROMETRICS // SECURE CHANNEL // LINCOLN RELAY</div>
 <div class="wd-warn">⚠ SECURITY LEVEL 9 (SL9) — AUTHORIZED EYES ONLY ⚠<br>UNAUTHORIZED ACCESS WILL BE REPORTED TO STARFLEET SECURITY</div>
 </div>
 <table>
@@ -140,23 +148,37 @@ tr.zl td{
   <span id="status">INITIALIZING...</span>
   <span id="timestamp">--:--:--Z</span>
 </div>
+<div class="prime-directive">PRIME DIRECTIVE EXCEPTION ACTIVE // INTERVENTION AUTHORIZED</div>
 <script>
 const MAX_ROWS=8;
 const SNR_MIN=-24;
 const SNR_MAX=24;
 const STALE_THRESHOLD_MS=3600000; // 60 minutes
+
+function getStardate(){
+  const now=new Date();
+  const year=now.getUTCFullYear();
+  const start=new Date(year,0,0);
+  const diff=now-start;
+  const oneDay=1000*60*60*24;
+  const day=Math.floor(diff/oneDay);
+  const hour=String(now.getUTCHours()).padStart(2,'0');
+  const min=String(now.getUTCMinutes()).padStart(2,'0');
+  return `${year}.${String(day).padStart(3,'0')}.${hour}${min}`;
+}
+
 function bandFromFreq(mhz){
-  if(mhz>=1.8&&mhz<2)return'160M';
-  if(mhz>=3.5&&mhz<4)return'80M';
-  if(mhz>=5.3&&mhz<5.4)return'60M';
-  if(mhz>=7&&mhz<7.3)return'40M';
-  if(mhz>=10.1&&mhz<10.15)return'30M';
-  if(mhz>=14&&mhz<14.35)return'20M';
-  if(mhz>=18&&mhz<18.16)return'17M';
-  if(mhz>=21&&mhz<21.45)return'15M';
-  if(mhz>=24.89&&mhz<24.99)return'12M';
-  if(mhz>=28&&mhz<29.7)return'10M';
-  if(mhz>=50&&mhz<54)return'6M';
+  if(mhz>=1.8&&mhz<2)return'🌑 160M';
+  if(mhz>=3.5&&mhz<4)return'🌑 80M';
+  if(mhz>=5.3&&mhz<5.4)return'🌑 60M';
+  if(mhz>=7&&mhz<7.3)return'☀️ 40M';
+  if(mhz>=10.1&&mhz<10.15)return'☀️ 30M';
+  if(mhz>=14&&mhz<14.35)return'☀️ 20M';
+  if(mhz>=18&&mhz<18.16)return'☀️ 17M';
+  if(mhz>=21&&mhz<21.45)return'⚡ 15M';
+  if(mhz>=24.89&&mhz<24.99)return'⚡ 12M';
+  if(mhz>=28&&mhz<29.7)return'⚡ 10M';
+  if(mhz>=50&&mhz<54)return'⚡ 6M';
   return Math.round(mhz)+'M';
 }
 function iaruRegion(grid){
@@ -169,6 +191,13 @@ function iaruRegion(grid){
 function isZL(grid){
   return grid && (grid.startsWith('RY55')||grid.startsWith('RY56'));
 }
+function getEmptyStateMsg(){
+  const hour=new Date().getHours();
+  if(hour>=6&&hour<18)return '// SCANNING IONOSPHERIC LAYERS // SOLAR FLUX NOMINAL //';
+  if(hour>=18||hour<6)return '// MONITORING NIGHTSIDE PROPAGATION // D-LAYER COLLAPSED //';
+  return '// TERMINATOR CROSSING DETECTED // OPTIMIZE FOR DX //';
+}
+
 async function load(){
   try{
     const r=await fetch('data/telemetry.json?t='+Date.now());
@@ -199,7 +228,7 @@ async function load(){
       const td=document.createElement('td');
       td.colSpan=6;
       td.className='empty-state';
-      td.textContent='// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE';
+      td.textContent=getEmptyStateMsg()+'// STANDING BY FOR DIRECTIVE';
       tr.appendChild(td);
       tb.appendChild(tr);
     }
@@ -209,7 +238,10 @@ async function load(){
     const stalenessMinutes=(now-lastUpdate)/60000;
     const statusEl=document.getElementById('status');
     const timestampEl=document.getElementById('timestamp');
-    timestampEl.textContent=d.timestamp||'--:--:--Z';
+    
+    // #8: Stardate Format
+    timestampEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp||'--:--:--Z'}`;
+    
     if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
       statusEl.textContent='ONLINE';
       statusEl.className='live';
@@ -217,14 +249,14 @@ async function load(){
       statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';
       statusEl.className='stale';
     } else if(d.telemetry.status==='DEGRADED'){
-      statusEl.textContent='DEGRADED';
+      statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED'; // #2
       statusEl.className='degraded';
     } else {
       statusEl.textContent=d.telemetry.status||'ONLINE';
       statusEl.className='live';
     }
     const zlPresent=filtered.some(t=>isZL(t.grid));
-    if(zlPresent){statusEl.textContent='ZL ACQUIRED';statusEl.className='live';}
+    if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO SEVEN';statusEl.className='live';} // #2
   }catch(e){
     document.getElementById('status').textContent='DEGRADED';
     document.getElementById('status').className='degraded';
