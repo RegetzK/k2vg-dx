@@ -75,7 +75,8 @@ body::after{
   cursor:pointer;
 }
 .controls button:hover{background:#f1c40f}
-.controls button.polling{background:#00ff66;color:#000}   
+.controls button.polling{background:#00ff66;color:#000}
+.controls button.armed{background:#00ff66;color:#000}
 table{
   border-collapse:collapse;
   border:1px solid #00ff66;
@@ -134,6 +135,7 @@ tr.zl td{
 }
 .status-bar .live{color:#00ff66}
 .status-bar .degraded{color:#e74c3c}
+.status-bar .stale{color:#ff6b6b}
 .snr-note{
   font-family:monospace;
   font-size:9px;
@@ -158,6 +160,7 @@ tr.zl td{
   </select>
   <label>Volume:</label>
   <input type="range" id="volSlider" min="0" max="100" value="50">
+  <button id="armAudio">Arm Audio</button>
   <button id="testAlert">Test Alert</button>
   <button id="pollNow">Poll Now</button>   
 </div>
@@ -190,6 +193,7 @@ tr.zl td{
 
 <script>
 let audioCtx=null;
+let audioArmed=false;
 function playAlert(){
   const vol=document.getElementById('volSlider').value/100;
   if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
@@ -210,11 +214,23 @@ function playAlert(){
   });
 }
 document.getElementById('testAlert').addEventListener('click',playAlert);
+document.getElementById('armAudio').addEventListener('click',function(){
+  audioArmed=!audioArmed;
+  this.textContent=audioArmed?'Audio ARMED':'Arm Audio';
+  this.classList.toggle('armed',audioArmed);
+});
+// Volume persistence
+const savedVol=localStorage.getItem('k2vg_volume');
+if(savedVol)document.getElementById('volSlider').value=savedVol;
+document.getElementById('volSlider').addEventListener('input',function(){
+  localStorage.setItem('k2vg_volume',this.value);
+});
 document.getElementById('pollNow').addEventListener('click',function(){this.textContent='POLLING...';this.classList.add('polling');load();setTimeout(()=>{this.textContent='Poll Now';this.classList.remove('polling');},1500);});   
   
 const SNR_MIN=-24;
 const SNR_MAX=-15;
 const MAX_ROWS=20;
+const STALE_THRESHOLD_MS=3600000; // 60 minutes
 let refreshTimer=null;
 
 function bandFromFreq(mhz){
@@ -251,19 +267,51 @@ async function load(){
     const tracks=d.telemetry.dx_tracks||[];
     const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX).slice(0,MAX_ROWS);
     let hadNew=false;
-    let html='';
     for(const t of filtered){
       const reg=iaruRegion(t.grid);
       const zl=isZL(t.grid)?' zl':'';
       hadNew=true;
-      html+='<tr class="telemetry'+zl+'"><td>'+t.call+'</td><td>'+t.grid+'</td><td>'+(t.band||bandFromFreq(t.freq))+'</td><td class="snr">'+t.db+'dB</td><td>'+(t.dxcc||t.call.substring(0,2))+'</td><td>'+reg+'</td></tr>';
+      const tr=document.createElement('tr');
+      tr.className='telemetry'+zl;
+      [t.call,t.grid,(t.band||bandFromFreq(t.freq)),t.db+'dB',(t.dxcc||t.call.substring(0,2)),reg].forEach((v,i)=>{
+        const td=document.createElement('td');
+        if(i===3)td.className='snr';
+        td.textContent=v;
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
     }
-    if(!filtered.length)html='<tr class="telemetry"><td colspan="6" class="empty-state">// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE</td></tr>';
-    tb.insertAdjacentHTML('beforeend',html);
-    document.getElementById('status').textContent=d.telemetry.status||'ONLINE';
-    document.getElementById('status').className=d.telemetry.status==='ONLINE'?'live':'degraded';
-    document.getElementById('timestamp').textContent=d.timestamp||'--:--:--Z';
-    if(hadNew)playAlert();
+    if(!filtered.length){
+      const tr=document.createElement('tr');
+      tr.className='telemetry';
+      const td=document.createElement('td');
+      td.colSpan=6;
+      td.className='empty-state';
+      td.textContent='// BETA 5 SCANNING... AWAITING SIGNAL ACQUISITION // SECTORS AS/AF/OC MONITORED // STANDING BY FOR DIRECTIVE';
+      tr.appendChild(td);
+      tb.appendChild(tr);
+    }
+    // STALENESS CHECK
+    const now=Date.now();
+    const lastUpdate=new Date(d.timestamp).getTime();
+    const stalenessMinutes=(now-lastUpdate)/60000;
+    const statusEl=document.getElementById('status');
+    const timestampEl=document.getElementById('timestamp');
+    timestampEl.textContent=d.timestamp||'--:--:--Z';
+    if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
+      statusEl.textContent='ONLINE';
+      statusEl.className='live';
+    } else if(stalenessMinutes>60){
+      statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';
+      statusEl.className='stale';
+    } else if(d.telemetry.status==='DEGRADED'){
+      statusEl.textContent='DEGRADED';
+      statusEl.className='degraded';
+    } else {
+      statusEl.textContent=d.telemetry.status||'ONLINE';
+      statusEl.className='live';
+    }
+    if(hadNew&&audioArmed)playAlert();
   }catch(e){
     document.getElementById('status').textContent='DEGRADED';
     document.getElementById('status').className='degraded';
