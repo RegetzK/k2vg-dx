@@ -134,8 +134,9 @@ tr.zl td{
   color:#666666;
 }
 .status-bar .live{color:#00ff66}
-.status-bar .degraded{color:#e74c3c}
-.status-bar .stale{color:#ff6b6b}
+.status-bar .degraded{color:#ff0000;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,0,0,0.7)}
+.status-bar .stale{color:#ff6b6b;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,107,107,0.7)}
+@keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}
 .snr-note{
   font-family:monospace;
   font-size:9px;
@@ -187,8 +188,8 @@ tr.zl td{
   <tbody>
     <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>UPLINK ACTIVE</td></tr>
     <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>MONITORING 🖖</td></tr>
-    <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORING</td></tr>
-    <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORING</td></tr>
+    <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORED</td></tr>
+    <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORED</td></tr>
   </tbody>
 </table>
 
@@ -197,7 +198,7 @@ tr.zl td{
   <span id="timestamp">--:--:--Z</span>
 </div>
 
-<div class="snr-note">// SNR RANGE -15 TO -24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) VS SINGLE-PASS DECODERS</div>
+<div class="snr-note">// SNR RANGE -24 TO +24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) VS SINGLE-PASS DECODERS</div>
 
 <div class="prime-directive">PRIME DIRECTIVE EXCEPTION ACTIVE // INTERVENTION AUTHORIZED</div>
 
@@ -238,7 +239,7 @@ document.getElementById('volSlider').addEventListener('input',function(){
 document.getElementById('pollNow').addEventListener('click',function(){this.textContent='POLLING...';this.classList.add('polling');load();setTimeout(()=>{this.textContent='Poll Now';this.classList.remove('polling');},1500);});   
   
 const SNR_MIN=-24;
-const SNR_MAX=-15;
+const SNR_MAX=24;
 const MAX_ROWS=20;
 const STALE_THRESHOLD_MS=3600000; // 60 minutes
 let refreshTimer=null;
@@ -277,7 +278,7 @@ function iaruRegion(grid){
   return'R3';
 }
 function isZL(grid){
-  return grid && (grid.startsWith('RY55')||grid.startsWith('RY56'));
+  return grid && (grid.startsWith('RF')||grid.startsWith('RE')||grid.startsWith('QF')||grid.startsWith('QG'));
 }
 function getEmptyStateMsg(){
   const hour=new Date().getHours();
@@ -326,7 +327,7 @@ async function load(){
     const statusEl=document.getElementById('status');
     const timestampEl=document.getElementById('timestamp');
     
-    // #8: Stardate Format
+    // Stardate Format
     timestampEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp||'--:--:--Z'}`;
     
     if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
@@ -336,12 +337,14 @@ async function load(){
       statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';
       statusEl.className='stale';
     } else if(d.telemetry.status==='DEGRADED'){
-      statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED'; // #2
+      statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED';
       statusEl.className='degraded';
     } else {
       statusEl.textContent=d.telemetry.status||'ONLINE';
       statusEl.className='live';
     }
+    const zlPresent=filtered.some(t=>isZL(t.grid));
+    if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO SEVEN';statusEl.className='live';}
     if(hadNew&&audioArmed)playAlert();
   }catch(e){
     document.getElementById('status').textContent='DEGRADED';
