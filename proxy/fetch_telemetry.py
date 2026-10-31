@@ -1,163 +1,196 @@
-#!/usr/bin/env python3
-"""
-BETA 5 Multi-Mission Telemetry Array
-Direct API fetch — no third-party proxies. ZT compliant.
-"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K2VG DX Monitor</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#000000;
+  color:#f4f4f4;
+  font-family:'Century Gothic','AppleGothic','Futura',sans-serif;
+  overflow:hidden;
+  height:500px;
+  width:100%;
+  padding:8px 10px;
+  position:relative;
+}
+body::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,102,0.03) 2px,rgba(0,255,102,0.03) 4px);
+  pointer-events:none;
+  z-index:999;
+}
+.wd-header{
+  margin-bottom:6px;
+  padding-bottom:6px;
+  border-bottom:1px solid #00ff6633;
+}
+.wd-title{
+  font-size:17px;
+  font-weight:bold;
+  text-align:center;
+  margin-bottom:4px;
+}
+.wd-cmd{
+  color:#ffffff;
+  font-size:13px;
+  font-weight:bold;
+  text-align:center;
+  line-height:1.4;
+}
+.wd-warn{
+  color:#ff6b6b;
+  font-size:13px;
+  text-align:center;
+  line-height:1.3;
+  animation:sl9pulse 5s ease-in-out infinite;
+}
+@keyframes sl9pulse{0%,100%{opacity:1}50%{opacity:.5}}
+table{
+  border-collapse:collapse;
+  border:1px solid #00ff66;
+  width:100%;
+  font-family:monospace;
+  font-size:18px;
+}
+th,td{
+  border:1px solid #1f2937;
+  padding:3px 6px;
+  text-align:left;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:140px;
+}
+th{
+  border-bottom:2px solid #00ff66;
+  color:#00ff66;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  background:#0b0c10;
+}
+tr.lore td{
+  color:#00ff66;
+  font-weight:bold;
+}
+tr.lore td:last-child{
+  color:#00e5ff;
+}
+tr.telemetry td{
+  color:#f4f4f4;
+}
+tr.telemetry td.snr{
+  color:#ffcc00;
+}
+tr.zl td{
+  color:#ff00ff;
+  font-weight:bold;
+}
+.empty-state{
+  color:#666666;
+  text-align:center;
+  font-size:14px;
+  font-style:italic;
+  padding:8px 4px;
+}
+.status-bar{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
+  font-family:monospace;
+  font-size:10px;
+  color:#666666;
+}
+.status-bar .live{color:#00ff66}
+.status-bar .degraded{color:#ff0000;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,0,0,0.7)}
+.status-bar .stale{color:#ff6b6b;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,107,107,0.7)}
+@keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.prime-directive{
+  color:#e74c3c;
+  font-size:9px;
+  text-align:center;
+  margin-top:4px;
+  font-family:monospace;
+  letter-spacing:1px;
+}
+</style>
+</head>
+<body>
+<div class="wd-header">
+<div class="wd-title"><span style="color:#ffffff">(SL9) SUBSPACE &amp; TERRESTRIAL DXCC MONITOR</span></div>
+<div class="wd-cmd">(SL9) STARFLEET COMMAND // ASTROMETRICS // SECURE CHANNEL // LINCOLN RELAY</div>
+<div class="wd-warn">⚠ SECURITY LEVEL 9 (SL9) — AUTHORIZED EYES ONLY ⚠<br>UNAUTHORIZED ACCESS WILL BE REPORTED TO STARFLEET SECURITY</div>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>CALL</th>
+      <th>GRID</th>
+      <th>BAND</th>
+      <th>SNR</th>
+      <th>DXCC</th>
+      <th>STATUS</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>UPLINK ACTIVE</td></tr>
+    <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>MONITORING 🖖</td></tr>
+    <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORED</td></tr>
+    <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORED</td></tr>
+  </tbody>
+</table>
+<div class="status-bar">
+  <span id="status">INITIALIZING...</span>
+  <span id="timestamp">--:--:--Z</span>
+</div>
+<div class="prime-directive">PRIME DIRECTIVE EXCEPTION ACTIVE // INTERVENTION AUTHORIZED</div>
+<script>
+const MAX_ROWS=8;
+const SNR_MIN=-24;
+const SNR_MAX=24;
+const STALE_THRESHOLD_MS=3600000; // 60 minutes
 
-import json
-import os
-import sys
-import urllib.request
-import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
-import html  # CRITICAL: Added for XSS sanitization
+function getStardate(){
+  const now=new Date();
+  const year=now.getUTCFullYear();
+  const start=new Date(year,0,0);
+  const diff=now-start;
+  const oneDay=1000*60*60*24;
+  const day=Math.floor(diff/oneDay);
+  const hour=String(now.getUTCHours()).padStart(2,'0');
+  const min=String(now.getUTCMinutes()).padStart(2,'0');
+  return `${year}.${String(day).padStart(3,'0')}.${hour}${min}`;
+}
 
-# ─── CONFIG ───────────────────────────────────────────────────────────
-STATION_CALL = "K2VG"
-MY_GRID = "FM05"  # PATCHED: Corrected from FM18 to FM05
-QSO_TOTAL = 124
-QSO_CONFIRMED_QRZ = 100
-SNR_MIN = -24
-SNR_MAX = 24
-LAST_SECONDS = 3600  # 30 min window
-
-FICTIONAL_STATIONS = [
-    {"call": "NCC-1701", "grid": "GSO-FM05", "band": "ALL", "db": None, "freq": None, "dxcc": "USS ENTERPRISE", "status": "UPLINK ACTIVE", "lore": True},
-    {"call": "N/A", "grid": "40 ERIDANI A", "band": "ALL", "db": None, "freq": None, "dxcc": "VULCAN", "status": "MONITORING 🖖", "lore": True},
-    {"call": "IC/MIL/GOV COMMS", "grid": "ALL", "band": "ALL", "db": None, "freq": None, "dxcc": "EARTH", "status": "MONITORING", "lore": True},
-    {"call": "CIV WEB/DARK WEB/COMMS", "grid": "ALL", "band": "ALL", "db": None, "freq": None, "dxcc": "EARTH", "status": "MONITORING", "lore": True},
-]
-
-HEADERS = {"User-Agent": "K2VG-BETA5-Telemetry/1.0"}
-
-
-def sanitize(text):
-    """Escape HTML entities to prevent XSS."""
-    if text is None:
-        return "N/A"
-    return html.escape(str(text))
-
-
-# ─── PSKREPORTER ─────────────────────────────────────────────────────
-def fetch_psk_telemetry():
-    """Direct XML fetch from PSKReporter. No CORS proxies."""
-    url = f"https://pskreporter.info/psk/reporter.cfm?call={STATION_CALL}&last={LAST_SECONDS}"
-    try:
-        req = urllib.request.Request(url, headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            data = resp.read()
-
-        root = ET.fromstring(data)
-        dx_signals = []
-
-        for report in root.findall("receptionReport"):
-            try:
-                db_val = int(report.get("sNR", "0"))
-                callsign = report.get("receiverCallsign", "Unknown")
-                grid = report.get("receiverGrid", "Unknown")
-                freq = int(report.get("frequency", "0"))
-
-                if SNR_MIN <= db_val <= SNR_MAX:
-                    dx_signals.append({
-                        "call": sanitize(callsign),
-                        "grid": sanitize(grid),
-                        "db": db_val,
-                        "freq": round(freq / 1000000, 4),
-                        "time": "LIVE",
-                        "lore": False,
-                    })
-            except (ValueError, TypeError):
-                continue
-
-        return {"status": "ONLINE", "dx_tracks": dx_signals}
-
-    except Exception as e:
-        print(f"PSKReporter fetch failed: {e}", file=sys.stderr)
-        return {"status": "DEGRADED", "dx_tracks": []}
-
-
-# ─── NOAA SWPC ───────────────────────────────────────────────────────
-def fetch_space_weather():
-    """Direct JSON fetch from NOAA SWPC APIs."""
-    result = {"sfi": "N/A", "kp": "N/A", "geomag": "N/A", "flare_risk": "N/A"}
-
-    # Kp index
-    try:
-        req = urllib.request.Request(
-            "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json",
-            headers=HEADERS,
-        )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            kp_data = json.loads(resp.read())
-        if kp_data:
-            print(f"DEBUG Kp: raw_data={kp_data[-1]}")  # ADDED DEBUG LOG
-            result["kp"] = sanitize(str(kp_data[-1].get("kp_index", "N/A")))
-            result["geomag"] = "STABLE" if float(kp_data[-1].get("kp_index", 0)) < 4 else "ELEVATED"
-    except Exception as e:
-        print(f"SWPC Kp fetch failed: {e}", file=sys.stderr)
-
-    # Solar flux (10.7 cm)
-    try:
-        req = urllib.request.Request(
-            "https://services.swpc.noaa.gov/products/solar-cycle-radio-flux.json",
-            headers=HEADERS,
-        )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            flux_data = json.loads(resp.read())
-        if flux_data:
-            print(f"DEBUG Flux: raw_data={flux_data[-1]}")  # ADDED DEBUG LOG
-            result["sfi"] = sanitize(str(flux_data[-1].get("solar_radio_flux", "N/A")))
-    except Exception as e:
-        print(f"SWPC flux fetch failed: {e}", file=sys.stderr)
-
-    # Space weather summary (for flare risk)
-    try:
-        req = urllib.request.Request(
-            "https://services.swpc.noaa.gov/products/space-weather-summary.json",
-            headers=HEADERS,
-        )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            swx = json.loads(resp.read())
-        if swx:
-            print(f"DEBUG SWX: raw_data={swx[-1]}")  # ADDED DEBUG LOG
-            result["flare_risk"] = sanitize(swx[-1].get("radio_blackout", "N/A"))
-    except Exception as e:
-        print(f"SWPC summary fetch failed: {e}", file=sys.stderr)
-
-    return result
-
-
-# ─── MAIN ────────────────────────────────────────────────────────────
-def main():
-    print("Initializing BETA 5 Multi-Mission Telemetry Array...")
-
-    solar = fetch_space_weather()
-    psk = fetch_psk_telemetry()
-
-    # Merge lore rows + live telemetry
-    combined = FICTIONAL_STATIONS + psk["dx_tracks"]
-
-    payload = {
-        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "station": {
-            "callsign": STATION_CALL,
-            "grid": MY_GRID,
-            "total_qsos": QSO_TOTAL,
-            "confirmed_qrz": QSO_CONFIRMED_QRZ,
-        },
-        "solar": solar,
-        "telemetry": {
-            "status": psk["status"],
-            "dx_tracks": combined,
-        },
-    }
-
-    os.makedirs("data", exist_ok=True)
-    with open("data/telemetry.json", "w") as f:
-        json.dump(payload, f, indent=2)
-
-    print(f"Telemetry written: {len(psk['dx_tracks'])} live signals, status={psk['status']}")
-
-
-if __name__ == "__main__":
-    main()
+function bandFromFreq(mhz){
+  if(mhz>=1.8&&mhz<2)return'🌑 160M';
+  if(mhz>=3.5&&mhz<4)return'🌑 80M';
+  if(mhz>=5.3&&mhz<5.4)return'🌑 60M';
+  if(mhz>=7&&mhz<7.3)return'☀️ 40M';
+  if(mhz>=10.1&&mhz<10.15)return'☀️ 30M';
+  if(mhz>=14&&mhz<14.35)return'☀️ 20M';
+  if(mhz>=18&&mhz<18.16)return'☀️ 17M';
+  if(mhz>=21&&mhz<21.45)return'⚡ 15M';
+  if(mhz>=24.89&&mhz<24.99)return'⚡ 12M';
+  if(mhz>=28&&mhz<29.7)return'⚡ 10M';
+  if(mhz>=50&&mhz<54)return'⚡ 6M';
+  return Math.round(mhz)+'M';
+}
+function iaruRegion(grid){
+  const c=grid.substring(0,2);
+  const col=parseInt(c[0],36);
+  if(col<=18)return'R1';
+  if(col<=22)return'R2';
+  return'R3';
+}
+function isZL(grid){
+  return grid && (grid.startsWith('RF')||grid.startsWith('RE')||grid.startsWith('QF')||grid.startsWith('QG'));
+}
+function getEmptyStateMsg(){
+  const hour=new Date().getHours();
+  if(hour>=6&&hour
