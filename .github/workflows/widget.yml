@@ -25,6 +25,9 @@ jobs:
       - name: Fetch telemetry
         run: python proxy/fetch_telemetry.py
 
+      - name: Validate telemetry
+        run: python -c "import json; d=json.load(open('data/telemetry.json')); print('OK:', len(d), 'keys')"
+
       - name: Upload telemetry artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -37,8 +40,7 @@ jobs:
         run: |
           git config user.name "BETA 5"
           git config user.email "beta5@k2vg.local"
-          git remote set-url origin https://x-access-token:${{ secrets.yaml_workflow_telemetry_v1 }}@github.com/${{ github.repository }}
+          git pull --rebase origin main
           git add data/telemetry.json
           git diff --cached --quiet || git commit -m "Telemetry update $(date -u +%Y%m%dT%H%M%SZ)"
-          git pull --rebase origin main
           git push
