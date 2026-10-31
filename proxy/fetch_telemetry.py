@@ -2,13 +2,13 @@
 """
 BETA 5 Multi-Mission Telemetry Array
 Direct API fetch — no third-party proxies. ZT compliant.
+Uses retrieve.pskreporter.info JSON API per BETA 5 Protocol Section 5A.1.
 """
 
 import json
 import os
 import sys
 import urllib.request
-import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 import html  # CRITICAL: Added for XSS sanitization
 
@@ -38,42 +38,116 @@ def sanitize(text):
     return html.escape(str(text))
 
 
+def band_from_freq(mhz):
+    """Convert frequency in MHz to ham band label."""
+    if mhz >= 1.8 and mhz < 2: return "160M"
+    if mhz >= 3.5 and mhz < 4: return "80M"
+    if mhz >= 5.3 and mhz < 5.4: return "60M"
+    if mhz >= 7 and mhz < 7.3: return "40M"
+    if mhz >= 10.1 and mhz < 10.15: return "30M"
+    if mhz >= 14 and mhz < 14.35: return "20M"
+    if mhz >= 18 and mhz < 18.16: return "17M"
+    if mhz >= 21 and mhz < 21.45: return "15M"
+    if mhz >= 24.89 and mhz < 24.99: return "12M"
+    if mhz >= 28 and mhz < 29.7: return "10M"
+    if mhz >= 50 and mhz < 54: return "6M"
+    return f"{mhz:.1f}M"
+
+
 # ─── PSKREPORTER ─────────────────────────────────────────────────────
-def fetch_psk_telemetry():
-    """Direct XML fetch from PSKReporter. No CORS proxies."""
-    url = f"https://pskreporter.info/psk/reporter.cfm?call={STATION_CALL}&last={LAST_SECONDS}"
+def fetch_psk_rx():
+    """Fetch spots where K2VG was the RECEIVER (stations K2VG heard)."""
+    url = f"https://retrieve.pskreporter.info/query?receiverCallsign={STATION_CALL}&flowStartSeconds=-{LAST_SECONDS}&rptlimit=50&statistics=1"
     try:
         req = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(req, timeout=20) as resp:
-            data = resp.read()
+            data = json.loads(resp.read())
 
-        root = ET.fromstring(data)
         dx_signals = []
+        reports = data.get("receptionReport", [])
 
-        for report in root.findall("receptionReport"):
+        for report in reports:
             try:
                 db_val = int(report.get("sNR", "0"))
-                callsign = report.get("receiverCallsign", "Unknown")
-                grid = report.get("receiverGrid", "Unknown")
-                freq = int(report.get("frequency", "0"))
+                callsign = report.get("senderCallsign", "Unknown")
+                grid = report.get("senderGrid", "Unknown")
+                freq = float(report.get("frequency", "0"))
+                freq_mhz = freq / 1_000_000
 
                 if SNR_MIN <= db_val <= SNR_MAX:
                     dx_signals.append({
                         "call": sanitize(callsign),
                         "grid": sanitize(grid),
+                        "band": band_from_freq(freq_mhz),
                         "db": db_val,
-                        "freq": round(freq / 1000000, 4),
+                        "freq": round(freq_mhz, 4),
                         "time": "LIVE",
                         "lore": False,
                     })
             except (ValueError, TypeError):
                 continue
 
-        return {"status": "ONLINE", "dx_tracks": dx_signals}
+        return dx_signals
 
     except Exception as e:
-        print(f"PSKReporter fetch failed: {e}", file=sys.stderr)
-        return {"status": "DEGRADED", "dx_tracks": []}
+        print(f"PSKReporter RX fetch failed: {e}", file=sys.stderr)
+        return []
+
+
+def fetch_psk_tx():
+    """Fetch spots where K2VG was the SENDER (stations that heard K2VG)."""
+    url = f"https://retrieve.pskreporter.info/query?senderCallsign={STATION_CALL}&flowStartSeconds=-{LAST_SECONDS}&rptlimit=50&statistics=1"
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read())
+
+        dx_signals = []
+        reports = data.get("receptionReport", [])
+
+        for report in reports:
+            try:
+                db_val = int(report.get("sNR", "0"))
+                callsign = report.get("receiverCallsign", "Unknown")
+                grid = report.get("receiverGrid", "Unknown")
+                freq = float(report.get("frequency", "0"))
+                freq_mhz = freq / 1_000_000
+
+                if SNR_MIN <= db_val <= SNR_MAX:
+                    dx_signals.append({
+                        "call": sanitize(callsign),
+                        "grid": sanitize(grid),
+                        "band": band_from_freq(freq_mhz),
+                        "db": db_val,
+                        "freq": round(freq_mhz, 4),
+                        "time": "LIVE",
+                        "lore": False,
+                    })
+            except (ValueError, TypeError):
+                continue
+
+        return dx_signals
+
+    except Exception as e:
+        print(f"PSKReporter TX fetch failed: {e}", file=sys.stderr)
+        return []
+
+
+def fetch_psk_telemetry():
+    """Combined RX + TX telemetry from PSKReporter JSON API."""
+    rx = fetch_psk_rx()
+    tx = fetch_psk_tx()
+
+    # Deduplicate by call+band (keep higher SNR)
+    seen = {}
+    for sig in rx + tx:
+        key = (sig["call"], sig["band"])
+        if key not in seen or sig["db"] > seen[key]["db"]:
+            seen[key] = sig
+
+    combined = sorted(seen.values(), key=lambda x: x["db"], reverse=True)
+    status = "ONLINE" if combined else "DEGRADED"
+    return {"status": status, "dx_tracks": combined}
 
 
 # ─── NOAA SWPC ───────────────────────────────────────────────────────
@@ -90,9 +164,13 @@ def fetch_space_weather():
         with urllib.request.urlopen(req, timeout=10) as resp:
             kp_data = json.loads(resp.read())
         if kp_data:
-            print(f"DEBUG Kp: raw_data={kp_data[-1]}")  # ADDED DEBUG LOG
-            result["kp"] = sanitize(str(kp_data[-1].get("kp_index", "N/A")))
-            result["geomag"] = "STABLE" if float(kp_data[-1].get("kp_index", 0)) < 4 else "ELEVATED"
+            latest = kp_data[-1]
+            kp_val = latest.get("kp_index", "N/A")
+            result["kp"] = sanitize(str(kp_val))
+            try:
+                result["geomag"] = "STABLE" if float(kp_val) < 4 else "ELEVATED"
+            except (ValueError, TypeError):
+                result["geomag"] = "N/A"
     except Exception as e:
         print(f"SWPC Kp fetch failed: {e}", file=sys.stderr)
 
@@ -105,8 +183,8 @@ def fetch_space_weather():
         with urllib.request.urlopen(req, timeout=10) as resp:
             flux_data = json.loads(resp.read())
         if flux_data:
-            print(f"DEBUG Flux: raw_data={flux_data[-1]}")  # ADDED DEBUG LOG
-            result["sfi"] = sanitize(str(flux_data[-1].get("solar_radio_flux", "N/A")))
+            latest = flux_data[-1]
+            result["sfi"] = sanitize(str(latest.get("solar_radio_flux", "N/A")))
     except Exception as e:
         print(f"SWPC flux fetch failed: {e}", file=sys.stderr)
 
@@ -119,8 +197,8 @@ def fetch_space_weather():
         with urllib.request.urlopen(req, timeout=10) as resp:
             swx = json.loads(resp.read())
         if swx:
-            print(f"DEBUG SWX: raw_data={swx[-1]}")  # ADDED DEBUG LOG
-            result["flare_risk"] = sanitize(swx[-1].get("radio_blackout", "N/A"))
+            latest = swx[-1]
+            result["flare_risk"] = sanitize(latest.get("radio_blackout", "N/A"))
     except Exception as e:
         print(f"SWPC summary fetch failed: {e}", file=sys.stderr)
 
