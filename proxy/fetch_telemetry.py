@@ -19,7 +19,7 @@ QSO_TOTAL = 124
 QSO_CONFIRMED_QRZ = 100
 SNR_MIN = -24
 SNR_MAX = 24
-LAST_SECONDS = 1800  # 30 min window
+LAST_SECONDS = 3600  # 30 min window
 
 FICTIONAL_STATIONS = [
     {"call": "NCC-1701", "grid": "GSO-FM05", "band": "ALL", "db": None, "freq": None, "dxcc": "USS ENTERPRISE", "status": "UPLINK ACTIVE", "lore": True},
