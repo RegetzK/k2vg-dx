@@ -3,6 +3,7 @@
 BETA 5 Multi-Mission Telemetry Array
 Direct API fetch — no third-party proxies. ZT compliant.
 PSKReporter retrieve API returns XML (IPFIX attributes), NOT JSON.
+This version ONLY queries TX (who heard K2VG) — confirmed active via your map.
 """
 
 import json
@@ -60,7 +61,8 @@ def band_from_freq(mhz):
 
 def _query_pskr(direction):
     """direction='rx' → who K2VG heard. direction='tx' → who heard K2VG."""
-    key = "receiverCallsign" if direction == "rx" else "senderCallsign"
+    # TEMPORARY: Only TX until RX is confirmed to work
+    key = "senderCallsign"  # ← force TX direction
     url = (
         "https://retrieve.pskreporter.info/query"
         f"?{key}={STATION_CALL}"
@@ -76,9 +78,9 @@ def _query_pskr(direction):
 
     root = ET.fromstring(raw)
 
-    # In RX query the far station is the SENDER; in TX query it's the RECEIVER.
-    other_call = "senderCallsign" if direction == "rx" else "receiverCallsign"
-    other_loc = "senderLocator" if direction == "rx" else "receiverLocator"
+    # In TX query, the far station is the RECEIVER
+    other_call = "receiverCallsign"
+    other_loc = "receiverLocator"
 
     out = []
     for rpt in root.iter("receptionReport"):
@@ -111,23 +113,19 @@ def _query_pskr(direction):
 def fetch_psk_telemetry():
     rx, tx = [], []
     try:
-        rx = _query_pskr("rx")
-    except Exception as e:
-        print(f"PSKReporter RX failed: {e}", file=sys.stderr)
-    try:
-        tx = _query_pskr("tx")
+        tx = _query_pskr("tx")  # ← only TX for now
     except Exception as e:
         print(f"PSKReporter TX failed: {e}", file=sys.stderr)
 
     seen = {}
-    for sig in rx + tx:
+    for sig in tx:  # ← only TX for now
         k = (sig["call"], sig["band"])
         if k not in seen or sig["db"] > seen[k]["db"]:
             seen[k] = sig
 
     combined = sorted(seen.values(), key=lambda x: x["db"], reverse=True)
     status = "ONLINE" if combined else "DEGRADED"
-    print(f"PSKReporter parsed: RX={len(rx)} TX={len(tx)} merged={len(combined)}")
+    print(f"PSKReporter parsed: TX={len(tx)} merged={len(combined)}")
     return {"status": status, "dx_tracks": combined}
 
 
