@@ -30,4 +30,6 @@ FICTIONAL_STATIONS = [
 ]
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; K2VG-BETA5-
+    "User-Agent": "Mozilla/5.0 (compatible; K2VG-BETA5-Telemetry/1.0; ham-radio telemetry)",
+    "Accept": "application/xml, text/xml, */*",
+}
