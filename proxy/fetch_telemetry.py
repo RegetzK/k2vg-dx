@@ -1,35 +1,81 @@
-#!/usr/bin/env python3
-"""
-BETA 5 Multi-Mission Telemetry Array
-Direct API fetch — no third-party proxies. ZT compliant.
-Uses retrieve.pskreporter.info/query with correct parameters per PSKReporter dev docs.
-"""
+# ─── FETCH ────────────────────────────────────────────────────────────
+PUBLIC_GRID = "FM05"  # OPSEC — never expose MY_GRID
 
-import json
-import os
-import sys
-import urllib.request
-import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
-import html
+def fetch_spots():
+    """Query PSKReporter for spots where K2VG is the receiver (RX view)."""
+    url = (
+        f"https://retrieve.pskreporter.info/query"
+        f"?receiverCallsign={STATION_CALL}"
+        f"&flowStartSeconds=-{LAST_SECONDS}"
+        f"&rronly=1"
+        f"&rptlimit=200"
+    )
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return resp.read()
 
-# ─── CONFIG ───────────────────────────────────────────────────────────
-STATION_CALL = "K2VG"
-MY_GRID = "FM18"
-QSO_TOTAL = 124
-QSO_CONFIRMED_QRZ = 100
-SNR_MIN = -24
-SNR_MAX = 24
-LAST_SECONDS = 3600  # 1 hour window per BETA 5 Protocol
+def parse_spots(xml_bytes):
+    """Parse receptionReport elements into track dicts."""
+    root = ET.fromstring(xml_bytes)
+    tracks = []
+    seen = set()
+    for rpt in root.iter("receptionReport"):
+        call = rpt.get("senderCallsign", "")
+        if not call or call in seen:
+            continue
+        seen.add(call)
+        freq_hz = rpt.get("frequency", "0")
+        freq_hz = int(freq_hz) if freq_hz else 0
+        grid = rpt.get("senderLocator", "")
+        dxcc = rpt.get("senderDXCCcode", "")
+        # PSKReporter doesn't expose SNR in the HTTP API — leave null
+        tracks.append({
+            "call": call,
+            "grid": grid or "????",
+            "band": None,          # front-end derives from freq
+            "freq": freq_hz,       # Hz — front-end divides by 1e6
+            "db": None,            # not available via HTTP API
+            "dxcc": dxcc or call[:2],
+            "lore": False,
+        })
+    return tracks
 
-FICTIONAL_STATIONS = [
-    {"call": "NCC-1701", "grid": "GSO-FM05", "band": "ALL", "db": None, "freq": None, "dxcc": "USS ENTERPRISE", "status": "UPLINK ACTIVE", "lore": True},
-    {"call": "N/A", "grid": "40 ERIDANI A", "band": "ALL", "db": None, "freq": None, "dxcc": "VULCAN", "status": "MONITORING 🖖", "lore": True},
-    {"call": "IC/MIL/GOV COMMS", "grid": "ALL", "band": "ALL", "db": None, "freq": None, "dxcc": "EARTH", "status": "MONITORED", "lore": True},
-    {"call": "CIV WEB/DARK WEB/COMMS", "grid": "ALL", "band": "ALL", "db": None, "freq": None, "dxcc": "EARTH", "status": "MONITORED", "lore": True},
-]
+# ─── MAIN ─────────────────────────────────────────────────────────────
+def main():
+    status = "ONLINE"
+    try:
+        xml_bytes = fetch_spots()
+        tracks = parse_spots(xml_bytes)
+    except Exception as e:
+        print(f"FETCH ERROR: {e}", file=sys.stderr)
+        status = "DEGRADED"
+        tracks = []
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; K2VG-BETA5-Telemetry/1.0; ham-radio telemetry)",
-    "Accept": "application/xml, text/xml, */*",
-}
+    # Build output
+    output = {
+        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "station": {
+            "callsign": STATION_CALL,
+            "grid": PUBLIC_GRID,       # ← OPSEC: FM05, never MY_GRID
+            "total_qsos": QSO_TOTAL,
+            "confirmed_qrz": QSO_CONFIRMED_QRZ,
+        },
+        "solar": {
+            "sfi": "N/A",
+            "kp": "N/A",
+            "geomag": "STABLE",
+            "flare_risk": "N/A",
+        },
+        "telemetry": {
+            "status": status,
+            "dx_tracks": FICTIONAL_STATIONS + tracks,
+        },
+    }
+
+    os.makedirs("data", exist_ok=True)
+    with open("data/telemetry.json", "w") as f:
+        json.dump(output, f, indent=2)
+    print(f"Wrote {len(tracks)} real tracks, status={status}")
+
+if __name__ == "__main__":
+    main()   
