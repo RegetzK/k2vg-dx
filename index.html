@@ -298,14 +298,15 @@ async function load(){
       dataStaleEl.textContent=`DATA FRESH (N/A)`;
       dataStaleEl.style.color='#00ff66';
     }
-    const zlPresent=filtered.some(t=>isZL(t.grid));
-    if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO SEVEN';statusEl.className='live';}
-  }catch(e){
-    document.getElementById('status').textContent='DEGRADED';
-    document.getElementById('status').className='degraded';
-    document.getElementById('dataStale').textContent='DATA STALE (ERROR)';
-    document.getElementById('dataStale').style.color='#ff3333';
-  }
+   const zlPresent=filtered.some(t=>isZL(t.grid));
+  if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO SEVEN';statusEl.className='live';}
+  // Update stardate with real timestamp from telemetry.json
+  stardateEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp||'--:--:--Z'}`;
+}
+catch(e){
+  document.getElementById('status').textContent='DEGRADED';
+  document.getElementById('status').className='degraded';
+}
 }
 load();
 setInterval(load,300000);
