@@ -265,51 +265,45 @@ async function load(){
       tr.appendChild(td);
       tb.appendChild(tr);
     }
-    // STALENESS CHECK
-    const now=Date.now();
-    const lastUpdate=new Date(d.timestamp).getTime();
-    const stalenessMinutes=(now-lastUpdate)/60000;
-    const statusEl=document.getElementById('status');
-    const timestampEl=document.getElementById('timestamp');
-    const dataStaleEl=document.getElementById('dataStale');
-    const stardateEl=document.getElementById('stardate');
+   // STALENESS CHECK
+    const now = Date.now();
+    const lastUpdate = new Date(d.timestamp).getTime();
+    const stalenessMinutes = (now - lastUpdate) / 60000;
+    const statusEl = document.getElementById('status');
+    const timestampEl = document.getElementById('timestamp');
+    const stardateEl = document.getElementById('stardate');
     
     // #8: Stardate Format
-    stardateEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp||'--:--:--Z'}`;
+    stardateEl.textContent = `STARDATE ${getStardate()} // ${d.timestamp || '--:--:--Z'}`;
     
-    if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
-      statusEl.textContent='ONLINE';
-      statusEl.className='live';
-      dataStaleEl.textContent=`DATA FRESH (${stalenessMinutes.toFixed(1)}m)`;
-      dataStaleEl.style.color='#00ff66';
-    } else if(stalenessMinutes>60){
-      statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';
-      statusEl.className='stale';
-      dataStaleEl.textContent=`DATA STALE (${stalenessMinutes.toFixed(1)}m)`;
-      dataStaleEl.style.color='#ff3333';
-    } else if(d.telemetry.status==='DEGRADED'){
-      statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED';
-      statusEl.className='degraded';
-      dataStaleEl.textContent=`DATA STALE (N/A)`;
-      dataStaleEl.style.color='#ff3333';
+    if (d.telemetry.status === 'ONLINE' && stalenessMinutes <= 60) {
+      statusEl.textContent = 'ONLINE';
+      statusEl.className = 'live';
+    } else if (stalenessMinutes > 60) {
+      statusEl.textContent = 'DATA STALE (' + stalenessMinutes.toFixed(1) + 'm)';
+      statusEl.className = 'stale';
+    } else if (d.telemetry.status === 'DEGRADED') {
+      statusEl.textContent = 'SUPERVISOR INTERVENTION REQUIRED';
+      statusEl.className = 'degraded';
     } else {
-      statusEl.textContent=d.telemetry.status||'ONLINE';
-      statusEl.className='live';
-      dataStaleEl.textContent=`DATA FRESH (N/A)`;
-      dataStaleEl.style.color='#00ff66';
+      statusEl.textContent = d.telemetry.status || 'ONLINE';
+      statusEl.className = 'live';
     }
-   const zlPresent=filtered.some(t=>isZL(t.grid));
-  if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO SEVEN';statusEl.className='live';}
-  // Update stardate with real timestamp from telemetry.json
-  stardateEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp||'--:--:--Z'}`;
+    const zlPresent = filtered.some(t => isZL(t.grid));
+    if (zlPresent) {
+      statusEl.textContent = 'TARGET LOCKED // REPORT TO GARY SEVEN';
+      statusEl.className = 'live';
+    }
+    // Update stardate with real timestamp from telemetry.json
+    stardateEl.textContent = `STARDATE ${getStardate()} // ${d.timestamp || '--:--:--Z'}`;
 }
 catch(e){
-  document.getElementById('status').textContent='DEGRADED';
-  document.getElementById('status').className='degraded';
+  document.getElementById('status').textContent = 'DEGRADED';
+  document.getElementById('status').className = 'degraded';
 }
 }
 load();
-setInterval(load,300000);
+setInterval(load, 300000);
 </script>
 </body>
-</html>
+</html
