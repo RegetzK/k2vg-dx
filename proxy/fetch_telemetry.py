@@ -74,7 +74,7 @@ def parse_spots(xml_bytes):
             "grid": grid,
             "band": None,
             "freq": freq_hz,
-            "db": None,
+            "db": 0,
             "dxcc": dxcc_code,
             "lore": False,
         })
