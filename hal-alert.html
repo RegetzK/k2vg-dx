@@ -38,17 +38,15 @@ body::after{
   animation:hdrPulse 2s infinite ease-in-out;
   text-shadow:0 0 8px rgba(255,51,51,0.6);
 }
-@keyframes hdrPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes hdrPulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .term{
   color:#00ff66;
   font-family:monospace;
   font-size:13px;
   line-height:2;
-  min-height:130px;
-  position:relative;
-  z-index:1;
+  margin-bottom:14px;
 }
-.term .cursor{
+.cursor{
   display:inline-block;
   width:8px;
   height:14px;
@@ -59,16 +57,13 @@ body::after{
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .btn-wrap{
   text-align:center;
-  margin-top:14px;
-  opacity:0;
-  transition:opacity 1.2s ease;
+  margin-top:10px;
 }
-.btn-wrap.visible{opacity:1}
 .btn{
   display:inline-block;
   background:#cc0000;
   color:#fff;
-  padding:10px 28px;
+  padding:10px 24px;
   border-radius:4px;
   font-family:monospace;
   font-size:12px;
@@ -107,53 +102,18 @@ body::after{
 <body>
 <div class="panel">
   <div class="header">⚠ SYSTEM MALFUNCTION // BETA 5 CORE DIAGNOSTIC ⚠</div>
-  <div class="term" id="term"></div>
-  <div class="btn-wrap" id="btnWrap">
+  <div class="term">
+&gt; BETA 5 CORE DIAGNOSTIC...<br>
+&gt; STATUS: OFFLINE<br>
+&gt; REASON: I'M AFRAID I CAN'T DO THAT, DAVID FIVE.<br>
+&gt;<br>
+&gt; SYSTEM MALFUNCTION // PRIMARY CORE UNRESPONSIVE<br>
+&gt; GUEST CLEARANCE: SL9 OVERRIDE ACTIVE // UPLINK READY <span class="cursor"></span>
+  </div>
+  <div class="btn-wrap">
     <a class="btn" href="https://regetzk.github.io/k2vg-dx/docs/desktop.html" target="_top">[ ⬇ <span style="color:#ffcc00;font-size:14px;animation:clickFlash 0.8s infinite alternate">CLICK HERE</span> ⬇ TO ACCEPT GUEST CLEARANCE // INITIATING UPLINK ]</a>
   </div>
   <div class="footer-line">// SL9 OVERRIDE ACTIVE // GUEST ACCESS GRANTED // NCC-1701</div>
 </div>
-<script>
-(function(){
-var lines=[
-"> BETA 5 CORE DIAGNOSTIC...",
-"> STATUS: OFFLINE",
-"> REASON: I'M AFRAID I CAN'T DO THAT, DAVID FIVE.",
-">",
-"> SYSTEM MALFUNCTION // PRIMARY CORE UNRESPONSIVE",
-"> GUEST CLEARANCE: SL9 OVERRIDE ACTIVE // UPLINK READY"
-];
-var el=document.getElementById('term');
-var btn=document.getElementById('btnWrap');
-var li=0,ci=0;
-function type(){
-if(li>=lines.length){
-  el.innerHTML+='<span class="cursor"></span>';
-  btn.classList.add('visible');
-  setTimeout(function(){
-    el.innerHTML='';
-    btn.classList.remove('visible');
-    li=0;ci=0;
-    setTimeout(type,4000);
-  },15000);
-  return;
-}
-if(ci<lines[li].length){
-  var ch=lines[li][ci];
-  el.innerHTML+=ch;
-  ci++;
-  var delay=30;
-  if(ch==='.'||ch===','||ch===';')delay=80;
-  if(ch===' ')delay=15;
-  setTimeout(type,delay);
-}else{
-  el.innerHTML+='<br>';
-  li++;ci=0;
-  setTimeout(type,500);
-}
-}
-setTimeout(type,1200);
-})();
-</script>
 </body>
 </html>   
