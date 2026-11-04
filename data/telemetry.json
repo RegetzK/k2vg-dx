@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-31T19:34:21Z",
+  "timestamp": "2026-11-04T01:12:34Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -13,7 +13,7 @@
     "flare_risk": "N/A"
   },
   "telemetry": {
-    "status": "DEGRADED",
+    "status": "ONLINE",
     "dx_tracks": [
       {
         "call": "NCC-1701",
@@ -42,7 +42,7 @@
         "db": null,
         "freq": null,
         "dxcc": "EARTH",
-        "status": "MONITORING",
+        "status": "MONITORED",
         "lore": true
       },
       {
@@ -52,8 +52,53 @@
         "db": null,
         "freq": null,
         "dxcc": "EARTH",
-        "status": "MONITORING",
+        "status": "MONITORED",
         "lore": true
+      },
+      {
+        "call": "YV5GRB",
+        "grid": "FK60nl17",
+        "band": null,
+        "freq": 10.13794,
+        "db": -18,
+        "dxcc": "YV",
+        "lore": false
+      },
+      {
+        "call": "SV3DCX",
+        "grid": "KM08vf15qv",
+        "band": null,
+        "freq": 10.136954,
+        "db": -20,
+        "dxcc": "SV",
+        "lore": false
+      },
+      {
+        "call": "HA7TM",
+        "grid": "JN97kk",
+        "band": null,
+        "freq": 10.136997,
+        "db": -19,
+        "dxcc": "HA",
+        "lore": false
+      },
+      {
+        "call": "PT7ZT",
+        "grid": "HI06sd",
+        "band": null,
+        "freq": 10.137238,
+        "db": -15,
+        "dxcc": "PT",
+        "lore": false
+      },
+      {
+        "call": "YV5KG",
+        "grid": "FK60mm84to",
+        "band": null,
+        "freq": 10.138091,
+        "db": -19,
+        "dxcc": "YV",
+        "lore": false
       }
     ]
   }
