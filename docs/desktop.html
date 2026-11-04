@@ -224,20 +224,26 @@ function playAlert(){
     osc.stop(t+dur);
   });
 }
-document.getElementById('testAlert').addEventListener('click',playAlert);
-document.getElementById('armAudio').addEventListener('click',function(){
-  audioArmed=!audioArmed;
-  this.textContent=audioArmed?'Audio ARMED':'Arm Audio';
-  this.classList.toggle('armed',audioArmed);
-});
-// Volume persistence
-const savedVol=localStorage.getItem('k2vg_volume');
-if(savedVol)document.getElementById('volSlider').value=savedVol;
-document.getElementById('volSlider').addEventListener('input',function(){
-  localStorage.setItem('k2vg_volume',this.value);
-});
-document.getElementById('pollNow').addEventListener('click',function(){this.textContent='POLLING...';this.classList.add('polling');load();setTimeout(()=>{this.textContent='Poll Now';this.classList.remove('polling');},1500);});   
-  
+// ZT: Guest access deterrent — controls are visible but locked
+var ztMsg=function(text){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(204,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:none';
+  d.innerHTML='<div style="color:#fff;font-family:monospace;font-size:18px;letter-spacing:3px;text-align:center"><span style="animation:degradedPulse 0.5s infinite">⚠ UNAUTHORIZED ACCESS ATTEMPT DETECTED ⚠</span><br><br><span style="font-size:12px;color:#ffcc00">'+text+'</span></div>';
+  document.body.appendChild(d);
+  setTimeout(function(){d.remove();},2500);
+};
+document.getElementById('pollNow').addEventListener('click',function(e){e.preventDefault();ztMsg('OPERATOR FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');});
+document.getElementById('armAudio').addEventListener('click',function(e){e.preventDefault();ztMsg('AUDIO SYSTEM LOCKED // SL9 CLEARANCE REQUIRED // INCIDENT LOGGED');});
+document.getElementById('testAlert').addEventListener('click',function(e){e.preventDefault();ztMsg('ALERT SYSTEM LOCKED // SL9 CLEARANCE REQUIRED // INCIDENT LOGGED');});
+document.getElementById('refreshInterval').addEventListener('change',function(e){this.value='300000';ztMsg('REFRESH RATE LOCKED // OPERATOR OVERRIDE DENIED');});
+document.getElementById('volSlider').addEventListener('input',function(e){ztMsg('VOLUME CONTROL LOCKED // OPERATOR FUNCTION ONLY');});
+document.addEventListener('contextmenu',function(e){e.preventDefault();ztMsg('UNAUTHORIZED INSPECTION ATTEMPT // REPORTED TO STARFLEET SECURITY');});
+document.addEventListener('keydown',function(e){
+  if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))){
+    e.preventDefault();
+    ztMsg('"I\'M AFRAID I CAN\'T LET YOU DO THAT, COMMANDER." — BETA 5');
+  }
+});     
 const SNR_MIN=-24;
 const SNR_MAX=24;
 const MAX_ROWS=20;
