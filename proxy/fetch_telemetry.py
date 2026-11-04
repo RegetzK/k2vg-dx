@@ -79,7 +79,7 @@ def parse_spots(xml_bytes):
             "db": db,
             "dxcc": dxcc_code,
             "lore": False,
-        })  
+        })
     print(f"Parsed {len(tracks)} unique senders")
     return tracks
 
@@ -119,6 +119,11 @@ def main():
     os.makedirs("data", exist_ok=True)
     with open("data/telemetry.json", "w") as f:
         json.dump(output, f, indent=2)
+
+    with open("data/telemetry.js", "w") as f:
+        f.write("window.TELEMETRY_DATA = ")
+        f.write(json.dumps(output))
+        f.write(";")
 
     print(f"Done: {len(tracks)} real tracks, status={status}")
 
