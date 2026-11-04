@@ -178,7 +178,6 @@ tr.zl td{
 
 <div class="prime-directive">PRIME DIRECTIVE EXCEPTION ACTIVE // INTERVENTION AUTHORIZED</div>
 
-<!-- Added elements -->
 <div class="data-stale" id="dataStale">DATA STALE (0.0m)</div>
 <div class="stardate" id="stardate">STARDATE 0000.000.0000 // 0000-00-00T00:00:00Z</div>
 
@@ -186,12 +185,12 @@ tr.zl td{
 const MAX_ROWS=8;
 const SNR_MIN=-24;
 const SNR_MAX=24;
-const STALE_THRESHOLD_MS=3600000; // 60 minutes
+const STALE_THRESHOLD_MS=3600000;
 
 function getStardate(){
   const now=new Date();
   const year=now.getUTCFullYear();
-  const start=new Date(year,0,0);
+  const start=new Date(Date.UTC(year,0,0));
   const diff=now-start;
   const oneDay=1000*60*60*24;
   const day=Math.floor(diff/oneDay);
@@ -199,6 +198,13 @@ function getStardate(){
   const min=String(now.getUTCMinutes()).padStart(2,'0');
   return `${year}.${String(day).padStart(3,'0')}.${hour}${min}`;
 }
+
+function updateStardate(ts){
+  const el=document.getElementById('stardate');
+  if(el) el.textContent=`STARDATE ${getStardate()} // ${ts || new Date().toISOString().replace(/\.\d+Z$/,'Z')}`;
+}
+setInterval(()=>updateStardate(),60000);
+updateStardate();
 
 function bandFromFreq(mhz){
   if(mhz>=1.8&&mhz<2)return'🌑 160M';
@@ -233,7 +239,7 @@ function getEmptyStateMsg(){
 
 async function load(){
   try{
-    const r=await fetch('data/telemetry.json?t='+Date.now());
+    const r=await fetch('https://regetzk.github.io/k2vg-dx/data/telemetry.json?t='+Date.now());
     if(!r.ok)throw r.status;
     const d=await r.json();
     const tb=document.querySelector('tbody');
@@ -265,45 +271,41 @@ async function load(){
       tr.appendChild(td);
       tb.appendChild(tr);
     }
-   // STALENESS CHECK
-    const now = Date.now();
-    const lastUpdate = new Date(d.timestamp).getTime();
-    const stalenessMinutes = (now - lastUpdate) / 60000;
-    const statusEl = document.getElementById('status');
-    const timestampEl = document.getElementById('timestamp');
-    const stardateEl = document.getElementById('stardate');
-    
-    // #8: Stardate Format
-    stardateEl.textContent = `STARDATE ${getStardate()} // ${d.timestamp || '--:--:--Z'}`;
-    
-    if (d.telemetry.status === 'ONLINE' && stalenessMinutes <= 60) {
-      statusEl.textContent = 'ONLINE';
-      statusEl.className = 'live';
-    } else if (stalenessMinutes > 60) {
-      statusEl.textContent = 'DATA STALE (' + stalenessMinutes.toFixed(1) + 'm)';
-      statusEl.className = 'stale';
-    } else if (d.telemetry.status === 'DEGRADED') {
-      statusEl.textContent = 'SUPERVISOR INTERVENTION REQUIRED';
-      statusEl.className = 'degraded';
+    const now=Date.now();
+    const lastUpdate=new Date(d.timestamp).getTime();
+    const stalenessMinutes=(now-lastUpdate)/60000;
+    const statusEl=document.getElementById('status');
+    const timestampEl=document.getElementById('timestamp');
+    const stardateEl=document.getElementById('stardate');
+
+    stardateEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp || '--:--:--Z'}`;
+
+    if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
+      statusEl.textContent='ONLINE';
+      statusEl.className='live';
+    } else if(stalenessMinutes>60){
+      statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';
+      statusEl.className='stale';
+    } else if(d.telemetry.status==='DEGRADED'){
+      statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED';
+      statusEl.className='degraded';
     } else {
-      statusEl.textContent = d.telemetry.status || 'ONLINE';
-      statusEl.className = 'live';
+      statusEl.textContent=d.telemetry.status||'ONLINE';
+      statusEl.className='live';
     }
-    const zlPresent = filtered.some(t => isZL(t.grid));
-    if (zlPresent) {
-      statusEl.textContent = 'TARGET LOCKED // REPORT TO GARY SEVEN';
-      statusEl.className = 'live';
+    const zlPresent=filtered.some(t=>isZL(t.grid));
+    if(zlPresent){
+      statusEl.textContent='TARGET LOCKED // REPORT TO GARY SEVEN';
+      statusEl.className='live';
     }
-    // Update stardate with real timestamp from telemetry.json
-    stardateEl.textContent = `STARDATE ${getStardate()} // ${d.timestamp || '--:--:--Z'}`;
-}
-catch(e){
-  document.getElementById('status').textContent = 'DEGRADED';
-  document.getElementById('status').className = 'degraded';
-}
+  }catch(e){
+    document.getElementById('status').textContent='DEGRADED';
+    document.getElementById('status').className='degraded';
+    updateStardate();
+  }
 }
 load();
-setInterval(load, 300000);
+setInterval(load,300000);
 </script>
 </body>
-</html
+</html>   
