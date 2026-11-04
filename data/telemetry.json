@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-04T02:31:58Z",
+  "timestamp": "2026-11-04T08:51:17Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -56,57 +56,66 @@
         "lore": true
       },
       {
-        "call": "IT9CCB",
-        "grid": "JM77pc30gd",
+        "call": "EA8DO",
+        "grid": "IL18BP",
         "band": null,
-        "freq": 10.137802,
-        "db": -13,
-        "dxcc": "IT",
+        "freq": 10.137713,
+        "db": -9,
+        "dxcc": "EA",
         "lore": false
       },
       {
-        "call": "F4WDL",
-        "grid": "IN94OT",
+        "call": "ZL4AS",
+        "grid": "RE43VT",
         "band": null,
-        "freq": 10.137434,
+        "freq": 10.137738,
+        "db": -19,
+        "dxcc": "ZL",
+        "lore": false
+      },
+      {
+        "call": "VK3HJ",
+        "grid": "QF22it23vv",
+        "band": null,
+        "freq": 10.138205,
         "db": -16,
-        "dxcc": "F4",
+        "dxcc": "VK",
         "lore": false
       },
       {
-        "call": "IK4LZH",
-        "grid": "JN54qm06",
+        "call": "EA5GS",
+        "grid": "IM99tl59",
         "band": null,
-        "freq": 10.1364,
-        "db": -20,
-        "dxcc": "IK",
+        "freq": 10.137081,
+        "db": -19,
+        "dxcc": "EA",
         "lore": false
       },
       {
-        "call": "PT7ZT",
-        "grid": "HI06sd",
+        "call": "EA1EAU",
+        "grid": "IN70dx",
         "band": null,
-        "freq": 10.137245,
+        "freq": 10.136826,
         "db": -16,
-        "dxcc": "PT",
+        "dxcc": "EA",
         "lore": false
       },
       {
-        "call": "HA7TM",
-        "grid": "JN97kk",
+        "call": "EB1LO",
+        "grid": "IN82SK",
         "band": null,
-        "freq": 10.138805,
-        "db": -1,
-        "dxcc": "HA",
-        "lore": false
-      },
-      {
-        "call": "DC6MY",
-        "grid": "JN58jo93sq",
-        "band": null,
-        "freq": 10.136346,
+        "freq": 10.137435,
         "db": -20,
-        "dxcc": "DC",
+        "dxcc": "EB",
+        "lore": false
+      },
+      {
+        "call": "PI4DX",
+        "grid": "JO21aj13",
+        "band": null,
+        "freq": 7.076141,
+        "db": -16,
+        "dxcc": "PI",
         "lore": false
       }
     ]
