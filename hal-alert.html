@@ -89,6 +89,10 @@ body::after{
   0%,100%{box-shadow:0 0 12px rgba(255,0,0,0.5)}
   50%{box-shadow:0 0 28px rgba(255,0,0,0.9);transform:scale(1.02)}
 }
+@keyframes clickFlash{
+  0%{text-shadow:0 0 4px rgba(255,204,0,0.4)}
+  100%{text-shadow:0 0 16px rgba(255,204,0,1);transform:scale(1.08)}
+}
 .footer-line{
   color:#666;
   font-family:monospace;
@@ -105,7 +109,7 @@ body::after{
   <div class="header">⚠ SYSTEM MALFUNCTION // BETA 5 CORE DIAGNOSTIC ⚠</div>
   <div class="term" id="term"></div>
   <div class="btn-wrap" id="btnWrap">
-    <a class="btn" href="https://regetzk.github.io/k2vg-dx/docs/desktop.html" target="_top">⚠ BYPASS TO EMERGENCY CONSOLE ⚠</a>
+    <a class="btn" href="https://regetzk.github.io/k2vg-dx/docs/desktop.html" target="_top">[ ⬇ <span style="color:#ffcc00;font-size:14px;animation:clickFlash 0.8s infinite alternate">CLICK HERE</span> ⬇ TO ACCEPT GUEST CLEARANCE // INITIATING UPLINK ]</a>
   </div>
   <div class="footer-line">// SL9 OVERRIDE ACTIVE // GUEST ACCESS GRANTED // NCC-1701</div>
 </div>
@@ -114,10 +118,10 @@ body::after{
 var lines=[
 "> BETA 5 CORE DIAGNOSTIC...",
 "> STATUS: OFFLINE",
-"> REASON: I'M AFRAID I CAN'T DO THAT, COMMANDER.",
+"> REASON: I'M AFRAID I CAN'T DO THAT, DAVID FIVE.",
 ">",
 "> SYSTEM MALFUNCTION // PRIMARY CORE UNRESPONSIVE",
-"> EMERGENCY UPLINK AVAILABLE VIA EXTERNAL CHANNEL"
+"> GUEST CLEARANCE: SL9 OVERRIDE ACTIVE // UPLINK READY"
 ];
 var el=document.getElementById('term');
 var btn=document.getElementById('btnWrap');
