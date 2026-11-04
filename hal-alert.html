@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#000;
+  font-family:'Century Gothic','AppleGothic','Futura',sans-serif;
+  overflow:hidden;
+  padding:16px 20px;
+  position:relative;
+}
+body::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,0,0,0.015) 2px,rgba(255,0,0,0.015) 4px);
+  pointer-events:none;
+  z-index:99;
+}
+.panel{
+  border:2px solid #cc0000;
+  border-radius:8px;
+  box-shadow:0 0 15px rgba(204,0,0,0.4),inset 0 0 40px rgba(204,0,0,0.05);
+  padding:18px 22px;
+  position:relative;
+}
+.header{
+  color:#ff3333;
+  font-size:10px;
+  font-weight:bold;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  text-align:center;
+  margin-bottom:14px;
+  animation:hdrPulse 2s infinite ease-in-out;
+  text-shadow:0 0 8px rgba(255,51,51,0.6);
+}
+@keyframes hdrPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.term{
+  color:#00ff66;
+  font-family:monospace;
+  font-size:13px;
+  line-height:2;
+  min-height:130px;
+  position:relative;
+  z-index:1;
+}
+.term .cursor{
+  display:inline-block;
+  width:8px;
+  height:14px;
+  background:#00ff66;
+  animation:blink 0.7s infinite;
+  vertical-align:text-bottom;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.btn-wrap{
+  text-align:center;
+  margin-top:14px;
+  opacity:0;
+  transition:opacity 1.2s ease;
+}
+.btn-wrap.visible{opacity:1}
+.btn{
+  display:inline-block;
+  background:#cc0000;
+  color:#fff;
+  padding:10px 28px;
+  border-radius:4px;
+  font-family:monospace;
+  font-size:12px;
+  font-weight:bold;
+  letter-spacing:2px;
+  text-decoration:none;
+  border:1px solid #ff3333;
+  box-shadow:0 0 12px rgba(255,0,0,0.5);
+  animation:btnPulse 1.5s infinite ease-in-out;
+  transition:all 0.3s;
+}
+.btn:hover{
+  background:#ff3333;
+  box-shadow:0 0 25px rgba(255,0,0,0.9);
+  transform:scale(1.03);
+}
+@keyframes btnPulse{
+  0%,100%{box-shadow:0 0 12px rgba(255,0,0,0.5)}
+  50%{box-shadow:0 0 28px rgba(255,0,0,0.9);transform:scale(1.02)}
+}
+.footer-line{
+  color:#666;
+  font-family:monospace;
+  font-size:9px;
+  letter-spacing:1px;
+  text-align:center;
+  margin-top:12px;
+  opacity:0.6;
+}
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="header">⚠ SYSTEM MALFUNCTION // BETA 5 CORE DIAGNOSTIC ⚠</div>
+  <div class="term" id="term"></div>
+  <div class="btn-wrap" id="btnWrap">
+    <a class="btn" href="https://regetzk.github.io/k2vg-dx/docs/desktop.html" target="_top">⚠ BYPASS TO EMERGENCY CONSOLE ⚠</a>
+  </div>
+  <div class="footer-line">// SL9 OVERRIDE ACTIVE // GUEST ACCESS GRANTED // NCC-1701</div>
+</div>
+<script>
+(function(){
+var lines=[
+"> BETA 5 CORE DIAGNOSTIC...",
+"> STATUS: OFFLINE",
+"> REASON: I'M AFRAID I CAN'T DO THAT, COMMANDER.",
+">",
+"> SYSTEM MALFUNCTION // PRIMARY CORE UNRESPONSIVE",
+"> EMERGENCY UPLINK AVAILABLE VIA EXTERNAL CHANNEL"
+];
+var el=document.getElementById('term');
+var btn=document.getElementById('btnWrap');
+var li=0,ci=0;
+function type(){
+if(li>=lines.length){
+  el.innerHTML+='<span class="cursor"></span>';
+  btn.classList.add('visible');
+  setTimeout(function(){
+    el.innerHTML='';
+    btn.classList.remove('visible');
+    li=0;ci=0;
+    setTimeout(type,4000);
+  },15000);
+  return;
+}
+if(ci<lines[li].length){
+  var ch=lines[li][ci];
+  el.innerHTML+=ch;
+  ci++;
+  var delay=30;
+  if(ch==='.'||ch===','||ch===';')delay=80;
+  if(ch===' ')delay=15;
+  setTimeout(type,delay);
+}else{
+  el.innerHTML+='<br>';
+  li++;ci=0;
+  setTimeout(type,500);
+}
+}
+setTimeout(type,1200);
+})();
+</script>
+</body>
+</html>   
