@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-04T09:47:52Z",
+  "timestamp": "2026-11-04T17:37:09Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -54,42 +54,6 @@
         "dxcc": "EARTH",
         "status": "MONITORED",
         "lore": true
-      },
-      {
-        "call": "CU7MD",
-        "grid": "HM58qm46hm",
-        "band": null,
-        "freq": 10.137526,
-        "db": -14,
-        "dxcc": "CU",
-        "lore": false
-      },
-      {
-        "call": "EA8TL",
-        "grid": "IL18NF",
-        "band": null,
-        "freq": 10.136449,
-        "db": -17,
-        "dxcc": "EA",
-        "lore": false
-      },
-      {
-        "call": "VK3SIM",
-        "grid": "QF22ni",
-        "band": null,
-        "freq": 10.138224,
-        "db": -17,
-        "dxcc": "VK",
-        "lore": false
-      },
-      {
-        "call": "EA8DO",
-        "grid": "IL18BP",
-        "band": null,
-        "freq": 10.137262,
-        "db": -4,
-        "dxcc": "EA",
-        "lore": false
       }
     ]
   }
