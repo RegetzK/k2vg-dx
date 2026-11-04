@@ -69,15 +69,17 @@ def parse_spots(xml_bytes):
             freq_hz = 0
         grid = rpt.get("senderLocator", "") or "????"
         dxcc_code = rpt.get("senderDXCCcode", "") or call[:2]
+        snr = rpt.get("sNR")
+        db = int(snr) if snr is not None else 0
         tracks.append({
             "call": call,
             "grid": grid,
             "band": None,
-            "freq": freq_hz,
-            "db": 0,
+            "freq": freq_hz / 1e6,
+            "db": db,
             "dxcc": dxcc_code,
             "lore": False,
-        })
+        })  
     print(f"Parsed {len(tracks)} unique senders")
     return tracks
 
