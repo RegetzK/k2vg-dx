@@ -136,7 +136,7 @@ tr.zl td{
 .status-bar .live{color:#00ff66}
 .status-bar .degraded{color:#ff0000;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,0,0,0.7)}
 .status-bar .stale{color:#ff6b6b;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,107,107,0.7)}
-@keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes cyanPulse{0%,100%{box-shadow:0 0 12px rgba(0,229,255,0.5)}50%{box-shadow:0 0 28px rgba(0,229,255,0.9);transform:scale(1.02)}}   
 .snr-note{
   font-family:monospace;
   font-size:9px;
@@ -361,7 +361,7 @@ load();
 scheduleRefresh();
 </script>
 <div style="text-align:center; margin-top:16px">
-  <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5); transition:all 0.3s;" onmouseover="this.style.boxShadow='0 0 28px rgba(0,229,255,0.9)';this.style.transform='scale(1.02)'" onmouseout="this.style.boxShadow='0 0 12px rgba(0,229,255,0.5)';this.style.transform='scale(1)'">← CLICK HERE // RETURN TO BETA FIVE COMM-STATION // NCC-1701</a>
+  <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5); animation:cyanPulse 1.5s infinite ease-in-out; transition:all 0.3s;" onmouseover="this.style.animation='none';this.style.boxShadow='0 0 30px rgba(0,229,255,0.9)';this.style.transform='scale(1.04)'" onmouseout="this.style.animation='cyanPulse 1.5s infinite ease-in-out';this.style.boxShadow='';this.style.transform='scale(1)'">← CLICK HERE // RETURN TO BETA FIVE COMM-STATION // NCC-1701</a>   
 </div>
 </body>
 </html>   
