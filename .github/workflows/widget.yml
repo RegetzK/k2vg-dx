@@ -18,6 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Clean working tree
+        run: git checkout -- .
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -41,7 +44,6 @@ jobs:
         run: |
           git config user.name "BETA 5"
           git config user.email "beta5@k2vg.local"
-          git checkout -- .
           git pull --rebase origin main
           git add data/telemetry.json
           git diff --cached --quiet || git commit -m "Telemetry update $(date -u +%Y%m%dT%H%M%SZ)"
