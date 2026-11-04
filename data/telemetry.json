@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-04T01:12:34Z",
+  "timestamp": "2026-11-04T02:31:58Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -56,48 +56,57 @@
         "lore": true
       },
       {
-        "call": "YV5GRB",
-        "grid": "FK60nl17",
+        "call": "IT9CCB",
+        "grid": "JM77pc30gd",
         "band": null,
-        "freq": 10.13794,
-        "db": -18,
-        "dxcc": "YV",
+        "freq": 10.137802,
+        "db": -13,
+        "dxcc": "IT",
         "lore": false
       },
       {
-        "call": "SV3DCX",
-        "grid": "KM08vf15qv",
+        "call": "F4WDL",
+        "grid": "IN94OT",
         "band": null,
-        "freq": 10.136954,
+        "freq": 10.137434,
+        "db": -16,
+        "dxcc": "F4",
+        "lore": false
+      },
+      {
+        "call": "IK4LZH",
+        "grid": "JN54qm06",
+        "band": null,
+        "freq": 10.1364,
         "db": -20,
-        "dxcc": "SV",
-        "lore": false
-      },
-      {
-        "call": "HA7TM",
-        "grid": "JN97kk",
-        "band": null,
-        "freq": 10.136997,
-        "db": -19,
-        "dxcc": "HA",
+        "dxcc": "IK",
         "lore": false
       },
       {
         "call": "PT7ZT",
         "grid": "HI06sd",
         "band": null,
-        "freq": 10.137238,
-        "db": -15,
+        "freq": 10.137245,
+        "db": -16,
         "dxcc": "PT",
         "lore": false
       },
       {
-        "call": "YV5KG",
-        "grid": "FK60mm84to",
+        "call": "HA7TM",
+        "grid": "JN97kk",
         "band": null,
-        "freq": 10.138091,
-        "db": -19,
-        "dxcc": "YV",
+        "freq": 10.138805,
+        "db": -1,
+        "dxcc": "HA",
+        "lore": false
+      },
+      {
+        "call": "DC6MY",
+        "grid": "JN58jo93sq",
+        "band": null,
+        "freq": 10.136346,
+        "db": -20,
+        "dxcc": "DC",
         "lore": false
       }
     ]
