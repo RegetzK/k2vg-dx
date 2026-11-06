@@ -136,7 +136,7 @@ tr.zl td{
 .status-bar .live{color:#00ff66}
 .status-bar .degraded{color:#ff0000;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,0,0,0.7)}
 .status-bar .stale{color:#ff6b6b;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,107,107,0.7)}
-@keyframes cyanPulse{0%,100%{box-shadow:0 0 12px rgba(0,229,255,0.5)}50%{box-shadow:0 0 28px rgba(0,229,255,0.9);transform:scale(1.02)}}   
+@keyframes cyanPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.03);opacity:0.85}}
 .snr-note{
   font-family:monospace;
   font-size:9px;
@@ -152,6 +152,19 @@ tr.zl td{
   margin-top:4px;
   font-family:monospace;
   letter-spacing:1px;
+}
+@media(max-width:600px){
+  body{padding:10px 8px}
+  .controls{flex-wrap:wrap;gap:8px;padding:6px 8px}
+  .controls input[type=range]{width:70px}
+  .controls button{padding:4px 8px;font-size:9px}
+  .controls select{font-size:11px;padding:3px 6px}
+  table{font-size:13px}
+  th,td{font-size:12px;padding:2px 4px;max-width:100px}
+  th{font-size:10px}
+  .panel-label{font-size:8px}
+  .status-bar{font-size:9px}
+  .snr-note{font-size:8px}
 }
 </style>
 </head>
@@ -171,9 +184,10 @@ tr.zl td{
   <input type="range" id="volSlider" min="0" max="100" value="50">
   <button id="armAudio">Arm Audio</button>
   <button id="testAlert">Test Alert</button>
-  <button id="pollNow">Poll Now</button>   
+  <button id="pollNow">Poll Now</button>
 </div>
 
+<div style="overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%">
 <table>
   <thead>
     <tr>
@@ -192,6 +206,7 @@ tr.zl td{
     <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORED</td></tr>
   </tbody>
 </table>
+</div>
 
 <div class="status-bar">
   <span id="status">INITIALIZING...</span>
@@ -224,7 +239,6 @@ function playAlert(){
     osc.stop(t+dur);
   });
 }
-// ZT: Guest access deterrent — controls are visible but locked
 var ztMsg=function(text){
   var d=document.createElement('div');
   d.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(204,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:none';
@@ -243,17 +257,17 @@ document.addEventListener('keydown',function(e){
     e.preventDefault();
     ztMsg('"I\'M AFRAID I CAN\'T LET YOU DO THAT, COMMANDER." — BETA 5');
   }
-});     
+});
 const SNR_MIN=-24;
 const SNR_MAX=24;
 const MAX_ROWS=20;
-const STALE_THRESHOLD_MS=3600000; // 60 minutes
+const STALE_THRESHOLD_MS=3600000;
 let refreshTimer=null;
 
 function getStardate(){
   const now=new Date();
   const year=now.getUTCFullYear();
-  const start=new Date(year,0,0);
+  const start=new Date(Date.UTC(year,0,0));
   const diff=now-start;
   const oneDay=1000*60*60*24;
   const day=Math.floor(diff/oneDay);
@@ -326,16 +340,12 @@ async function load(){
       tr.appendChild(td);
       tb.appendChild(tr);
     }
-    // STALENESS CHECK
     const now=Date.now();
     const lastUpdate=new Date(d.timestamp).getTime();
     const stalenessMinutes=(now-lastUpdate)/60000;
     const statusEl=document.getElementById('status');
     const timestampEl=document.getElementById('timestamp');
-    
-    // Stardate Format
     timestampEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp||'--:--:--Z'}`;
-    
     if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
       statusEl.textContent='ONLINE';
       statusEl.className='live';
@@ -367,7 +377,7 @@ load();
 scheduleRefresh();
 </script>
 <div style="text-align:center; margin-top:16px">
-  <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5); animation:cyanPulse 1.5s infinite ease-in-out; transition:all 0.3s;" onmouseover="this.style.animation='none';this.style.boxShadow='0 0 30px rgba(0,229,255,0.9)';this.style.transform='scale(1.04)'" onmouseout="this.style.animation='cyanPulse 1.5s infinite ease-in-out';this.style.boxShadow='';this.style.transform='scale(1)'">← CLICK HERE // RETURN TO BETA FIVE COMM-STATION // NCC-1701</a>   
+  <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">← CLICK HERE // RETURN TO BETA FIVE COMM-STATION // NCC-1701</a>
 </div>
 </body>
 </html>   
