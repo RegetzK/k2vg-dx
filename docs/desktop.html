@@ -24,7 +24,7 @@ body::after{
 }
 .station-header{
   color:#ffffff;
-  font-size:22px;
+  font-size:20px;
   font-weight:bold;
   letter-spacing:1px;
   text-align:center;
@@ -33,7 +33,7 @@ body::after{
 }
 .wd-warn{
   color:#ff3333;
-  font-size:22px;
+  font-size:20px;
   font-weight:bold;
   letter-spacing:1px;
   text-align:center;
@@ -44,7 +44,7 @@ body::after{
   -webkit-transform:translateZ(0);
 }
 @keyframes warnFade{0%,100%{opacity:1}50%{opacity:0.3}}
-
+@keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}
 .controls{
   display:flex;
   align-items:center;
@@ -168,8 +168,8 @@ tr.zl td{
 }
 @media(max-width:600px){
   body{padding:10px 8px}
-  .station-header{font-size:16px}
-  .wd-warn{font-size:16px}
+  .station-header{font-size:14px}
+  .wd-warn{font-size:14px}
   .controls{flex-wrap:wrap;gap:8px;padding:6px 8px}
   .controls input[type=range]{width:70px}
   .controls button{padding:4px 8px;font-size:9px}
@@ -177,7 +177,6 @@ tr.zl td{
   table{font-size:13px}
   th,td{font-size:12px;padding:2px 4px;max-width:100px}
   th{font-size:10px}
-  .panel-label{font-size:8px}
   .status-bar{font-size:9px}
   .snr-note{font-size:8px}
 }
