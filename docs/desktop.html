@@ -22,6 +22,28 @@ body::after{
   pointer-events:none;
   z-index:999;
 }
+.station-header{
+  color:#ffffff;
+  font-size:22px;
+  font-weight:bold;
+  letter-spacing:1px;
+  text-align:center;
+  margin-bottom:8px;
+  line-height:1.3;
+}
+.wd-warn{
+  color:#ff3333;
+  font-size:22px;
+  font-weight:bold;
+  letter-spacing:1px;
+  text-align:center;
+  margin-bottom:14px;
+  line-height:1.4;
+  animation:warnFade 2.5s infinite ease-in-out;
+  -webkit-backface-visibility:hidden;
+  -webkit-transform:translateZ(0);
+}
+@keyframes warnFade{0%,100%{opacity:1}50%{opacity:0.3}}
 .panel-label{
   color:#00ff66;
   font-size:10px;
@@ -155,6 +177,8 @@ tr.zl td{
 }
 @media(max-width:600px){
   body{padding:10px 8px}
+  .station-header{font-size:16px}
+  .wd-warn{font-size:16px}
   .controls{flex-wrap:wrap;gap:8px;padding:6px 8px}
   .controls input[type=range]{width:70px}
   .controls button{padding:4px 8px;font-size:9px}
@@ -169,6 +193,9 @@ tr.zl td{
 </style>
 </head>
 <body>
+<div class="station-header">(SL9) BETA FIVE QUANTUM DECODING SUBSPACE &amp; TERRESTRIAL DXCC MONITORING &amp; REAL-TIME REPORTS</div>
+<div class="wd-warn">⚠ SECURITY LEVEL 9 (SL9) — AUTHORIZED EYES ONLY ⚠<br>UNAUTHORIZED ACCESS WILL BE REPORTED TO STARFLEET SECURITY</div>
+
 <div class="panel-label">DEEP COVER IC-7300 &amp; BETA 5 TRANSCEIVER ARRAY SUBSPACE MONITORING STATION PANEL</div>
 
 <div class="controls">
@@ -360,7 +387,7 @@ async function load(){
       statusEl.className='live';
     }
     const zlPresent=filtered.some(t=>isZL(t.grid));
-    if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO SEVEN';statusEl.className='live';}
+    if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO GARY SEVEN';statusEl.className='live';}
     if(hadNew&&audioArmed)playAlert();
   }catch(e){
     document.getElementById('status').textContent='DEGRADED';
