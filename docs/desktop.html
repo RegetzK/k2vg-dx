@@ -228,7 +228,7 @@ tr.zl td{
   <span id="timestamp">--:--:--Z</span>
 </div>
 
-<div class="snr-note">// SNR RANGE -24 TO +24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) VS SINGLE-PASS DECODERS</div>
+<div class="snr-note">// SNR RANGE -35 TO +24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) & QUANTUM DECODING VS SINGLE-PASS DECODERS</div>
 
 <div class="prime-directive">PRIME DIRECTIVE EXCEPTION ACTIVE // INTERVENTION AUTHORIZED</div>
 
@@ -270,10 +270,10 @@ document.addEventListener('contextmenu',function(e){e.preventDefault();ztMsg('UN
 document.addEventListener('keydown',function(e){
   if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))){
     e.preventDefault();
-    ztMsg('"I\'M AFRAID I CAN\'T LET YOU DO THAT, COMMANDER." — BETA 5');
+    ztMsg('"I\'M AFRAID I CAN\'T LET YOU DO THAT, COMMANDER." — BETA FIVE');
   }
 });
-const SNR_MIN=-30;
+const SNR_MIN=-35;
 const SNR_MAX=24;
 const MAX_ROWS=20;
 const STALE_THRESHOLD_MS=3600000;
