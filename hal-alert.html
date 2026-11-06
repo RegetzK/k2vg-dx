@@ -71,22 +71,23 @@ body::after{
   letter-spacing:2px;
   text-decoration:none;
   border:1px solid #ff3333;
-  box-shadow:0 0 12px rgba(255,0,0,0.5);
+  box-shadow:0 0 12px rgba(255,0,0,0.5), 0 0 28px rgba(255,0,0,0.25);
   animation:btnPulse 1.5s infinite ease-in-out;
-  transition:all 0.3s;
+  -webkit-backface-visibility:hidden;
+  -webkit-transform:translateZ(0);
+  will-change:transform,opacity;
 }
 .btn:hover{
   background:#ff3333;
   box-shadow:0 0 25px rgba(255,0,0,0.9);
-  transform:scale(1.03);
 }
 @keyframes btnPulse{
-  0%,100%{box-shadow:0 0 12px rgba(255,0,0,0.5)}
-  50%{box-shadow:0 0 28px rgba(255,0,0,0.9);transform:scale(1.02)}
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.03);opacity:0.85}
 }
 @keyframes clickFlash{
-  0%{text-shadow:0 0 4px rgba(255,204,0,0.4)}
-  100%{text-shadow:0 0 16px rgba(255,204,0,1);transform:scale(1.08)}
+  0%,100%{opacity:1}
+  50%{opacity:0.6}
 }
 .footer-line{
   color:#666;
@@ -111,7 +112,7 @@ body::after{
 &gt; GUEST CLEARANCE: SL9 OVERRIDE ACTIVE // UPLINK READY <span class="cursor"></span>
   </div>
   <div class="btn-wrap">
-    <a class="btn" href="https://regetzk.github.io/k2vg-dx/docs/desktop.html" target="_top">[ ⬇ <span style="color:#ffcc00;font-size:14px;animation:clickFlash 0.8s infinite alternate">CLICK HERE</span> ⬇ TO ACCEPT GUEST CLEARANCE // INITIATING UPLINK ]</a>
+    <a class="btn" href="https://regetzk.github.io/k2vg-dx/docs/desktop.html" target="_top">[ ⬇ <span style="color:#ffcc00;font-size:14px;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span> ⬇ TO ACCEPT GUEST CLEARANCE // INITIATING UPLINK ]</a>
   </div>
   <div class="footer-line">// SL9 OVERRIDE ACTIVE // GUEST ACCESS GRANTED // NCC-1701</div>
 </div>
