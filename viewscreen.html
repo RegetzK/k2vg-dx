@@ -20,48 +20,154 @@ body { margin:0; padding:0; background:#777777; }
 <div class="red-alert-panel" style="border:1px solid #666;border-radius:3px;height:70px;margin:0 auto;width:20px"></div>
 </td>
 <!-- COL 2: GREY CONTROL PANEL (LIT) - packed tight ~150px tall -->
-<td style="padding:0 4px 8px 4px;text-align:center;vertical-align:top;width:120px">
-<div style="background-color:#b8bcc0;border-radius:3px;padding:4px;max-height:150px;overflow:hidden">
-<!-- 2a: Diagonal staircase - top-left -->
-<div style="float:left;margin-bottom:2px">
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:4px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:7px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:10px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:13px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:16px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:19px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;padding-left:22px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
+REBUILD COL 2 — replace everything between <!-- COL 2: GREY CONTROL PANEL --> and <!-- COL 3: --> with:
+
+<div style="background-color:#d4d8dc;border:2px solid #eef0f2;border-radius:3px;padding:4px;max-height:150px;overflow:hidden">
+
+  <!-- LEFT COLUMN: large dark panel + maroon strip + toggle -->
+  <div style="float:left;width:64px">
+    <!-- Large dark panel with scattered dots -->
+    <div style="background:#2a2a2a;border-radius:2px;padding:3px;margin-bottom:3px">
+      <div style="display:flex;gap:2px;margin-bottom:1px">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:4px;width:4px"></span>
+        <span style="background:#333;height:4px;width:4px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:4px;width:4px"></span>
+        <span style="background:#333;height:4px;width:4px"></span>
+      </div>
+      <div style="display:flex;gap:2px;margin-bottom:1px;padding-left:6px">
+        <span style="background:#333;height:4px;width:4px"></span>
+        <span class="lit" style="background:#ff4422;border-radius:50%;height:4px;width:4px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:4px;width:4px"></span>
+        <span style="background:#333;height:4px;width:4px"></span>
+      </div>
+      <div style="display:flex;gap:2px;margin-bottom:1px;padding-left:12px">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:4px;width:4px"></span>
+        <span style="background:#333;height:4px;width:4px"></span>
+        <span class="lit" style="background:#2ecc71;border-radius:50%;height:4px;width:4px"></span>
+        <span style="background:#333;height:4px;width:4px"></span>
+      </div>
+      <div style="display:flex;gap:2px;margin-bottom:1px;padding-left:18px">
+        <span style="background:#333;height:4px;width:4px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:4px;width:4px"></span>
+        <span style="background:#333;height:4px;width:4px"></span>
+        <span class="lit" style="background:#e0e0e0;border-radius:50%;height:4px;width:4px"></span>
+      </div>
+      <div style="display:flex;gap:2px;padding-left:24px">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:4px;width:4px"></span>
+        <span style="background:#333;height:4px;width:4px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:4px;width:4px"></span>
+        <span style="background:#333;height:4px;width:4px"></span>
+      </div>
+    </div>
+    <!-- Maroon horizontal strip -->
+    <div style="background:#4a2000;border-radius:2px;padding:2px 3px;margin-bottom:3px">
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ff4422;border-radius:50%;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ff4422;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+      </div>
+    </div>
+    <!-- Grey toggle switch -->
+    <div style="display:flex;justify-content:center;margin-top:2px">
+      <span style="background:#ccc;border:1px solid #999;border-radius:1px;height:4px;width:8px;display:inline-block;margin:0 1px"></span>
+      <span style="background:#999;border:1px solid #777;border-radius:1px;height:4px;width:8px;display:inline-block;margin:0 1px"></span>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN: stacked grids -->
+  <div style="float:right;width:46px">
+    <!-- 4x4 grid with 2 large green dots -->
+    <div style="background:#2a2a2a;border-radius:2px;padding:2px;margin-bottom:3px">
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span class="lit" style="background:#2ecc71;border-radius:50%;height:5px;width:5px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#2ecc71;border-radius:50%;height:5px;width:5px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ff4422;border-radius:50%;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+      </div>
+    </div>
+    <!-- 3x5 grid with 1 large black dot -->
+    <div style="background:#2a2a2a;border-radius:2px;padding:2px;margin-bottom:3px">
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span style="background:#333;height:5px;width:5px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center">
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+        <span style="background:#333;height:3px;width:3px"></span>
+      </div>
+    </div>
+    <!-- 3-col x 4-row small lit grid -->
+    <div style="display:flex;flex-direction:column;gap:1px">
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#e0e0e0;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ff4422;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px">
+        <span class="lit" style="background:#2ecc71;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+      </div>
+      <div style="display:flex;gap:2px;justify-content:center">
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ffcc00;border-radius:50%;height:3px;width:3px"></span>
+        <span class="lit" style="background:#ff4422;border-radius:50%;height:3px;width:3px"></span>
+      </div>
+    </div>
+  </div>
+
+  <div style="clear:both"></div>
 </div>
-<!-- 2b: 4x4 dark dots with large sockets on white bg - top-right -->
-<div style="background:#e8e8e8;border-radius:2px;display:inline-block;margin-bottom:2px;padding:3px;vertical-align:top;width:36px;float:right">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:5px;width:5px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:5px;width:5px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<div style="clear:both"></div>
-<!-- 2c: Dark maroon block - horizontal, mixed lights -->
-<div style="background:#4a2000;border-radius:2px;display:inline-block;margin-bottom:2px;padding:3px;vertical-align:top;width:68px">
-<div style="display:flex;gap:3px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:3px;justify-content:center"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<!-- 2d: Raised rectangular control -->
-<div style="background:#999;border:1px solid #777;border-radius:2px;height:6px;margin:2px auto 0;width:18px"></div>
-<!-- 2e: Tall vertical panel on right side -->
-<div style="background:#8B4513;border-radius:2px;display:inline-block;margin:0 0 0 3px;padding:3px;vertical-align:top;width:32px;float:right">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<div style="clear:both"></div>
-</div>
-</td>
 <!-- COL 3: NARROW ORANGE STRIP (LEFT) - shifted down ~20% -->
 <td style="padding:20px 3px 8px 3px;text-align:center;vertical-align:top;width:22px">
 <div style="background-color:#cc5500;border-radius:3px;padding:8px 2px">
