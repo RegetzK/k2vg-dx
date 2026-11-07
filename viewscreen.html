@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { margin:0; padding:0; background:#0b0c10; }
+@keyframes redAlertFlash{0%,100%{background-color:#cc2200;box-shadow:inset 0 0 4px rgba(255,255,255,0.3)}50%{background-color:#ff3300;box-shadow:0 0 8px #ff3300,inset 0 0 6px rgba(255,255,255,0.5)}}
+.red-alert-panel{animation:redAlertFlash 1s infinite ease-in-out}
+@keyframes litPulse{0%,100%{opacity:1}50%{opacity:.7}}
+.lit{animation:litPulse 2s infinite ease-in-out}
+</style>
+</head>
+<body>
+<div style="margin-bottom:35px;margin-left:auto;margin-right:auto;margin-top:25px;max-width:920px;width:100%">
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#1c2025;border-bottom:8px solid #ffcc00;border-left:4px solid #2a2a2a;border-radius:8px;border-right:4px solid #2a2a2a;border-top:4px solid #2a2a2a;box-shadow:inset 0 0 25px rgba(0,0,0,0.95),0 8px 25px rgba(0,0,0,0.75),0 0 40px rgba(0,229,255,0.08);box-sizing:border-box;margin:0 auto;max-width:920px;width:100%">
+<tbody>
+<tr>
+<!-- COL 1: RED ALERT LEFT -->
+<td style="padding:8px 3px;text-align:center;vertical-align:middle;width:28px">
+<div class="red-alert-panel" style="border:1px solid #666;border-radius:3px;height:180px;margin:0 auto;width:14px"></div>
+</td>
+<!-- COL 2: GREY CONTROL PANEL (LIT) -->
+<td style="padding:8px 4px;text-align:center;vertical-align:middle;width:120px">
+<div style="background-color:#b8bcc0;border-radius:3px;padding:6px">
+<!-- 2a: Diagonal staircase -->
+<div style="margin-bottom:4px">
+<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:2px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:4px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:6px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:4px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:6px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:6px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:2px;width:2px"></span></div>
+</div>
+<!-- 2b: 3x3 dark dots on white bg -->
+<div style="background:#e8e8e8;border-radius:2px;display:inline-block;margin-bottom:4px;padding:3px;vertical-align:top;width:28px">
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+<!-- 2c: 20 lights + 1 larger (dark orange bg) -->
+<div style="background:#8B4513;border-radius:2px;display:inline-block;margin-bottom:4px;padding:3px;vertical-align:top;width:48px">
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:2px;width:2px"></span></div>
+</div>
+<!-- 2d: 10 lights on very dark orange bg -->
+<div style="background:#4a2000;border-radius:2px;display:inline-block;margin-bottom:4px;padding:3px;vertical-align:top;width:48px">
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00:border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+<!-- 2e: Raised rectangular control -->
+<div style="background:#999;border:1px solid #777;border-radius:2px;height:8px;margin:4px auto 0;width:20px"></div>
+</div>
+</td>
+<!-- COL 3: NARROW ORANGE STRIP (LEFT) -->
+<td style="padding:8px 3px;text-align:center;vertical-align:middle;width:22px">
+<div style="background-color:#cc5500;border-radius:3px;padding:8px 2px">
+<div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+</div>
+</td>
+<!-- COL 4: VIEWSCREEN - LOCKED -->
+<td style="background-color:#0b0c10;box-sizing:border-box;padding:15px 5px">
+<div style="background-color:#000000;border-radius:6px;border:6px solid #00e5ff;box-shadow:0 0 16px rgba(0,229,255,0.6),inset 0 0 10px rgba(0,229,255,0.6);box-sizing:border-box;display:block;margin-bottom:0;margin-left:auto;margin-right:auto;margin-top:0;max-width:440px;overflow:hidden;padding:0"><img alt="NCC 1701" src="/hampages/k2vg/NCC1701b.png" style="aspect-ratio:5 / 3 !important;box-sizing:border-box;display:block;filter:contrast(1.05) brightness(0.92) saturate(1.05);height:auto !important;max-height:none !important;object-fit:cover;opacity:0.95;width:100%" /></div>
+</td>
+<!-- COL 5: NARROW ORANGE STRIP (RIGHT - MIRROR of #3) -->
+<td style="padding:8px 3px;text-align:center;vertical-align:middle;width:22px">
+<div style="background-color:#cc5500;border-radius:3px;padding:8px 2px">
+<div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+</div>
+</td>
+<!-- COL 6: GREY CONTROL PANEL (ALL UNLIT) -->
+<td style="padding:8px 4px;text-align:center;vertical-align:middle;width:120px">
+<div style="background-color:#b8bcc0;border-radius:3px;padding:6px">
+<!-- 6a: Dark orange 12-light block top-left -->
+<div style="background:#4a2000;border-radius:2px;display:inline-block;margin-bottom:4px;padding:3px;vertical-align:top;width:48px">
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+<!-- 6b: 2 rows of 6, no bg -->
+<div style="display:inline-block;margin-bottom:4px;vertical-align:top">
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+<!-- 6c: 4x4 grid -->
+<div style="display:inline-block;margin-bottom:4px;padding:3px;vertical-align:top">
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+<!-- 6d: Group of 4 -->
+<div style="display:inline-block;margin-bottom:4px">
+<div style="display:flex;gap:2px;justify-content:center"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+<!-- 6e: 12 lights on white bg -->
+<div style="background:#e8e8e8;border-radius:2px;display:inline-block;margin-bottom:4px;padding:3px;vertical-align:top;width:38px">
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+<!-- 6f: Row of 6 -->
+<div style="display:inline-block;margin-bottom:4px">
+<div style="display:flex;gap:2px;justify-content:center"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+<!-- 6g: Raised rectangular control -->
+<div style="background:#999;border:1px solid #777;border-radius:2px;height:8px;margin:4px auto 0;width:20px"></div>
+<!-- 6h: Yellow 18-light block -->
+<div style="background:#ffcc00;border-radius:2px;display:inline-block;margin-bottom:4px;padding:3px;vertical-align:top;width:58px">
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+<div style="display:flex;gap:2px;justify-content:center"><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span><span style="background:#333;border-radius:50%;display:inline-block;height:1px;width:1px"></span></div>
+</div>
+</div>
+</td>
+<!-- COL 7: RED ALERT RIGHT (mirror of #1) -->
+<td style="padding:8px 3px;text-align:center;vertical-align:middle;width:28px">
+<div class="red-alert-panel" style="border:1px solid #666;border-radius:3px;height:180px;margin:0 auto;width:14px"></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
