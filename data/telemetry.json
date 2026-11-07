@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-07T09:57:49Z",
+  "timestamp": "2026-11-07T16:16:38Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -56,39 +56,696 @@
         "lore": true
       },
       {
-        "call": "CT1FIU",
-        "grid": "IN50rt03",
+        "call": "IZ0DIB",
+        "grid": "JN61hu41tx",
         "band": null,
-        "freq": 10.137196,
+        "freq": 21.075604,
         "db": -17,
+        "dxcc": "IZ",
+        "lore": false
+      },
+      {
+        "call": "IW0FGX",
+        "grid": "JN61KN",
+        "band": null,
+        "freq": 21.074867,
+        "db": -15,
+        "dxcc": "IW",
+        "lore": false
+      },
+      {
+        "call": "OK1JAZ",
+        "grid": "JO70GG",
+        "band": null,
+        "freq": 21.074216,
+        "db": -18,
+        "dxcc": "OK",
+        "lore": false
+      },
+      {
+        "call": "F6KHM",
+        "grid": "IN78rj",
+        "band": null,
+        "freq": 21.075443,
+        "db": -18,
+        "dxcc": "F6",
+        "lore": false
+      },
+      {
+        "call": "IK4ADE",
+        "grid": "JN54OE",
+        "band": null,
+        "freq": 21.074977,
+        "db": -18,
+        "dxcc": "IK",
+        "lore": false
+      },
+      {
+        "call": "EA3VM",
+        "grid": "JN01uf",
+        "band": null,
+        "freq": 21.075472,
+        "db": -19,
+        "dxcc": "EA",
+        "lore": false
+      },
+      {
+        "call": "DL8AMB",
+        "grid": "JO60JV",
+        "band": null,
+        "freq": 21.075685,
+        "db": -16,
+        "dxcc": "DL",
+        "lore": false
+      },
+      {
+        "call": "IK4TVP",
+        "grid": "JN64ck40qm",
+        "band": null,
+        "freq": 21.075588,
+        "db": -17,
+        "dxcc": "IK",
+        "lore": false
+      },
+      {
+        "call": "OK1WCF",
+        "grid": "JO80BJ",
+        "band": null,
+        "freq": 21.076961,
+        "db": -20,
+        "dxcc": "OK",
+        "lore": false
+      },
+      {
+        "call": "DC4CP",
+        "grid": "JO30BS",
+        "band": null,
+        "freq": 21.074721,
+        "db": -21,
+        "dxcc": "DC",
+        "lore": false
+      },
+      {
+        "call": "CT7BRV",
+        "grid": "IM58LM",
+        "band": null,
+        "freq": 21.076352,
+        "db": -19,
         "dxcc": "CT",
         "lore": false
       },
       {
-        "call": "EI0CZ",
-        "grid": "IO52rr63",
+        "call": "CT1EHK",
+        "grid": "IM58kr33",
         "band": null,
-        "freq": 10.137944,
-        "db": -16,
-        "dxcc": "EI",
+        "freq": 21.075246,
+        "db": -18,
+        "dxcc": "CT",
         "lore": false
       },
       {
-        "call": "IZ3BSU",
-        "grid": "JN66ck90jr",
+        "call": "F6BTP",
+        "grid": "JN09mj97",
         "band": null,
-        "freq": 10.137744,
+        "freq": 21.076455,
+        "db": -19,
+        "dxcc": "F6",
+        "lore": false
+      },
+      {
+        "call": "GJ3YHU",
+        "grid": "IN89ve13",
+        "band": null,
+        "freq": 21.074666,
+        "db": -15,
+        "dxcc": "GJ",
+        "lore": false
+      },
+      {
+        "call": "DK3TNA",
+        "grid": "JO62PJ",
+        "band": null,
+        "freq": 21.075912,
+        "db": -18,
+        "dxcc": "DK",
+        "lore": false
+      },
+      {
+        "call": "DF7PX",
+        "grid": "JO72LM",
+        "band": null,
+        "freq": 21.074622,
+        "db": -21,
+        "dxcc": "DF",
+        "lore": false
+      },
+      {
+        "call": "DC6RN",
+        "grid": "JN59wk60",
+        "band": null,
+        "freq": 21.074892,
+        "db": -18,
+        "dxcc": "DC",
+        "lore": false
+      },
+      {
+        "call": "F1PFU",
+        "grid": "JN26dp59",
+        "band": null,
+        "freq": 21.074877,
+        "db": -13,
+        "dxcc": "F1",
+        "lore": false
+      },
+      {
+        "call": "PA8KW",
+        "grid": "JO32BM",
+        "band": null,
+        "freq": 21.076825,
+        "db": -15,
+        "dxcc": "PA",
+        "lore": false
+      },
+      {
+        "call": "LY1CX",
+        "grid": "KO25nm33",
+        "band": null,
+        "freq": 21.075478,
+        "db": -15,
+        "dxcc": "LY",
+        "lore": false
+      },
+      {
+        "call": "ON8WR",
+        "grid": "JO11sb",
+        "band": null,
+        "freq": 21.076608,
+        "db": -17,
+        "dxcc": "ON",
+        "lore": false
+      },
+      {
+        "call": "M9RPO",
+        "grid": "IO82UT",
+        "band": null,
+        "freq": 21.076454,
+        "db": -19,
+        "dxcc": "M9",
+        "lore": false
+      },
+      {
+        "call": "EG1PR",
+        "grid": "IM99RM",
+        "band": null,
+        "freq": 21.075373,
+        "db": -15,
+        "dxcc": "EG",
+        "lore": false
+      },
+      {
+        "call": "G3PMY",
+        "grid": "IO90FQ",
+        "band": null,
+        "freq": 21.076055,
+        "db": -14,
+        "dxcc": "G3",
+        "lore": false
+      },
+      {
+        "call": "SM6MVL",
+        "grid": "JO67QN",
+        "band": null,
+        "freq": 21.074588,
+        "db": -16,
+        "dxcc": "SM",
+        "lore": false
+      },
+      {
+        "call": "HK3AB",
+        "grid": "FJ24xr",
+        "band": null,
+        "freq": 21.075738,
+        "db": -19,
+        "dxcc": "HK",
+        "lore": false
+      },
+      {
+        "call": "HC5RF",
+        "grid": "FI07LC",
+        "band": null,
+        "freq": 21.075031,
+        "db": -18,
+        "dxcc": "HC",
+        "lore": false
+      },
+      {
+        "call": "DO8SD",
+        "grid": "JO53XH",
+        "band": null,
+        "freq": 21.075906,
+        "db": -14,
+        "dxcc": "DO",
+        "lore": false
+      },
+      {
+        "call": "LZ2TS",
+        "grid": "KN22",
+        "band": null,
+        "freq": 21.076204,
+        "db": -12,
+        "dxcc": "LZ",
+        "lore": false
+      },
+      {
+        "call": "DH5MK",
+        "grid": "JO41kw16",
+        "band": null,
+        "freq": 21.076703,
+        "db": -21,
+        "dxcc": "DH",
+        "lore": false
+      },
+      {
+        "call": "OE1RDU/3",
+        "grid": "JN88IL",
+        "band": null,
+        "freq": 21.074448,
+        "db": -15,
+        "dxcc": "OE",
+        "lore": false
+      },
+      {
+        "call": "IK2SAR",
+        "grid": "JN55cv65",
+        "band": null,
+        "freq": 21.076156,
+        "db": -18,
+        "dxcc": "IK",
+        "lore": false
+      },
+      {
+        "call": "DO1SJF",
+        "grid": "JN48PR",
+        "band": null,
+        "freq": 21.075304,
+        "db": -18,
+        "dxcc": "DO",
+        "lore": false
+      },
+      {
+        "call": "M0PYU",
+        "grid": "IO93SA",
+        "band": null,
+        "freq": 21.07651,
+        "db": -17,
+        "dxcc": "M0",
+        "lore": false
+      },
+      {
+        "call": "PB7TT",
+        "grid": "JO21GV",
+        "band": null,
+        "freq": 21.075637,
+        "db": -20,
+        "dxcc": "PB",
+        "lore": false
+      },
+      {
+        "call": "DK5IR",
+        "grid": "JN49ic58",
+        "band": null,
+        "freq": 21.075863,
+        "db": -19,
+        "dxcc": "DK",
+        "lore": false
+      },
+      {
+        "call": "F8MRQ",
+        "grid": "JN17CT",
+        "band": null,
+        "freq": 21.074487,
+        "db": -17,
+        "dxcc": "F8",
+        "lore": false
+      },
+      {
+        "call": "DL1EB",
+        "grid": "JO31jl85",
+        "band": null,
+        "freq": 21.075356,
+        "db": -15,
+        "dxcc": "DL",
+        "lore": false
+      },
+      {
+        "call": "DO9BAU",
+        "grid": "JO62ti30",
+        "band": null,
+        "freq": 21.0761,
+        "db": -19,
+        "dxcc": "DO",
+        "lore": false
+      },
+      {
+        "call": "9A4ZM",
+        "grid": "JN86HF",
+        "band": null,
+        "freq": 21.076584,
+        "db": -14,
+        "dxcc": "9A",
+        "lore": false
+      },
+      {
+        "call": "HA7TM",
+        "grid": "JN97kk",
+        "band": null,
+        "freq": 21.076113,
+        "db": -8,
+        "dxcc": "HA",
+        "lore": false
+      },
+      {
+        "call": "EA7JHC",
+        "grid": "IM76GC",
+        "band": null,
+        "freq": 21.074524,
+        "db": -19,
+        "dxcc": "EA",
+        "lore": false
+      },
+      {
+        "call": "EA7GG",
+        "grid": "IM76gc56",
+        "band": null,
+        "freq": 21.075374,
+        "db": -16,
+        "dxcc": "EA",
+        "lore": false
+      },
+      {
+        "call": "LA8LGA",
+        "grid": "JP50sv75",
+        "band": null,
+        "freq": 21.074388,
+        "db": -14,
+        "dxcc": "LA",
+        "lore": false
+      },
+      {
+        "call": "G0HSP",
+        "grid": "IO90MS",
+        "band": null,
+        "freq": 21.076774,
+        "db": -18,
+        "dxcc": "G0",
+        "lore": false
+      },
+      {
+        "call": "DK2KI",
+        "grid": "JO31mo62ah",
+        "band": null,
+        "freq": 21.074833,
+        "db": -19,
+        "dxcc": "DK",
+        "lore": false
+      },
+      {
+        "call": "F1MXE",
+        "grid": "JN05gq36",
+        "band": null,
+        "freq": 21.076773,
+        "db": -19,
+        "dxcc": "F1",
+        "lore": false
+      },
+      {
+        "call": "PA3GYQ",
+        "grid": "JO21ev69",
+        "band": null,
+        "freq": 21.075288,
+        "db": -20,
+        "dxcc": "PA",
+        "lore": false
+      },
+      {
+        "call": "EC7R",
+        "grid": "IM67LG",
+        "band": null,
+        "freq": 21.075202,
+        "db": -11,
+        "dxcc": "EC",
+        "lore": false
+      },
+      {
+        "call": "HA3HA",
+        "grid": "JN86vi",
+        "band": null,
+        "freq": 21.075504,
+        "db": -17,
+        "dxcc": "HA",
+        "lore": false
+      },
+      {
+        "call": "ON4DN",
+        "grid": "JO20LM",
+        "band": null,
+        "freq": 21.074342,
+        "db": -8,
+        "dxcc": "ON",
+        "lore": false
+      },
+      {
+        "call": "SV1CQN",
+        "grid": "KM08QO",
+        "band": null,
+        "freq": 21.076183,
+        "db": -20,
+        "dxcc": "SV",
+        "lore": false
+      },
+      {
+        "call": "LY3PW",
+        "grid": "KO05WV",
+        "band": null,
+        "freq": 21.07567,
+        "db": -20,
+        "dxcc": "LY",
+        "lore": false
+      },
+      {
+        "call": "DK4TM",
+        "grid": "JO40",
+        "band": null,
+        "freq": 21.076653,
+        "db": -19,
+        "dxcc": "DK",
+        "lore": false
+      },
+      {
+        "call": "DL4MFR",
+        "grid": "JN58RS",
+        "band": null,
+        "freq": 21.074995,
+        "db": -19,
+        "dxcc": "DL",
+        "lore": false
+      },
+      {
+        "call": "DL6NDN",
+        "grid": "JO50JB",
+        "band": null,
+        "freq": 21.076145,
+        "db": -17,
+        "dxcc": "DL",
+        "lore": false
+      },
+      {
+        "call": "F6BIA",
+        "grid": "JN18dq92",
+        "band": null,
+        "freq": 21.074538,
+        "db": -11,
+        "dxcc": "F6",
+        "lore": false
+      },
+      {
+        "call": "DL4DBM",
+        "grid": "JO31QI",
+        "band": null,
+        "freq": 21.076768,
+        "db": -18,
+        "dxcc": "DL",
+        "lore": false
+      },
+      {
+        "call": "EB5AFK",
+        "grid": "IM98LL",
+        "band": null,
+        "freq": 21.075764,
+        "db": -16,
+        "dxcc": "EB",
+        "lore": false
+      },
+      {
+        "call": "DO8JB",
+        "grid": "JO32XC",
+        "band": null,
+        "freq": 21.074399,
+        "db": -17,
+        "dxcc": "DO",
+        "lore": false
+      },
+      {
+        "call": "DH1KU",
+        "grid": "JO30jp36",
+        "band": null,
+        "freq": 21.075876,
+        "db": -21,
+        "dxcc": "DH",
+        "lore": false
+      },
+      {
+        "call": "YO9HB",
+        "grid": "KN34iv",
+        "band": null,
+        "freq": 21.0751,
+        "db": -13,
+        "dxcc": "YO",
+        "lore": false
+      },
+      {
+        "call": "DO1BBM",
+        "grid": "JO40VS",
+        "band": null,
+        "freq": 21.074737,
+        "db": -20,
+        "dxcc": "DO",
+        "lore": false
+      },
+      {
+        "call": "S57D",
+        "grid": "JN76gc63",
+        "band": null,
+        "freq": 21.074721,
+        "db": -19,
+        "dxcc": "S5",
+        "lore": false
+      },
+      {
+        "call": "HB9EDB",
+        "grid": "JN45lu90",
+        "band": null,
+        "freq": 21.074209,
+        "db": -19,
+        "dxcc": "HB",
+        "lore": false
+      },
+      {
+        "call": "I3QDK",
+        "grid": "JN65dx64",
+        "band": null,
+        "freq": 21.074342,
+        "db": -11,
+        "dxcc": "I3",
+        "lore": false
+      },
+      {
+        "call": "DL1NB",
+        "grid": "JO43KR",
+        "band": null,
+        "freq": 21.075137,
+        "db": -20,
+        "dxcc": "DL",
+        "lore": false
+      },
+      {
+        "call": "RD6OQ",
+        "grid": "KN87",
+        "band": null,
+        "freq": 21.075568,
+        "db": -16,
+        "dxcc": "RD",
+        "lore": false
+      },
+      {
+        "call": "F4MHR",
+        "grid": "JN09XP",
+        "band": null,
+        "freq": 21.075079,
+        "db": -18,
+        "dxcc": "F4",
+        "lore": false
+      },
+      {
+        "call": "IZ1MKK",
+        "grid": "JN44VD",
+        "band": null,
+        "freq": 21.076008,
         "db": -20,
         "dxcc": "IZ",
         "lore": false
       },
       {
-        "call": "CU2DX",
-        "grid": "HM77es51",
+        "call": "DL1ECG",
+        "grid": "JO31IE",
         "band": null,
-        "freq": 10.136327,
-        "db": -18,
-        "dxcc": "CU",
+        "freq": 21.07494,
+        "db": -19,
+        "dxcc": "DL",
+        "lore": false
+      },
+      {
+        "call": "DK7ZT",
+        "grid": "JO40ht85",
+        "band": null,
+        "freq": 21.075819,
+        "db": -16,
+        "dxcc": "DK",
+        "lore": false
+      },
+      {
+        "call": "DG9NAJ",
+        "grid": "JN59SW",
+        "band": null,
+        "freq": 21.07481,
+        "db": -17,
+        "dxcc": "DG",
+        "lore": false
+      },
+      {
+        "call": "I1RJP",
+        "grid": "JN45bo",
+        "band": null,
+        "freq": 21.074333,
+        "db": -19,
+        "dxcc": "I1",
+        "lore": false
+      },
+      {
+        "call": "YT3M",
+        "grid": "KN03JQ",
+        "band": null,
+        "freq": 21.075688,
+        "db": -8,
+        "dxcc": "YT",
+        "lore": false
+      },
+      {
+        "call": "I1APQ",
+        "grid": "JN34ww10tc",
+        "band": null,
+        "freq": 21.075465,
+        "db": -23,
+        "dxcc": "I1",
+        "lore": false
+      },
+      {
+        "call": "CT2JCB",
+        "grid": "IM59hb",
+        "band": null,
+        "freq": 21.075368,
+        "db": -20,
+        "dxcc": "CT",
         "lore": false
       }
     ]
