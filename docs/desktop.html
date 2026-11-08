@@ -266,7 +266,7 @@ document.getElementById('pollNow').addEventListener('click',function(e){e.preven
 document.getElementById('armAudio').addEventListener('click',function(e){e.preventDefault();ztMsg('AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');});
 document.getElementById('testAlert').addEventListener('click',function(e){e.preventDefault();ztMsg('ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');});
 document.getElementById('refreshInterval').addEventListener('change',function(e){this.value='300000';ztMsg('REFRESH RATE LOCKED // ADMIN OVERRIDE DENIED');});
-document.getElementById('volSlider').addEventListener('input',function(e){ztMsg('VOLUME CONTROL LOCKED // OPERATOR FUNCTION ONLY // VIOLATION LOGGED');});
+document.getElementById('volSlider').addEventListener('input',function(e){ztMsg('VOLUME CONTROL LOCKED // ADMIN FUNCTION ONLY // VIOLATION LOGGED');});
 document.addEventListener('contextmenu',function(e){e.preventDefault();ztMsg('UNAUTHORIZED INSPECTION ATTEMPT // ADMIN PRIVILEDGES REQUIRED // REPORTED TO STARFLEET SECURITY');});
 document.addEventListener('keydown',function(e){
   if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))){
