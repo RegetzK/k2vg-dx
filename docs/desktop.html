@@ -261,12 +261,12 @@ var ztMsg=function(text){
   document.body.appendChild(d);
   setTimeout(function(){d.remove();},2500);
 };
-document.getElementById('pollNow').addEventListener('click',function(e){e.preventDefault();ztMsg('OPERATOR FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');});
-document.getElementById('armAudio').addEventListener('click',function(e){e.preventDefault();ztMsg('AUDIO SYSTEM LOCKED // SL9 CLEARANCE REQUIRED // INCIDENT LOGGED');});
-document.getElementById('testAlert').addEventListener('click',function(e){e.preventDefault();ztMsg('ALERT SYSTEM LOCKED // SL9 CLEARANCE REQUIRED // INCIDENT LOGGED');});
-document.getElementById('refreshInterval').addEventListener('change',function(e){this.value='300000';ztMsg('REFRESH RATE LOCKED // OPERATOR OVERRIDE DENIED');});
-document.getElementById('volSlider').addEventListener('input',function(e){ztMsg('VOLUME CONTROL LOCKED // OPERATOR FUNCTION ONLY');});
-document.addEventListener('contextmenu',function(e){e.preventDefault();ztMsg('UNAUTHORIZED INSPECTION ATTEMPT // REPORTED TO STARFLEET SECURITY');});
+document.getElementById('pollNow').addEventListener('click',function(e){e.preventDefault();ztMsg('ADMIN FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');});
+document.getElementById('armAudio').addEventListener('click',function(e){e.preventDefault();ztMsg('AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');});
+document.getElementById('testAlert').addEventListener('click',function(e){e.preventDefault();ztMsg('ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');});
+document.getElementById('refreshInterval').addEventListener('change',function(e){this.value='300000';ztMsg('REFRESH RATE LOCKED // ADMIN OVERRIDE DENIED');});
+document.getElementById('volSlider').addEventListener('input',function(e){ztMsg('VOLUME CONTROL LOCKED // OPERATOR FUNCTION ONLY // VIOLATION LOGGED');});
+document.addEventListener('contextmenu',function(e){e.preventDefault();ztMsg('UNAUTHORIZED INSPECTION ATTEMPT // ADMIN PRIVILEDGES REQUIRED // REPORTED TO STARFLEET SECURITY');});
 document.addEventListener('keydown',function(e){
   if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))){
     e.preventDefault();
@@ -392,7 +392,7 @@ load();
 scheduleRefresh();
 </script>
 <div style="text-align:center; margin-top:16px">
-  <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">CLICK HERE // RETURN TO BETA FIVE COMM-STATION</a>
+  <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">[   <span style="color:#ffff00 !important;font-size:12px;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span>   ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 </body>
 </html>   
