@@ -262,12 +262,12 @@ var ztMsg=function(text){
   document.body.appendChild(d);
   setTimeout(function(){d.remove();},4000);
 };
-document.getElementById('pollNow').addEventListener('click',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.fullAlert();ztMsg('ADMIN FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');});
-document.getElementById('armAudio').addEventListener('click',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.fullAlert();ztMsg('AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');});
-document.getElementById('testAlert').addEventListener('click',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.fullAlert();ztMsg('ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');});
-document.addEventListener('contextmenu',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.fullAlert();ztMsg('UNAUTHORIZED INSPECTION ATTEMPT // ADMIN PRIVILEDGES REQUIRED // REPORTED TO STARFLEET SECURITY');});
-document.getElementById('refreshInterval').addEventListener('change',function(e){this.value='300000';if(window.K2VGAudio)K2VGAudio.fullAlert();ztMsg('REFRESH RATE LOCKED // ADMIN OVERRIDE DENIED');});
-document.getElementById('volSlider').addEventListener('input',function(e){if(window.K2VGAudio)K2VGAudio.fullAlert();ztMsg('VOLUME CONTROL LOCKED // ADMIN FUNCTION ONLY // VIOLATION LOGGED');});   
+document.getElementById('pollNow').addEventListener('click',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('ADMIN FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');});
+document.getElementById('armAudio').addEventListener('click',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');});
+document.getElementById('testAlert').addEventListener('click',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');});
+document.addEventListener('contextmenu',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('UNAUTHORIZED INSPECTION ATTEMPT // ADMIN PRIVILEDGES REQUIRED // REPORTED TO STARFLEET SECURITY');}); 
+document.getElementById('refreshInterval').addEventListener('change',function(e){this.value='300000';if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('REFRESH RATE LOCKED // ADMIN OVERRIDE DENIED');});   
+document.getElementById('volSlider').addEventListener('input',function(e){if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('VOLUME CONTROL LOCKED // ADMIN FUNCTION ONLY // VIOLATION LOGGED');});   
 document.addEventListener('keydown',function(e){
   if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))){
     e.preventDefault();
