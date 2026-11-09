@@ -181,16 +181,21 @@ body { margin:0; padding:0; background:#b0a89e; }
 </td>
 <!-- COL 7: RED ALERT RIGHT - 70px wide, 150px tall -->
 <td style="padding:0 3px 8px 3px;text-align:center;vertical-align:top;width:70px">
-<div class="red-alert-panel" style="border:1px solid #666;border-radius:3px;height:65px;margin:0 auto;width:25px;position:relative;background:transparent">
-  <!-- inner glow layer that does the flashing -->
-  <div style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:3px;background:#d8261e;animation:redFlash 1s infinite ease-in-out;box-shadow:0 0 8px #f2382c,inset 0 0 8px rgba(255,0,0,0.4)"></div>
-  <!-- the 3 actual lights on top -->
-  <span style="position:absolute;left:50%;top:6px;width:4px;height:5px;background:#fff5f0;box-shadow:0 0 6px #ff1a1a,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:12px;width:4px;height:5px;background:#fff5f0;box-shadow:0 0 6px #ff1a1a,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:26px;width:4px;height:5px;background:#fff5f0;box-shadow:0 0 6px #ff1a1a,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:32px;width:4px;height:5px;background:#fff5f0;box-shadow:0 0 6px #ff1a1a,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:46px;width:4px;height:5px;background:#fff5f0;box-shadow:0 0 6px #ff1a1a,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:52px;width:4px;height:5px;background:#fff5f0;box-shadow:0 0 6px #ff1a1a,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
+<div class="red-alert-panel" style="border:1px solid #666;border-radius:3px;height:65px;margin:0 auto;width:25px;position:relative;background:transparent;overflow:hidden">
+  <!-- base red glow, 3-bulb radial hotspots -->
+  <div style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:3px;background:
+    radial-gradient(ellipse 14px 10px at 50% 15%, #ff3a2e 0%, transparent 70%),
+    radial-gradient(ellipse 14px 10px at 50% 50%, #ff3a2e 0%, transparent 70%),
+    radial-gradient(ellipse 14px 10px at 50% 85%, #ff3a2e 0%, transparent 70%),
+    linear-gradient(180deg, #d8261e 0%, #8a1209 100%);
+    animation:redFlash 1s infinite ease-in-out;
+    box-shadow:0 0 8px #f2382c, inset 0 0 10px rgba(255,0,0,0.5)"></div>
+  <!-- fluted glass texture -->
+  <div style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:3px;background:repeating-linear-gradient(90deg, transparent 0px, transparent 3px, rgba(255,255,255,0.08) 3px, rgba(255,255,255,0.08) 4px);z-index:1;pointer-events:none"></div>
+  <!-- 3 bulb highlights -->
+  <span style="position:absolute;left:50%;top:8px;width:5px;height:6px;background:radial-gradient(ellipse, #fff8f5 0%, #ffb0a0 100%);border-radius:50%;box-shadow:0 0 5px #ff2a1a,0 0 10px #ff4444;transform:translateX(-50%);z-index:2"></span>
+  <span style="position:absolute;left:50%;top:29px;width:5px;height:6px;background:radial-gradient(ellipse, #fff8f5 0%, #ffb0a0 100%);border-radius:50%;box-shadow:0 0 5px #ff2a1a,0 0 10px #ff4444;transform:translateX(-50%);z-index:2"></span>
+  <span style="position:absolute;left:50%;top:50px;width:5px;height:6px;background:radial-gradient(ellipse, #fff8f5 0%, #ffb0a0 100%);border-radius:50%;box-shadow:0 0 5px #ff2a1a,0 0 10px #ff4444;transform:translateX(-50%);z-index:2"></span>
 </div>
 </td>
 
