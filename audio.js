@@ -1,4 +1,3 @@
-<script>
 (function(){
   let ctx=null,started=false;
   const V=0.12; // master volume (0 to 1)
@@ -163,4 +162,3 @@
   // Expose for manual triggering (desktop.html unauthorized access)
   window.K2VGAudio={klaxon:alertKlaxon,sonar:sonarBreach,allHands:allHands,buzzer:buzzerRumble,lock:subspaceLock,denied:function(){const c=ac();tone(220,c.currentTime,0.08,'square',V*0.15);tone(180,c.currentTime+0.1,0.08,'square',V*0.15);}};   
 })();
-</script>   
