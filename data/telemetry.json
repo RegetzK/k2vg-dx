@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-10T21:27:38Z",
+  "timestamp": "2026-11-11T01:25:41Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -56,28 +56,28 @@
         "lore": true
       },
       {
-        "call": "PW8BR",
-        "grid": "FH99AC",
+        "call": "HK4QHD",
+        "grid": "FJ26GC",
         "band": null,
-        "freq": 21.075243,
-        "db": -14,
-        "dxcc": "PW",
+        "freq": 7.0765,
+        "db": -18,
+        "dxcc": "HK",
         "lore": false
       },
       {
-        "call": "HK4LGH",
-        "grid": "FJ26ee83",
+        "call": "IZ2AMW",
+        "grid": "JN45ol72",
         "band": null,
-        "freq": 21.075571,
-        "db": -19,
-        "dxcc": "HK",
+        "freq": 7.0763,
+        "db": -20,
+        "dxcc": "IZ",
         "lore": false
       },
       {
         "call": "HK4QXX",
         "grid": "FJ26HD",
         "band": null,
-        "freq": 21.075458,
+        "freq": 7.075456,
         "db": -19,
         "dxcc": "HK",
         "lore": false
@@ -86,45 +86,18 @@
         "call": "ZZ5UNO",
         "grid": "GG54RH",
         "band": null,
-        "freq": 21.075002,
-        "db": -21,
+        "freq": 7.075074,
+        "db": -20,
         "dxcc": "ZZ",
         "lore": false
       },
       {
-        "call": "E77PY",
-        "grid": "JN84XP",
+        "call": "PI4DX",
+        "grid": "JO21aj13",
         "band": null,
-        "freq": 21.075751,
-        "db": -11,
-        "dxcc": "E7",
-        "lore": false
-      },
-      {
-        "call": "HK3WW",
-        "grid": "FJ24LL",
-        "band": null,
-        "freq": 21.075512,
-        "db": -21,
-        "dxcc": "HK",
-        "lore": false
-      },
-      {
-        "call": "YV4AJR",
-        "grid": "FK60EF",
-        "band": null,
-        "freq": 18.1017,
+        "freq": 7.074928,
         "db": -19,
-        "dxcc": "YV",
-        "lore": false
-      },
-      {
-        "call": "HK3VXX",
-        "grid": "FJ24so",
-        "band": null,
-        "freq": 18.10217,
-        "db": -18,
-        "dxcc": "HK",
+        "dxcc": "PI",
         "lore": false
       }
     ]
