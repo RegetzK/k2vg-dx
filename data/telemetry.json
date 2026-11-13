@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-12T19:09:23Z",
+  "timestamp": "2026-11-13T00:23:51Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -54,6 +54,60 @@
         "dxcc": "EARTH",
         "status": "MONITORED",
         "lore": true
+      },
+      {
+        "call": "US2YW",
+        "grid": "KN28xg",
+        "band": null,
+        "freq": 7.074932,
+        "db": -17,
+        "dxcc": "US",
+        "lore": false
+      },
+      {
+        "call": "DH8WR",
+        "grid": "JO50QR",
+        "band": null,
+        "freq": 7.075129,
+        "db": -20,
+        "dxcc": "DH",
+        "lore": false
+      },
+      {
+        "call": "HK3PLB",
+        "grid": "FJ24XQ63",
+        "band": null,
+        "freq": 7.074887,
+        "db": -22,
+        "dxcc": "HK",
+        "lore": false
+      },
+      {
+        "call": "PV8AJ",
+        "grid": "FJ92qu",
+        "band": null,
+        "freq": 7.075971,
+        "db": -21,
+        "dxcc": "PV",
+        "lore": false
+      },
+      {
+        "call": "IT9EWL",
+        "grid": "JM78of",
+        "band": null,
+        "freq": 7.076202,
+        "db": -18,
+        "dxcc": "IT",
+        "lore": false
+      },
+      {
+        "call": "IK4DCW",
+        "grid": "JN64AM",
+        "band": null,
+        "freq": 7.076163,
+        "db": -19,
+        "dxcc": "IK",
+        "lore": false
       }
     ]
   }
