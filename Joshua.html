@@ -95,7 +95,6 @@
 <div id="return">
 <a href="https://www.qrz.com/db/K2VG" target="_top">[ <span style="color:#ffff00 !important;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span> ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
-
 <script>
 (function(){
   /* ---- Build the 9 cells once ---- */
@@ -135,10 +134,6 @@
   }
 
   /* ---- TTT Sequence — geometric speed-up like the film ---- */
-  // Each game: moveDelay shrinks, tieFlash shrinks, inter-game pause shrinks
-  // Game 1: 2.2s draw + 270ms TIE + 680ms pause = ~3.2s
-  // Game 10: 17ms move + 9ms TIE + 14ms pause = ~175ms total
-  // Grand total: ~10.2s
   var md = [], td = [], tp = [];
   for (var i = 0; i < 10; i++) {
     md.push(Math.round(220 * Math.pow(0.75, i)));
@@ -151,22 +146,20 @@
   var speedEl = document.getElementById('ttt-speed');
 
   function drawBoard(callback) {
-    var cells = [];
-    for (var i = 0; i < 9; i++) cells.push(' ');
+    var state = [' ',' ',' ',' ',' ',' ',' ',' ',' '];   // FIX: renamed from 'cells'
     var player = 'X';
     var i = 0;
 
     function placeMove() {
       if (i >= 9) {
-        // Show TIE with a brief flash
         statusEl.textContent = 'TIE';
         setTimeout(function() {
           if (callback) callback();
         }, td[tttIdx]);
         return;
       }
-      cells[i] = player;
-      cells[i].textContent = player;
+      state[i] = player;                                  // track game state here
+      cells[i].textContent = player;                      // write to the real DOM cell
       cells[i].className = 'cell ' + player.toLowerCase() + ' flash';
       setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[i]), 120);
 
