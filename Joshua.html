@@ -134,39 +134,51 @@
     requestAnimationFrame(checkFreeze);
   }
 
-  /* ---- TTT Sequence ---- */
-  var speeds = [500,450,380,310,250,200,160,130,110,100];
+  /* ---- TTT Sequence — geometric speed-up like the film ---- */
+  // Each game: moveDelay shrinks, tieFlash shrinks, inter-game pause shrinks
+  // Game 1: 2.2s draw + 270ms TIE + 680ms pause = ~3.2s
+  // Game 10: 17ms move + 9ms TIE + 14ms pause = ~175ms total
+  // Grand total: ~10.2s
+  var md = [], td = [], tp = [];
+  for (var i = 0; i < 10; i++) {
+    md.push(Math.round(220 * Math.pow(0.75, i)));
+    td.push(Math.round(270 * Math.pow(0.68, i)));
+    tp.push(Math.round(680 * Math.pow(0.65, i)));
+  }
+
   var tttIdx = 0;
   var statusEl = document.getElementById('ttt-status');
   var speedEl = document.getElementById('ttt-speed');
-  var MOVE_DELAY = 30;
 
   function drawBoard(callback) {
-    var state = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
+    var cells = [];
+    for (var i = 0; i < 9; i++) cells.push(' ');
     var player = 'X';
     var i = 0;
 
     function placeMove() {
       if (i >= 9) {
+        // Show TIE with a brief flash
         statusEl.textContent = 'TIE';
-        if (callback) callback();
+        setTimeout(function() {
+          if (callback) callback();
+        }, td[tttIdx]);
         return;
       }
-      state[i] = player;
+      cells[i] = player;
       cells[i].textContent = player;
       cells[i].className = 'cell ' + player.toLowerCase() + ' flash';
-      // Remove the white flash highlight shortly after placement
       setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[i]), 120);
 
       player = (player === 'X') ? 'O' : 'X';
       i++;
-      setTimeout(placeMove, MOVE_DELAY);
+      setTimeout(placeMove, md[tttIdx]);
     }
     placeMove();
   }
 
   function runGame() {
-    if (tttIdx >= speeds.length) {
+    if (tttIdx >= 10) {
       statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
       speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
       log.style.animationPlayState = 'running';
@@ -174,7 +186,7 @@
       return;
     }
 
-    var spd = speeds[tttIdx];
+    var spd = tp[tttIdx];
     speedEl.textContent = 'GAME ' + (tttIdx+1) + '/10 \u2014 ' + spd + 'ms';
     statusEl.innerHTML = '&nbsp;';
     resetBoard();
