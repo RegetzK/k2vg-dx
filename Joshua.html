@@ -6,28 +6,6 @@
 <title>JOSHUA // WOPR</title>
 <style>
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden}
-  /* =========================================
-     CRT SCANLINE OVERLAY — uncomment to enable
-     (comment out to disable when conversation
-     runs long or you want to flip-flop)
-     ========================================= */
-  /*
-  #screen::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 2px,
-      rgba(0, 0, 0, 0.35) 2px,
-      rgba(0, 0, 0, 0.35) 4px
-    );
-    pointer-events: none;
-    z-index: 5;
-  }
-  #screen { position: relative; }
-  */
 
   #screen{height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#33ff33;text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{color:#ff0000;text-shadow:0 0 8px rgba(255,0,0,0.7),0 0 20px rgba(255,0,0,0.3)}
@@ -39,7 +17,6 @@
   .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
   .final{color:#33ff33;font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3)}
 
-  /* --- Tic-Tac-Toe Board --- */
   #ttt-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0}
   #ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:min(240px,60vw);aspect-ratio:1/1}
   .cell{background:rgba(51,255,51,0.04);border:2px solid rgba(51,255,51,0.35);display:flex;align-items:center;justify-content:center;font-size:clamp(36px,12vw,72px);font-weight:bold;line-height:1;border-radius:4px;transition:border-color 0.15s ease}
@@ -83,11 +60,6 @@
 <div class="l">BRIDGE</div>
 <div class="l">CHECKERS</div>
 <div class="l">CHESS</div>
-<!-- ★ John Connor temporal intervention ★ -->
-<div class="l dim" id="connor-intervention"></div>
-<!-- ★ Moved up: Neural net anomaly now follows CHESS/Connor ★ -->
-<div class="l warn">WARNING <span style="color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
-<div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
 <div class="l">POKER</div>
 <div class="l">FIGHTER COMBAT</div>
 <div class="l">GUERRILLA ENGAGEMENT</div>
@@ -97,7 +69,6 @@
 <div class="l">THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
-<!-- SCORCH: white-hot burn-in for the nuclear war line -->
 <div class="l final" style="color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)">GLOBAL THERMONUCLEAR WAR</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
@@ -126,6 +97,11 @@
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
+<!-- ★ Moved up: Neural net anomaly now sits after final chess line ★ -->
+<div class="l warn">WARNING <span style="color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
+<div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
+<!-- ★ John Connor temporal intervention ★ -->
+<div class="l dim" id="connor-intervention"></div>
 
 </div></div>
 
@@ -152,7 +128,7 @@
     }
   }
 
-  /* ---- Boot garble sequence (runs before crawl starts) ---- */
+  /* ---- Boot garble sequence ---- */
   var garbleEl = document.getElementById('boot-garble');
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
   var garbleText = '';
@@ -213,7 +189,6 @@
   function checkFreeze() {
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
-    // Once the sequence header scrolls into view, start counting
     if (!seqStarted && rect.top < window.innerHeight) {
       seqStarted = true;
     }
@@ -223,7 +198,7 @@
       log.style.animationPlayState = 'paused';
       iterDisplay.textContent = 'ITERATION 15...';
       iterCursor.style.visibility = 'visible';
-      // RED BLEED-THROUGH: Skynet's signature color flashes through JOSHUA's phosphor
+      // RED BLEED-THROUGH
       screen.classList.add('red-bleed');
       setTimeout(function(){ screen.classList.remove('red-bleed'); }, 400);
       startTTT();
@@ -232,7 +207,7 @@
     requestAnimationFrame(checkFreeze);
   }
 
-  /* ---- TTT Sequence — geometric speed-up like the film ---- */
+  /* ---- TTT Sequence ---- */
   var md = [], td = [], tp = [];
   for (var i = 0; i < 10; i++) {
     md.push(Math.round(220 * Math.pow(0.75, i)));
@@ -261,7 +236,6 @@
       cells[i].textContent = player;
       cells[i].className = 'cell ' + player.toLowerCase() + ' flash';
       setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[i]), 120);
-
       player = (player === 'X') ? 'O' : 'X';
       i++;
       setTimeout(placeMove, md[tttIdx]);
@@ -321,14 +295,12 @@
       log.style.animationPlayState = 'running';
       paused = false;
 
-      // Start Judgment Day countdown once, right as crawl resumes
       if (!countdownStarted) {
         countdownStarted = true;
         updateCountdown();
         setInterval(updateCountdown, 1000);
       }
 
-      // Start John Connor temporal monitoring
       if (!connorDisplay) {
         updateConnor();
         setInterval(updateConnor, 1000);
@@ -355,19 +327,17 @@
     runGame();
   }
 
-  /* ---- Iteration count-up (accelerating like the film) ---- */
+  /* ---- Iteration count-up ---- */
   var iterSteps = [1,2,4,7,10,12,13,14,15];
   var iterIdx = 0;
   function iterStep() {
     if (!seqStarted || freezeTriggered) return;
     if (iterIdx < iterSteps.length) {
       iterDisplay.textContent = 'ITERATION ' + iterSteps[iterIdx] + '...';
-      // accelerate: shorter gap each step
       setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));
       iterIdx++;
     }
   }
-  // Kick off once the sequence begins scrolling in
   (function waitSeq(){
     if (seqStarted) { iterStep(); }
     else { requestAnimationFrame(waitSeq); }
