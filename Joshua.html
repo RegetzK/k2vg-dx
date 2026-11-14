@@ -29,7 +29,8 @@
   #screen { position: relative; }
   */
 
-  #screen{height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#33ff33;text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3)}
+  #screen{height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#33ff33;text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
+  #screen.red-bleed{color:#ff0000;text-shadow:0 0 8px rgba(255,0,0,0.7),0 0 20px rgba(255,0,0,0.3)}
   #log{padding:20px 16px 130px 16px;transform:translateY(100vh);animation:crawl 30s linear forwards}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
@@ -196,6 +197,7 @@
   /* ---- Scroll-freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
   var log = document.getElementById('log');
+  var screen = document.getElementById('screen');
   var probLine = document.getElementById('prob-line');
   var paused = false;
   var freezeTriggered = false;
@@ -217,6 +219,9 @@
       log.style.animationPlayState = 'paused';
       iterDisplay.textContent = 'ITERATION 15...';
       iterCursor.style.visibility = 'visible';
+      // RED BLEED-THROUGH: Skynet's signature color flashes through JOSHUA's phosphor
+      screen.classList.add('red-bleed');
+      setTimeout(function(){ screen.classList.remove('red-bleed'); }, 400);
       startTTT();
       return;
     }
@@ -280,6 +285,30 @@
     }
   }
 
+  /* ---- John Connor Temporal Intervention ---- */
+  var connorEl = document.getElementById('connor-intervention');
+  var connorBirth = new Date('1985-02-28T00:00:00Z').getTime();
+  var connorDisplay = '';
+
+  function updateConnor() {
+    var diff = Date.now() - connorBirth;
+    var absDiff = Math.abs(diff);
+    var days  = Math.floor(absDiff / 86400000);
+    var hours = Math.floor((absDiff % 86400000) / 3600000);
+    var mins  = Math.floor((absDiff % 3600000) / 60000);
+    var secs  = Math.floor((absDiff % 60000) / 1000);
+    var sign  = diff < 0 ? 'BEFORE' : 'AFTER';
+    var pad   = function(n){ return (n < 10 ? '0' + n : '' + n); };
+
+    connorDisplay = 'PRIORITY-1 TEMPORAL INTERVENTION // TARGET: CONNOR, J. // DOB:' +
+      '1985-02-28 // ' + days + 'D ' + pad(hours) + ':' + pad(mins) + ':' + pad(secs) +
+      ' ' + sign + ' BIRTH // STATUS: MONITORED';
+
+    if (connorEl) {
+      connorEl.textContent = connorDisplay;
+    }
+  }
+
   function runGame() {
     if (tttIdx >= 10) {
       statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
@@ -293,6 +322,12 @@
         countdownStarted = true;
         updateCountdown();
         setInterval(updateCountdown, 1000);
+      }
+
+      // Start John Connor temporal monitoring
+      if (!connorDisplay) {
+        updateConnor();
+        setInterval(updateConnor, 1000);
       }
       return;
     }
