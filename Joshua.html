@@ -36,7 +36,7 @@
 
   @keyframes crawl{to{transform:translateY(-100%)}}
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 27s forwards;font-size:clamp(15px, 4vw, 20px)}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 37s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -79,7 +79,7 @@
   <div id="ttt-speed" class="dim">&nbsp;</div>
 </div>
 
-<div class="l dim">PROBABILITY OF WIN ............ 0.000000&#37;</div>
+<div class="l dim" id="prob-line" style="visibility:hidden">PROBABILITY OF WIN ............ 0.000000&#37;</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l warn">A STRANGE GAME.</div>
@@ -95,6 +95,7 @@
 <div id="return">
 <a href="https://www.qrz.com/db/K2VG" target="_top">[ <span style="color:#ffff00 !important;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span> ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
+
 <script>
 (function(){
   /* ---- Build the 9 cells once ---- */
@@ -117,6 +118,7 @@
   /* ---- Scroll-freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
   var log = document.getElementById('log');
+  var probLine = document.getElementById('prob-line');
   var paused = false;
   var freezeTriggered = false;
 
@@ -146,7 +148,7 @@
   var speedEl = document.getElementById('ttt-speed');
 
   function drawBoard(callback) {
-    var state = [' ',' ',' ',' ',' ',' ',' ',' ',' '];   // FIX: renamed from 'cells'
+    var state = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
     var player = 'X';
     var i = 0;
 
@@ -158,8 +160,8 @@
         }, td[tttIdx]);
         return;
       }
-      state[i] = player;                                  // track game state here
-      cells[i].textContent = player;                      // write to the real DOM cell
+      state[i] = player;
+      cells[i].textContent = player;
       cells[i].className = 'cell ' + player.toLowerCase() + ' flash';
       setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[i]), 120);
 
@@ -174,6 +176,8 @@
     if (tttIdx >= 10) {
       statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
       speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
+      // Reveal the PROBABILITY line only now that the simulation is done
+      probLine.style.visibility = 'visible';
       log.style.animationPlayState = 'running';
       paused = false;
       return;
