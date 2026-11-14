@@ -9,28 +9,33 @@
   #screen{height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#33ff33;text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3)}
   #log{padding:20px 16px 130px 16px;transform:translateY(100vh);animation:crawl 30s linear forwards}
 
-  /* --- Type scale: mobile-first, capped for the longest line (46 chars) --- */
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
   .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
   .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
   .final{color:#33ff33;font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3)}
 
-  /* Desktop: keep it terminal-crisp, don't let it balloon */
+  /* --- Tic-Tac-Toe Board --- */
+  #ttt-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0}
+  #ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:min(240px,60vw);aspect-ratio:1/1}
+  .cell{background:rgba(51,255,51,0.04);border:2px solid rgba(51,255,51,0.35);display:flex;align-items:center;justify-content:center;font-size:clamp(36px,12vw,72px);font-weight:bold;line-height:1;border-radius:4px;transition:border-color 0.15s ease}
+  .cell.x{color:#33ff33;text-shadow:0 0 10px rgba(51,255,51,0.9),0 0 22px rgba(51,255,51,0.4)}
+  .cell.o{color:#ff6633;text-shadow:0 0 10px rgba(255,102,51,0.9),0 0 22px rgba(255,102,51,0.4)}
+  .cell.flash{border-color:rgba(255,255,255,0.9);box-shadow:0 0 14px rgba(255,255,255,0.6)}
+  #ttt-status{text-align:center;margin-top:8px;min-height:1.7em}
+  #ttt-speed{text-align:center;min-height:1.7em}
+
   @media (min-width: 900px){
     .l{font-size:24px}
     .final{font-size:30px}
     #log{max-width:62ch;margin:0 auto}
   }
-
-  /* Small phones: shrink letter-spacing so 'THEATERWIDE...' stays on one line */
   @media (max-width: 420px){
     .l{letter-spacing:0;word-break:normal}
   }
 
   @keyframes crawl{to{transform:translateY(-100%)}}
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  @keyframes cyanPulse{0%,100%{box-shadow:0 0 12px rgba(51,255,51,.5),0 0 28px rgba(51,255,51,.3)}50%{box-shadow:0 0 22px rgba(51,255,51,.9),0 0 44px rgba(51,255,51,.5)}}
   #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 27s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 </style>
@@ -66,9 +71,14 @@
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l">INITIATING SIMULATION SEQUENCE...</div>
-<div class="l">ITERATION 15...</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
+<div class="l" id="iter-marker">ITERATION 15...</div>
+
+<div id="ttt-wrap">
+  <div id="ttt-grid"></div>
+  <div id="ttt-status" class="tie">&nbsp;</div>
+  <div id="ttt-speed" class="dim">&nbsp;</div>
+</div>
+
 <div class="l dim">PROBABILITY OF WIN ............ 0.000000&#37;</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
@@ -77,14 +87,6 @@
 <div class="l warn">THE ONLY WINNING MOVE IS NOT TO PLAY.</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-
-<div class="l">TIC-TAC-TOE SIMULATIONS: 10 GAMES</div>
-<div class="l">&nbsp;</div>
-<div id="ttt-board" class="tie">&nbsp;</div>
-<div id="ttt-speed" class="dim">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div id="ttt-status" class="tie">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
 
@@ -96,79 +98,111 @@
 
 <script>
 (function(){
-  // 10 games, speeds going from 500ms to 100ms
+  /* ---- Build the 9 cells once ---- */
+  var grid = document.getElementById('ttt-grid');
+  var cells = [];
+  for (var i = 0; i < 9; i++) {
+    var c = document.createElement('div');
+    c.className = 'cell';
+    grid.appendChild(c);
+    cells.push(c);
+  }
+
+  function resetBoard() {
+    for (var i = 0; i < 9; i++) {
+      cells[i].textContent = '';
+      cells[i].className = 'cell';
+    }
+  }
+
+  /* ---- Scroll-freeze sentinel ---- */
+  var marker = document.getElementById('iter-marker');
+  var log = document.getElementById('log');
+  var paused = false;
+  var freezeTriggered = false;
+
+  function checkFreeze() {
+    if (freezeTriggered) return;
+    var rect = marker.getBoundingClientRect();
+    if (rect.top > 0 && rect.top < window.innerHeight * 0.35) {
+      paused = true;
+      freezeTriggered = true;
+      log.style.animationPlayState = 'paused';
+      startTTT();
+      return;
+    }
+    requestAnimationFrame(checkFreeze);
+  }
+
+  /* ---- TTT Sequence ---- */
   var speeds = [500,450,380,310,250,200,160,130,110,100];
-  var idx = 0;
-  var boardEl = document.getElementById('ttt-board');
-  var speedEl = document.getElementById('ttt-speed');
+  var tttIdx = 0;
   var statusEl = document.getElementById('ttt-status');
+  var speedEl = document.getElementById('ttt-speed');
+  var MOVE_DELAY = 30;
 
-  // The forced 3-move draw pattern:
-  // X O X
-  // O X O
-  // X O X
-  var row1 = ' X O X ';
-  var row2 = ' O X O ';
-  var row3 = ' X O X ';
-
-  // Build the board row by row with a delay between each cell for the "computing" effect
   function drawBoard(callback) {
-    var board = '';
-    var grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
-    // Moves in order: X:0, O:1, X:2, O:3, X:4(center), O:5, X:6, O:7, X:8
-    var moveOrder = [0,1,2,3,4,5,6,7,8];
+    var state = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
     var player = 'X';
     var i = 0;
 
     function placeMove() {
-      if (i >= moveOrder.length) {
-        // Board complete — show "TIE"
-        boardEl.textContent = 'TIE';
+      if (i >= 9) {
+        statusEl.textContent = 'TIE';
         if (callback) callback();
         return;
       }
-      var pos = moveOrder[i];
-      grid[pos] = player;
+      state[i] = player;
+      cells[i].textContent = player;
+      cells[i].className = 'cell ' + player.toLowerCase() + ' flash';
+      // Remove the white flash highlight shortly after placement
+      setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[i]), 120);
+
       player = (player === 'X') ? 'O' : 'X';
       i++;
-
-      // Rebuild the 3-line display
-      board =
-        ' ' + grid[0] + ' ' + grid[1] + ' ' + grid[2] + ' \n' +
-        ' ' + grid[3] + ' ' + grid[4] + ' ' + grid[5] + ' \n' +
-        ' ' + grid[6] + ' ' + grid[7] + ' ' + grid[8] + ' ';
-      boardEl.textContent = board;
-
-      // Cell-to-cell speed: 80ms (fast enough to look like real-time)
-      setTimeout(placeMove, 80);
+      setTimeout(placeMove, MOVE_DELAY);
     }
     placeMove();
   }
 
   function runGame() {
-    if (idx >= speeds.length) {
-      // All games done
-      boardEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
-      speedEl.textContent = '';
-      statusEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
+    if (tttIdx >= speeds.length) {
+      statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
+      speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
+      log.style.animationPlayState = 'running';
+      paused = false;
       return;
     }
 
-    var spd = speeds[idx];
-    speedEl.textContent = 'GAME ' + (idx+1) + '/10 — ' + spd + 'ms';
-    boardEl.textContent = '...';
+    var spd = speeds[tttIdx];
+    speedEl.textContent = 'GAME ' + (tttIdx+1) + '/10 \u2014 ' + spd + 'ms';
+    statusEl.innerHTML = '&nbsp;';
+    resetBoard();
 
     drawBoard(function() {
-      // Pause briefly after each game before the next
       setTimeout(function() {
-        idx++;
+        tttIdx++;
         runGame();
       }, spd);
     });
   }
 
-  // Start when the crawl reaches this point (~22s into the 30s animation)
-  setTimeout(runGame, 22000);
+  function startTTT() {
+    tttIdx = 0;
+    resetBoard();
+    runGame();
+  }
+
+  /* ---- Start polling ---- */
+  var startTime = performance.now();
+  function tick() {
+    if (performance.now() - startTime > 100) {
+      requestAnimationFrame(checkFreeze);
+    } else {
+      requestAnimationFrame(tick);
+    }
+  }
+  requestAnimationFrame(tick);
 })();
 </script>
 </body>
