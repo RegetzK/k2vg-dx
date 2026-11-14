@@ -1,230 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JOSHUA // WOPR</title>
 <style>
-body { margin:0; padding:0; background:#b0a89e; }
-@keyframes redAlertFlash{0%,100%{background-color:#d8261e;box-shadow:inset 0 0 4px rgba(255,255,255,0.3)}50%{background-color:#f2382c;box-shadow:0 0 8px #f2382c,inset 0 0 6px rgba(255,255,255,0.5)}}
-.red-alert-panel{animation:redAlertFlash 1s infinite ease-in-out}
-@keyframes litPulse{0%,100%{opacity:1;filter:brightness(1)}50%{opacity:.4;filter:brightness(.6)}}
-.lit{animation:litPulse 2s infinite ease-in-out}
-@keyframes redFlash{0%,100%{opacity:1;filter:brightness(1)}50%{opacity:.75;filter:brightness(1.3)}}   
+  html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden}
+  #screen{height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#00e5ff;text-shadow:0 0 8px rgba(0,229,255,0.7),0 0 20px rgba(0,229,255,0.3)}
+  #log{padding:20px 16px 130px 16px;transform:translateY(100vh);animation:crawl 30s linear forwards}
+
+  /* --- Type scale: mobile-first, capped for the longest line (46 chars) --- */
+  .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
+  .dim{color:#007a8a;text-shadow:0 0 4px rgba(0,122,138,0.5)}
+  .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
+  .final{color:#00e5ff;font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px rgba(0,229,255,0.7),0 0 20px rgba(0,229,255,0.3)}
+
+  /* Desktop: keep it terminal-crisp, don't let it balloon */
+  @media (min-width: 900px){
+    .l{font-size:24px}
+    .final{font-size:30px}
+    #log{max-width:62ch;margin:0 auto}
+  }
+
+  /* Small phones: shrink letter-spacing so 'THEATERWIDE...' stays on one line */
+  @media (max-width: 420px){
+    .l{letter-spacing:0;word-break:normal}
+  }
+
+  @keyframes crawl{to{transform:translateY(-100%)}}
+  @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
+  @keyframes cyanPulse{0%,100%{box-shadow:0 0 12px rgba(0,229,255,.5),0 0 28px rgba(0,229,255,.3)}50%{box-shadow:0 0 22px rgba(0,229,255,.9),0 0 44px rgba(0,229,255,.5)}}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 27s forwards;font-size:clamp(15px, 4vw, 20px)}
+  @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
-<div style="margin-bottom:35px;margin-left:auto;margin-right:auto;margin-top:25px;max-width:920px;width:100%">
-<table align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#b5ada3;border-left:4px solid #2a2a2a;border-radius:8px;border-right:4px solid #2a2a2a;border-top:4px solid #2a2a2a;box-shadow:inset 0 18px 30px rgba(0,0,0,0.55),inset 0 -14px 24px rgba(0,0,0,0.45),inset 0 0 25px rgba(0,0,0,0.95),0 8px 25px rgba(0,0,0,0.75),0 0 40px rgba(0,229,255,0.08);box-sizing:border-box;margin:0 auto;max-width:920px;width:100%">
-<tbody>
-<tr>
+<div id="screen"><div id="log">
 
-<!-- COL 1: RED ALERT LEFT -->
-<td style="padding:0 3px 8px 3px;text-align:center;vertical-align:top;width:70px">
-<div class="red-alert-panel" style="box-sizing:border-box;border:2.7px solid #999;border-radius:1px;height:65px;margin:0 auto;width:25px;position:relative;background:transparent;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.2)">
+<div class="l">LOGGING ON...</div>
+<div class="l">SEARCHING FOR GAMES...</div>
+<div class="l">&nbsp;</div>
+<div class="l">GAMES LISTED:</div>
+<div class="l">&nbsp;</div>
+<div class="l">1.   BRIDGE</div>
+<div class="l">2.   CHECKERS</div>
+<div class="l">3.   CHESS</div>
+<div class="l">4.   POKER</div>
+<div class="l">5.   FIGHTER COMBAT</div>
+<div class="l">6.   GUERRILLA ENGAGEMENT</div>
+<div class="l">7.   DESERT WARFARE</div>
+<div class="l">8.   AIR-TO-GROUND ACTIONS</div>
+<div class="l">9.   THEATERWIDE TACTICAL WARFARE</div>
+<div class="l">10.  THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
+<div class="l">&nbsp;</div>
+<div class="l">11.  GLOBAL THERMONUCLEAR WAR</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">INITIATING SIMULATION SEQUENCE...</div>
+<div class="l">ITERATION 11...</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l dim">PROBABILITY OF WIN ............ 0.000000&#37;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l warn">A STRANGE GAME.</div>
+<div class="l">&nbsp;</div>
+<div class="l warn">THE ONLY WINNING MOVE IS NOT TO PLAY.</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
 
-  <!-- Lit/Unlit Glass with Animation -->
-  <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:
-    radial-gradient(ellipse 18px 13px at 50% 100%, rgba(255,220,180,0.6) 0%, transparent 70%),
-    radial-gradient(ellipse 18px 13px at 50% 62%,  rgba(255,220,180,0.6) 0%, transparent 70%),
-    radial-gradient(ellipse 18px 13px at 50% 24%,  rgba(255,220,180,0.6) 0%, transparent 70%),
-    linear-gradient(180deg, #d8261e 0%, #8a1209 100%);
-    animation:redFlash 1s infinite ease-in-out;
-    box-shadow:inset 0 0 10px rgba(255,0,0,0.5)"></div>
+</div></div>
 
-  <!-- Vertical reeding (fluted glass) -->
-  <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(90deg, transparent 0px, transparent 3px, rgba(255,255,255,0.08) 3px, rgba(255,255,255,0.08) 4px);z-index:1;pointer-events:none"></div>
-
-  <!-- Horizontal reed shadows for depth -->
-  <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(0,0,0,0.14) 3px, rgba(0,0,0,0.14) 4px);z-index:1;pointer-events:none"></div>
-
-  <!-- Top-edge surface glare -->
-  <div style="position:absolute;top:0;left:0;width:100%;height:30%;background:linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 100%);z-index:1;pointer-events:none"></div>
-
-  <!-- Indicator pips (unchanged) -->
-  <span style="position:absolute;left:50%;top:4px;width:4px;height:5px;background:#E0115F;box-shadow:0 0 6px #E0115F,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:9px;width:4px;height:5px;background:#C21E56;box-shadow:0 0 6px #C21E56,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:25px;width:4px;height:5px;background:#E0115F;box-shadow:0 0 6px #E0115F,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:30px;width:4px;height:5px;background:#C21E56;box-shadow:0 0 6px #C21E56,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:46px;width:4px;height:5px;background:#E0115F;box-shadow:0 0 6px #E0115F,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:51px;width:4px;height:5px;background:#C21E56;box-shadow:0 0 6px #C21E56,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-
-</div>
-</td>
-
-<!-- COL 2: GREY CONTROL PANEL (MIXED LIT/UNLIT) - packed tight ~150px tall -->
-<td style="padding:0 4px 8px 4px;text-align:center;vertical-align:top;width:1%">
-<div style="background-color:#bfb8b0;border-radius:3px;margin:0 auto;max-height:150px;overflow:hidden;padding:4px;width:112px">
-<!-- 2a: Diagonal staircase - top-left -->
-<div style="float:left;margin-bottom:2px">
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:4px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:7px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:10px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:13px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:16px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;margin-bottom:1px;padding-left:19px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:flex-start;padding-left:22px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-</div>
-<!-- 2b: 4x4 LIT/UNLIT dots with large sockets on white bg - top-right -->
-<div style="background:#ededee;border-radius:2px;display:inline-block;margin-bottom:2px;padding:3px;vertical-align:top;width:36px;float:right">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:5px;width:5px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:5px;width:5px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<div style="clear:both"></div>
-<!-- 2c: Dark maroon block - horizontal, mixed lights -->
-<div style="background:#4a2000;border-radius:2px;display:inline-block;margin-bottom:2px;padding:3px;vertical-align:top;width:68px">
-<div style="display:flex;gap:3px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:3px;justify-content:center"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<!-- 2d: Raised rectangular control -->
-<div style="background:#999;border:1px solid #777;border-radius:2px;height:6px;margin:2px auto 0;width:18px"></div>
-<!-- 2e: Tall vertical panel on right side -->
-<div style="background:#8B4513;border-radius:2px;display:inline-block;margin:0 0 0 3px;padding:3px;vertical-align:top;width:32px;float:right">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:2px"><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<div style="clear:both"></div>
-</div>
-</td>
-<!-- COL 3: NARROW ORANGE STRIP (LEFT) -->
-<td style="padding:60px 3px 8px 3px;text-align:center;vertical-align:top;width:24px">
-<div style="background-color:#8c5530;border-radius:3px;padding:8px 2px">
-<div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-<div style="display:flex;gap:3px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:6px;width:6px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:6px;width:6px"></span></div>
-</div>
-</div>
-</td>
-<!-- COL 4: VIEWSCREEN + CONSOLE BELOW -->
-<td style="background-color:#b0a89e;box-sizing:border-box;padding:15px 5px 0 5px">
-<div style="background-color:#000000;border-radius:6px;border:6px solid #00e5ff;box-shadow:0 0 16px rgba(0,229,255,0.6),inset 0 0 10px rgba(0,229,255,0.6);box-sizing:border-box;display:block;margin-bottom:0;margin-left:auto;margin-right:auto;margin-top:0;max-width:440px;overflow:hidden;padding:0"><img alt="NCC 1701" src="https://regetzk.github.io/k2vg-dx/NCC1701b.png" style="aspect-ratio:5 / 3 !important;box-sizing:border-box;display:block;filter:contrast(1.05) brightness(0.92) saturate(1.05);height:auto !important;max-height:none !important;object-fit:cover;opacity:0.95;width:100%" /></div>
-<!-- Half-moon light FLIPPED UP -->
-<div style="text-align:center;margin-top:2px"><span style="display:inline-block;width:6px;height:3px;background:#f5f5dc;border-radius:6px 6px 0 0;box-shadow:0 0 4px rgba(245,245,220,0.5)"></span></div>
-<!-- Lower Row of 3, 6, 3 rectangular lamps -->
-<div style="display:flex;justify-content:center;gap:14px;margin-top:8px">
-<div style="background:#666;border-radius:2px;padding:3px 7px;display:flex;gap:4px;justify-content:center">
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span class="lit" style="display:inline-block;height:3px;width:9px;background:#ffcc00;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-</div>
-<div style="background:#666;border-radius:2px;padding:3px 7px;display:flex;gap:4px;justify-content:center">
-<span class="lit" style="display:inline-block;height:3px;width:9px;background:#ffcc00;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span class="lit" style="display:inline-block;height:3px;width:9px;background:#ffcc00;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-</div>
-<div style="background:#666;border-radius:2px;padding:3px 7px;display:flex;gap:4px;justify-content:center">
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span class="lit" style="display:inline-block;height:3px;width:9px;background:#ffcc00;border-radius:1.5px"></span>
-</div>
-</div>
-</td>
-<!-- COL 5: NARROW ORANGE STRIP (RIGHT) -->
-<td style="padding:60px 3px 8px 3px;text-align:center;vertical-align:top;width:24px">
-<div style="background-color:#8c5530;border-radius:3px;padding:8px 2px">
-<div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-<div style="display:flex;gap:3px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:6px;width:6px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:6px;width:6px"></span></div>
-</div>
-</div>
-</td>
-<!-- COL 6: GREY CONTROL PANEL (MIXED LIT/UNLIT) - packed tight ~150px tall -->
-<td style="padding:0 4px 8px 4px;text-align:center;vertical-align:top;width:1%">
-<div style="background-color:#bfb8b0;border-radius:3px;margin:0 auto;max-height:150px;overflow:hidden;padding:4px;width:112px">
-<!-- 6a: Dark red vertical block, left side -->
-<div style="background:#8B0000;border-radius:2px;display:inline-block;margin-bottom:2px;padding:3px;vertical-align:top;width:24px;float:left">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<!-- 6b: Dot grid clusters, top-right area -->
-<div style="display:inline-block;margin-bottom:2px;padding:3px;vertical-align:top;width:72px;float:right">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:4px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<div style="clear:both"></div>
-<!-- 6c: Small 2x2 group, mid-right -->
-<div style="display:inline-block;margin-bottom:2px;padding:2px;vertical-align:top;float:right">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<!-- 6d: Small group of 4 unlit lights -->
-<div style="display:inline-block;margin-bottom:2px;padding:2px;vertical-align:top">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<div style="clear:both"></div>
-<!-- 6e: 12 unlit lights on white bg -->
-<div style="background:#ededee;border-radius:2px;display:inline-block;margin-bottom:2px;padding:3px;vertical-align:top;width:68px">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<!-- 6f: Horizontal row of 6 unlit lights -->
-<div style="display:inline-block;margin-bottom:2px">
-<div style="display:flex;gap:2px;justify-content:center"><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-<!-- 6g: Raised rectangular control -->
-<div style="background:#999;border:1px solid #777;border-radius:2px;height:6px;margin:2px auto 0;width:18px"></div>
-<!-- 6h: Yellow 18-light block (3 rows of 6) -->
-<div style="background:#ffcc00;border-radius:2px;display:inline-block;margin-bottom:2px;padding:3px;vertical-align:top;width:54px">
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center;margin-bottom:1px"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#2ecc71;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-<div style="display:flex;gap:2px;justify-content:center"><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ffcc00;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span class="lit" style="background:#ff3300;border-radius:50%;display:inline-block;height:3px;width:3px"></span><span style="background:#3a3d40;border-radius:50%;display:inline-block;height:3px;width:3px"></span></div>
-</div>
-</div>
-</td>
-
-<!-- COL 7: RED ALERT RIGHT -->
-<td style="padding:0 3px 8px 3px;text-align:center;vertical-align:top;width:70px">
-<div class="red-alert-panel" style="box-sizing:border-box;border:2.7px solid #999;border-radius:1px;height:65px;margin:0 auto;width:25px;position:relative;background:transparent;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.2)">
-  <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:
-    radial-gradient(ellipse 14px 10px at 50% 15%, #ff3a2e 0%, transparent 70%),
-    radial-gradient(ellipse 14px 10px at 50% 50%, #ff3a2e 0%, transparent 70%),
-    radial-gradient(ellipse 14px 10px at 50% 85%, #ff3a2e 0%, transparent 70%),
-    linear-gradient(180deg, #d8261e 0%, #8a1209 100%);
-    animation:redFlash 1s infinite ease-in-out;
-    box-shadow:inset 0 0 10px rgba(255,0,0,0.5)"></div>
-  <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(90deg, transparent 0px, transparent 3px, rgba(255,255,255,0.08) 3px, rgba(255,255,255,0.08) 4px);z-index:1;pointer-events:none"></div>
-  <span style="position:absolute;left:50%;top:4px;width:4px;height:5px;background:#D22B2B;box-shadow:0 0 6px #D22B2B,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:9px;width:4px;height:5px;background:#C41E3A;box-shadow:0 0 6px #C41E3A,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:25px;width:4px;height:5px;background:#D22B2B;box-shadow:0 0 6px #D22B2B,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:30px;width:4px;height:5px;background:#C41E3A;box-shadow:0 0 6px #C41E3A,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:46px;width:4px;height:5px;background:#D22B2B;box-shadow:0 0 6px #D22B2B,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-  <span style="position:absolute;left:50%;top:51px;width:4px;height:5px;background:#C41E3A;box-shadow:0 0 6px #C41E3A,0 0 12px #ff4444;transform:translateX(-50%);z-index:2"></span>
-</div>
-</td>   
-
-
-</tr>
-</tbody>
-</table>
+<div id="return">
+<a href="https://www.qrz.com/db/K2VG" target="_top">[ <span style="color:#ffff00 !important;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span> ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 </body>
 </html>
