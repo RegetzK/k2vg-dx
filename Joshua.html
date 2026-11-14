@@ -6,16 +6,31 @@
 <title>JOSHUA // WOPR</title>
 <style>
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden}
-  #screen{height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#00e5ff;text-shadow:0 0 8px rgba(0,229,255,0.7),0 0 20px rgba(0,229,255,0.3)}
+  #screen{height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#33ff33;text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3)}
   #log{padding:20px 16px 130px 16px;transform:translateY(100vh);animation:crawl 30s linear forwards}
-  .l{font-size:clamp(20px, 5vw, 28px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
-  .dim{color:#007a8a;text-shadow:0 0 4px rgba(0,122,138,0.5)}
+
+  /* --- Type scale: mobile-first, capped for the longest line (46 chars) --- */
+  .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
+  .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
   .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
-  .final{color:#00e5ff;font-weight:bold;font-size:clamp(24px, 6.5vw, 36px);text-shadow:0 0 8px rgba(0,229,255,0.7),0 0 20px rgba(0,229,255,0.3)}
+  .final{color:#33ff33;font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3)}
+
+  /* Desktop: keep it terminal-crisp, don't let it balloon */
+  @media (min-width: 900px){
+    .l{font-size:24px}
+    .final{font-size:30px}
+    #log{max-width:62ch;margin:0 auto}
+  }
+
+  /* Small phones: shrink letter-spacing so 'THEATERWIDE...' stays on one line */
+  @media (max-width: 420px){
+    .l{letter-spacing:0;word-break:normal}
+  }
+
   @keyframes crawl{to{transform:translateY(-100%)}}
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  @keyframes cyanPulse{0%,100%{box-shadow:0 0 12px rgba(0,229,255,.5),0 0 28px rgba(0,229,255,.3)}50%{box-shadow:0 0 22px rgba(0,229,255,.9),0 0 44px rgba(0,229,255,.5)}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 27s forwards}
+  @keyframes cyanPulse{0%,100%{box-shadow:0 0 12px rgba(51,255,51,.5),0 0 28px rgba(51,255,51,.3)}50%{box-shadow:0 0 22px rgba(51,255,51,.9),0 0 44px rgba(51,255,51,.5)}}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 27s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -23,29 +38,37 @@
 <div id="screen"><div id="log">
 
 <div class="l">LOGGING ON...</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
+<div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l">GAMES LISTED:</div>
 <div class="l">&nbsp;</div>
-<div class="l">1.   BRIDGE</div>
-<div class="l">2.   CHECKERS</div>
-<div class="l">3.   CHESS</div>
-<div class="l">4.   POKER</div>
-<div class="l">5.   FIGHTER COMBAT</div>
-<div class="l">6.   GUERRILLA ENGAGEMENT</div>
-<div class="l">7.   DESERT WARFARE</div>
-<div class="l">8.   AIR-TO-GROUND ACTIONS</div>
-<div class="l">9.   THEATERWIDE TACTICAL WARFARE</div>
-<div class="l">10.  THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
+<div class="l">FALKEN'S MAZE</div>
+<div class="l">BLACK JACK</div>
+<div class="l">GIN RUMMY</div>
+<div class="l">HEARTS</div>
+<div class="l">BRIDGE</div>
+<div class="l">CHECKERS</div>
+<div class="l">CHESS</div>
+<div class="l">POKER</div>
+<div class="l">FIGHTER COMBAT</div>
+<div class="l">GUERRILLA ENGAGEMENT</div>
+<div class="l">DESERT WARFARE</div>
+<div class="l">AIR-TO-GROUND ACTIONS</div>
+<div class="l">THEATERWIDE TACTICAL WARFARE</div>
+<div class="l">THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
 <div class="l">&nbsp;</div>
-<div class="l">11.  GLOBAL THERMONUCLEAR WAR</div>
+<div class="l">GLOBAL THERMONUCLEAR WAR</div>
+<div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l">INITIATING SIMULATION SEQUENCE...</div>
-<div class="l">ITERATION 11...</div>
+<div class="l">ITERATION 15...</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
-<div class="l">PROBABILITY OF WIN ............ 0.000000&#37;</div>
+<div class="l dim">PROBABILITY OF WIN ............ 0.000000&#37;</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l warn">A STRANGE GAME.</div>
