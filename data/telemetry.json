@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-14T08:03:38Z",
+  "timestamp": "2026-11-14T14:59:10Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -54,6 +54,96 @@
         "dxcc": "EARTH",
         "status": "MONITORED",
         "lore": true
+      },
+      {
+        "call": "PE9JAN",
+        "grid": "JO22OP",
+        "band": null,
+        "freq": 18.100934,
+        "db": -18,
+        "dxcc": "PE",
+        "lore": false
+      },
+      {
+        "call": "RA6MQ",
+        "grid": "KN96",
+        "band": null,
+        "freq": 18.101991,
+        "db": -18,
+        "dxcc": "RA",
+        "lore": false
+      },
+      {
+        "call": "G7EDD",
+        "grid": "IO94SC",
+        "band": null,
+        "freq": 18.101245,
+        "db": -20,
+        "dxcc": "G7",
+        "lore": false
+      },
+      {
+        "call": "OK5ARI",
+        "grid": "JN78wx",
+        "band": null,
+        "freq": 18.102356,
+        "db": -20,
+        "dxcc": "OK",
+        "lore": false
+      },
+      {
+        "call": "OK1WCF",
+        "grid": "JO80BJ",
+        "band": null,
+        "freq": 18.101015,
+        "db": -16,
+        "dxcc": "OK",
+        "lore": false
+      },
+      {
+        "call": "R5AJ",
+        "grid": "KO95IU",
+        "band": null,
+        "freq": 14.076298,
+        "db": -16,
+        "dxcc": "R5",
+        "lore": false
+      },
+      {
+        "call": "RV3DMM",
+        "grid": "KO84",
+        "band": null,
+        "freq": 14.074692,
+        "db": -20,
+        "dxcc": "RV",
+        "lore": false
+      },
+      {
+        "call": "EI9IB",
+        "grid": "IO63oc",
+        "band": null,
+        "freq": 14.076159,
+        "db": -20,
+        "dxcc": "EI",
+        "lore": false
+      },
+      {
+        "call": "OK3KW",
+        "grid": "JO60lj",
+        "band": null,
+        "freq": 14.076605,
+        "db": -21,
+        "dxcc": "OK",
+        "lore": false
+      },
+      {
+        "call": "RK4F",
+        "grid": "LO23QQ",
+        "band": null,
+        "freq": 14.075031,
+        "db": -19,
+        "dxcc": "RK",
+        "lore": false
       }
     ]
   }
