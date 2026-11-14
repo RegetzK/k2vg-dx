@@ -200,13 +200,23 @@
   var paused = false;
   var freezeTriggered = false;
 
+  var iterDisplay = document.getElementById('iter-display');
+  var iterCursor = document.getElementById('iter-cursor');
+  var seqStarted = false;
+
   function checkFreeze() {
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
+    // Once the sequence header scrolls into view, start counting
+    if (!seqStarted && rect.top < window.innerHeight) {
+      seqStarted = true;
+    }
     if (rect.top > 0 && rect.top < window.innerHeight * 0.35) {
       paused = true;
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
+      iterDisplay.textContent = 'ITERATION 15...';
+      iterCursor.style.visibility = 'visible';
       startTTT();
       return;
     }
@@ -264,8 +274,10 @@
     var secs  = Math.floor((absDiff % 60000) / 1000);
     var sign  = diff < 0 ? 'BEFORE' : 'AFTER';
     var pad   = function(n){ return (n < 10 ? '0' + n : '' + n); };
-    judgEl.textContent = 'T+' + pad(hours) + ':' + pad(mins) + ':' + pad(secs) +
-      ' // ' + days + 'D // ' + sign + ' SIGNAL DATE';
+    if (judgEl) {
+      judgEl.textContent = 'T+' + pad(hours) + ':' + pad(mins) + ':' + pad(secs) +
+        ' // ' + days + 'D // ' + sign + ' SIGNAL DATE';
+    }
   }
 
   function runGame() {
@@ -303,6 +315,24 @@
     resetBoard();
     runGame();
   }
+
+  /* ---- Iteration count-up (accelerating like the film) ---- */
+  var iterSteps = [1,2,4,7,10,12,13,14,15];
+  var iterIdx = 0;
+  function iterStep() {
+    if (!seqStarted || freezeTriggered) return;
+    if (iterIdx < iterSteps.length) {
+      iterDisplay.textContent = 'ITERATION ' + iterSteps[iterIdx] + '...';
+      // accelerate: shorter gap each step
+      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));
+      iterIdx++;
+    }
+  }
+  // Kick off once the sequence begins scrolling in
+  (function waitSeq(){
+    if (seqStarted) { iterStep(); }
+    else { requestAnimationFrame(waitSeq); }
+  })();
 
   /* ---- Start polling ---- */
   var startTime = performance.now();
