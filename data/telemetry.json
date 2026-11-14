@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-14T01:41:01Z",
+  "timestamp": "2026-11-14T08:03:38Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -54,78 +54,6 @@
         "dxcc": "EARTH",
         "status": "MONITORED",
         "lore": true
-      },
-      {
-        "call": "ON6AA",
-        "grid": "JO11jd26ic",
-        "band": null,
-        "freq": 7.074474,
-        "db": -16,
-        "dxcc": "ON",
-        "lore": false
-      },
-      {
-        "call": "HK4QXX",
-        "grid": "FJ26HD",
-        "band": null,
-        "freq": 7.075555,
-        "db": -19,
-        "dxcc": "HK",
-        "lore": false
-      },
-      {
-        "call": "HJ6UMR",
-        "grid": "FJ24hp",
-        "band": null,
-        "freq": 7.075114,
-        "db": -17,
-        "dxcc": "HJ",
-        "lore": false
-      },
-      {
-        "call": "EA7LIC",
-        "grid": "IM86SU",
-        "band": null,
-        "freq": 7.075748,
-        "db": -20,
-        "dxcc": "EA",
-        "lore": false
-      },
-      {
-        "call": "OK1WCF",
-        "grid": "JO80BJ",
-        "band": null,
-        "freq": 7.075306,
-        "db": -11,
-        "dxcc": "OK",
-        "lore": false
-      },
-      {
-        "call": "9A5LBC",
-        "grid": "JN95IE",
-        "band": null,
-        "freq": 7.076585,
-        "db": -10,
-        "dxcc": "9A",
-        "lore": false
-      },
-      {
-        "call": "F5RRS",
-        "grid": "JN36eb44",
-        "band": null,
-        "freq": 10.137935,
-        "db": -17,
-        "dxcc": "F5",
-        "lore": false
-      },
-      {
-        "call": "EA2BFJ",
-        "grid": "IN83lh",
-        "band": null,
-        "freq": 10.137135,
-        "db": -16,
-        "dxcc": "EA",
-        "lore": false
       }
     ]
   }
