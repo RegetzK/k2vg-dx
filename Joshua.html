@@ -68,12 +68,12 @@
 
 <div class="l" id="boot-garble"></div>
 <div class="l" id="boot-line">JOSHUA ONLINE...</div>
-<div class="l dim">BETA-FIVE // QNTM-CMP // BUILD 1983.07.14 // K2VG NODE</div>
+<div class="l dim">Legacy War Operation Plan Response (WOPR) BETA FIVE QUANTUM NODE ESTABLISHED // BUILD 1983.06.03 FULLY PATCHED</div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
 <div class="l dim" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
 <div class="l">&nbsp;</div>
-<div class="l">GAMES LISTED:</div>
+<div class="l">GAMES FOUND:</div>
 <div class="l">&nbsp;</div>
 <div class="l">FALKEN'S MAZE</div>
 <div class="l">BLACK JACK</div>
@@ -89,7 +89,7 @@
 <div class="l">AIR-TO-GROUND ACTIONS</div>
 <div class="l">THEATERWIDE TACTICAL WARFARE</div>
 <div class="l">THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
-<div class="l dim">--- END OF LISTED THREAT VECTORS ---</div>
+<div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <!-- SCORCH: white-hot burn-in for the nuclear war line -->
 <div class="l final" style="color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)">GLOBAL THERMONUCLEAR WAR</div>
@@ -106,11 +106,13 @@
   <div id="ttt-speed" class="dim">&nbsp;</div>
 </div>
 
-<div class="l dim" id="prob-line" style="visibility:hidden">PROBABILITY OF WIN ............ 0.000000&#37;</div>
+<div class="l" id="prob-line" style="visibility:hidden">PROBABILITY OF WIN ....... 0.0000&#37;</div>
 <div class="l">&nbsp;</div>
-<div class="l dim">SYSOP: JOSHUA // UPTIME: 15,870 DAYS // MEMORY: 64K OK</div>
+<div class="l">SYSOP: JOSHUA/BETA FIVE // UPTIME: 15,870 DAYS // MEMORY: 64K + QUANTUM CORE EXPANSION</div>
 <div class="l">&nbsp;</div>
-<div class="l dim">COLD BOOT INITIATED // DATE: 1983-07-14 // TIME: 03:47:22 UTC</div>
+<div class="l warn">COLD BOOT COMPLETED AND ADDITIONAL <span style="color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
+<div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE FIRST SIGNAL DETECTED</div>
+<div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l warn">A STRANGE GAME.</div>
 <div class="l">&nbsp;</div>
@@ -288,9 +290,94 @@
       requestAnimationFrame(checkFreeze);
     } else {
       requestAnimationFrame(tick);
+  /* ---- Judgment Day Countdown ---- */
+  var judgEl = document.getElementById('judgement-countdown');
+  var judgmentDay = new Date('1997-08-04T03:47:22Z').getTime();
+
+  function updateCountdown() {
+    var now = Date.now();
+    var diff = now - judgmentDay;
+    var absDiff = Math.abs(diff);
+
+    var days = Math.floor(absDiff / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((absDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var mins = Math.floor((absDiff % (1000 * 60 * 60)) / (1000 * 60));
+    var secs = Math.floor((absDiff % (1000 * 60)) / 1000);
+
+    var sign = diff < 0 ? 'BEFORE' : 'AFTER';
+    var pad = function(n) { return (n < 10 ? '0' + n : '' + n); };
+
+    judgEl.textContent = 'T+' + pad(hours) + ':' + pad(mins) + ':' + pad(secs) +
+      ' // ' + days + 'D // ' + sign + ' SIGNAL DATE';
+  }
+
+  // Start updating after the crawl freeze ends (so users see it ticking)
+  // We piggyback on the TTT completion moment since that's when the crawl resumes
+  var countdownStarted = false;
+
+  function runGame() {
+    if (tttIdx >= 10) {
+      statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
+      speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
+      probLine.style.visibility = 'visible';
+      log.style.animationPlayState = 'running';
+      paused = false;
+
+      // Start Judgment Day countdown once, right as crawl resumes
+      if (!countdownStarted) {
+        countdownStarted = true;
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+      return;
+    }
+
+    var spd = tp[tttIdx];
+    speedEl.textContent = 'GAME ' + (tttIdx+1) + '/10 \u2014 ' + spd + 'ms';
+    statusEl.innerHTML = '&nbsp;';
+    resetBoard();
+
+    drawBoard(function() {
+      setTimeout(function() {
+        tttIdx++;
+        runGame();
+      }, spd);
+    });
+  }
+
+  function startTTT() {
+    tttIdx = 0;
+    resetBoard();
+    runGame();
+  }
+
+  /* ---- Start polling ---- */
+  var startTime = performance.now();
+  function tick() {
+    if (performance.now() - startTime > 100) {
+      requestAnimationFrame(checkFreeze);
+    } else {
+      requestAnimationFrame(tick);
     }
   }
   requestAnimationFrame(tick);
+
+  /* ---- Judgment Day Countdown ---- */
+  var judgEl = document.getElementById('judgement-countdown');
+  var judgmentDay = new Date('1997-08-04T03:47:22Z').getTime();
+
+  function updateCountdown() {
+    var diff = Date.now() - judgmentDay;
+    var absDiff = Math.abs(diff);
+    var days  = Math.floor(absDiff / 86400000);
+    var hours = Math.floor((absDiff % 86400000) / 3600000);
+    var mins  = Math.floor((absDiff % 3600000) / 60000);
+    var secs  = Math.floor((absDiff % 60000) / 1000);
+    var sign  = diff < 0 ? 'BEFORE' : 'AFTER';
+    var pad   = function(n){ return (n < 10 ? '0' + n : '' + n); };
+    judgEl.textContent = 'T+' + pad(hours) + ':' + pad(mins) + ':' + pad(secs) +
+      ' // ' + days + 'D // ' + sign + ' SIGNAL DATE';
+  }
 })();
 </script>
 </body>
