@@ -81,16 +81,10 @@
 
 <div class="l">TIC-TAC-TOE SIMULATIONS: 10 GAMES</div>
 <div class="l">&nbsp;</div>
-<div class="l tie">  X O X  | O X O  | X O X  | O X O  | X O X  | O X O  | X O X  | O X O  | X O X  | O X O </div>
-<div class="l tie">  O X O  | X O X  | O X O  | X O X  | O X O  | X O X  | O X O  | X O X  | O X O  | X O X </div>
-<div class="l tie">  X O X  | O X O  | X O X  | O X O  | X O X  | O X O  | X O X  | O X O  | X O X  | O X O </div>
-<div class="l tie">  TIE    | TIE    | TIE    | TIE    | TIE    | TIE    | TIE    | TIE    | TIE    | TIE    </div>
+<div id="ttt-board" class="tie">&nbsp;</div>
+<div id="ttt-speed" class="dim">&nbsp;</div>
 <div class="l">&nbsp;</div>
-<div class="l tie">  500ms  |  450ms |  380ms |  310ms |  250ms |  200ms |  160ms |  130ms |  110ms |  100ms </div>
-<div class="l">&nbsp;</div>
-<div class="l">ALL GAMES: DRAW (3-MOVE FORCED)</div>
-<div class="l">&nbsp;</div>
-<div class="l">OPTIMAL PLAY CONFIRMED.</div>
+<div id="ttt-status" class="tie">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
 
@@ -99,5 +93,83 @@
 <div id="return">
 <a href="https://www.qrz.com/db/K2VG" target="_top">[ <span style="color:#ffff00 !important;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span> ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
+
+<script>
+(function(){
+  // 10 games, speeds going from 500ms to 100ms
+  var speeds = [500,450,380,310,250,200,160,130,110,100];
+  var idx = 0;
+  var boardEl = document.getElementById('ttt-board');
+  var speedEl = document.getElementById('ttt-speed');
+  var statusEl = document.getElementById('ttt-status');
+
+  // The forced 3-move draw pattern:
+  // X O X
+  // O X O
+  // X O X
+  var row1 = ' X O X ';
+  var row2 = ' O X O ';
+  var row3 = ' X O X ';
+
+  // Build the board row by row with a delay between each cell for the "computing" effect
+  function drawBoard(callback) {
+    var board = '';
+    var grid = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
+    // Moves in order: X:0, O:1, X:2, O:3, X:4(center), O:5, X:6, O:7, X:8
+    var moveOrder = [0,1,2,3,4,5,6,7,8];
+    var player = 'X';
+    var i = 0;
+
+    function placeMove() {
+      if (i >= moveOrder.length) {
+        // Board complete — show "TIE"
+        boardEl.textContent = 'TIE';
+        if (callback) callback();
+        return;
+      }
+      var pos = moveOrder[i];
+      grid[pos] = player;
+      player = (player === 'X') ? 'O' : 'X';
+      i++;
+
+      // Rebuild the 3-line display
+      board =
+        ' ' + grid[0] + ' ' + grid[1] + ' ' + grid[2] + ' \n' +
+        ' ' + grid[3] + ' ' + grid[4] + ' ' + grid[5] + ' \n' +
+        ' ' + grid[6] + ' ' + grid[7] + ' ' + grid[8] + ' ';
+      boardEl.textContent = board;
+
+      // Cell-to-cell speed: 80ms (fast enough to look like real-time)
+      setTimeout(placeMove, 80);
+    }
+    placeMove();
+  }
+
+  function runGame() {
+    if (idx >= speeds.length) {
+      // All games done
+      boardEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
+      speedEl.textContent = '';
+      statusEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
+      return;
+    }
+
+    var spd = speeds[idx];
+    speedEl.textContent = 'GAME ' + (idx+1) + '/10 — ' + spd + 'ms';
+    boardEl.textContent = '...';
+
+    drawBoard(function() {
+      // Pause briefly after each game before the next
+      setTimeout(function() {
+        idx++;
+        runGame();
+      }, spd);
+    });
+  }
+
+  // Start when the crawl reaches this point (~22s into the 30s animation)
+  setTimeout(runGame, 22000);
+})();
+</script>
 </body>
 </html>
