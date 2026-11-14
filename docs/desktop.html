@@ -366,7 +366,7 @@ async function load(){
       statusEl.textContent='ONLINE';
       statusEl.className='live';
     } else if(stalenessMinutes>60){
-      statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';
+      statusEl.textContent='TIMESTAMP ('+stalenessMinutes.toFixed(1)+'m)';
       statusEl.className='stale';
     } else if(d.telemetry.status==='DEGRADED'){
       statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED';
