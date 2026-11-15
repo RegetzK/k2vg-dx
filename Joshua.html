@@ -130,8 +130,11 @@
 <div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: CONNOR, JOHN. // DOB:1985-02-28 // 15,235D AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)</div>
 <div class="l">&nbsp;</div>
 <div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
+
+</div></div>
+
 <div id="return">
-<a href="https://www.qrz.com/db/K2VG" target="_top">[ <span style="color:#ffff00 !important;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span> ] // RETURN TO BETA FIVE COMM-STATION</a>
+<a href="https://www.qrz.com/db/K2VG" target="_top" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 
 <script>
@@ -263,19 +266,12 @@
     requestAnimationFrame(checkFreeze);
   }
 
-  /* ---- 20 games: first 10 baseline speed, next 10 exponential ramp ---- */
+  /* ---- 20 games: continuous exponential decay ---- */
   var md = [], td = [], tp = [];
   for (var i = 0; i < 20; i++) {
-    if (i < 10) {
-      md.push(Math.round(220 * Math.pow(0.75, i)));
-      td.push(Math.round(270 * Math.pow(0.68, i)));
-      tp.push(Math.round(680 * Math.pow(0.65, i)));
-    } else {
-      var j = i - 10;
-      md.push(Math.round(80 * Math.pow(0.6, j)));
-      td.push(Math.round(100 * Math.pow(0.55, j)));
-      tp.push(Math.round(200 * Math.pow(0.5, j)));
-    }
+    md.push(Math.max(1, Math.round(220 * Math.pow(0.75, i))));
+    td.push(Math.max(0, Math.round(270 * Math.pow(0.68, i))));
+    tp.push(Math.max(0, Math.round(680 * Math.pow(0.65, i))));
   }
 
   var tttIdx = 0;
@@ -402,7 +398,7 @@
     if (!seqStarted || freezeTriggered) return;
     if (iterIdx < iterSteps.length) {
       iterDisplay.textContent = 'ITERATION [FIBONACCI]' + iterSteps[iterIdx] + '...';
-      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));I
+      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));
       iterIdx++;
     }
   }
