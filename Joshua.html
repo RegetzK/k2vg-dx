@@ -14,6 +14,7 @@
   #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
+  #progress-bar{white-space:pre;overflow:hidden}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
   .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
   .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
@@ -57,6 +58,7 @@
   }
   @media (max-width: 420px){
     .l{letter-spacing:0;word-break:normal}
+    #progress-bar{font-size:clamp(12px, 5.9vw, 18px)}
   }
 
   @media (min-resolution: 3dppx), (-webkit-min-device-pixel-ratio: 2) {
@@ -73,7 +75,7 @@
   }
 
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 43s forwards;font-size:clamp(15px, 4vw, 20px)}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 44s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
   @supports not (height: 100dvh) {
@@ -86,10 +88,10 @@
 
 <div class="l" id="boot-garble"></div>
 <div class="l" id="boot-line">JOSHUA ONLINE...</div>
-<div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Post-Quantum Link ESTABLISHED // BUILD 1983.06.03 mark <span id="utc-date"></span> // WOPR ZT VULNS REMEDIATED</div>
+<div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Quantum Link // BUILD 1983.06.03 mark <span id="utc-date"></span> // ZT VULNS REMEDIATED</div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
-<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
+<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░] 0%</div>
 <div class="l">&nbsp;</div>
 <div class="l">GAMES FOUND:</div>
 <div class="l">&nbsp;</div>
@@ -146,6 +148,8 @@
 <div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">15,235D</span> AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)</div>
 <div class="l">&nbsp;</div>
 <div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
 
 </div></div>
 
@@ -230,28 +234,30 @@
     garbleFrame++;
     setTimeout(garbleStep, garbleInterval);
   }
-  garbleStep();
+  /* FIX 1: delay garble until first crawl frame is on-screen */
+  setTimeout(garbleStep, 900);
 
   var progressBar = document.getElementById('progress-bar');
   var progressFrame = 0, progressMax = 30;
 
+  /* FIX 2: delay progress start so it animates while scrolling into view on mobile */
   setTimeout(function() {
     function progressStep() {
       if (progressFrame >= progressMax) {
-        progressBar.textContent = '[███████████████████████████████] 100%';
+        progressBar.textContent = '[████████████████████] 100%';
         return;
       }
       var pct = Math.round((progressFrame / progressMax) * 100);
-      var filled = Math.round((progressFrame / progressMax) * 31);
+      var filled = Math.round((progressFrame / progressMax) * 20);
       var bar = '', i;
       for (i = 0; i < filled; i++) bar += '█';
-      for (i = 0; i < 31 - filled; i++) bar += '░';
+      for (i = 0; i < 20 - filled; i++) bar += '░';
       progressBar.textContent = '[' + bar + '] ' + pct + '%';
       progressFrame++;
       setTimeout(progressStep, 100);
     }
     progressStep();
-  }, 1500);
+  }, 3000);
 
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
@@ -266,11 +272,12 @@
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
   }
 
+  /* FIX 3: reduce freeze threshold from 0.6 to 0.45 so TTT board stays fully in viewport */
   function checkFreeze() {
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
     if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
-    if (rect.top > 0 && rect.top < window.innerHeight * 0.6) {
+    if (rect.top > 0 && rect.top < window.innerHeight * 0.45) {
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
       redBlink(400);
