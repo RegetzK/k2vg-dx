@@ -1,164 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>JOSHUA // WOPR</title>
+<style>
+  :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
+  html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
+  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
+  #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
+  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
+
+  .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
+  .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
+  .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
+  .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
+  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3)}
+  .scorch{color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)}
+  .hot{color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)}
+
+  #iter-marker{height:0;line-height:0;overflow:hidden}
+
+  #ttt-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0}
+  #ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:min(240px,60vw);aspect-ratio:1/1}
+  .cell{background:rgba(51,255,51,0.04);border:2px solid rgba(51,255,51,0.35);display:flex;align-items:center;justify-content:center;font-size:clamp(36px,12vw,72px);font-weight:bold;line-height:1;border-radius:4px;transition:border-color 0.15s ease}
+  .cell.x{color:var(--fg);text-shadow:0 0 10px var(--glow),0 0 22px rgba(51,255,51,0.4)}
+  .cell.o{color:#ff6633;text-shadow:0 0 10px rgba(255,102,51,0.9),0 0 22px rgba(255,102,51,0.4)}
+  .cell.flash{border-color:rgba(255,255,255,0.9);box-shadow:0 0 14px rgba(255,255,255,0.6)}
+  #ttt-status{text-align:center;margin-top:8px;min-height:1.7em}
+  #ttt-speed{text-align:center;min-height:1.7em}
+
+  @media (min-width: 900px){
+    .l{font-size:24px}
+    .final{font-size:30px}
+    #log{max-width:62ch;margin:0 auto}
+  }
+  @media (max-width: 420px){
+    .l{letter-spacing:0;word-break:normal}
+  }
+
+  @media (min-resolution: 3dppx), (-webkit-min-device-pixel-ratio: 2) {
+    .l{font-size:clamp(16px, 4vw + 3px, 22px)}
+    .final{font-size:clamp(18px, 5vw + 3px, 28px)}
+    .cell{font-size:clamp(32px,10vw,60px)}
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes crawl{to{top:var(--end-top, 0px)}}
+    #log{animation-duration:45s}
+    #return{animation:none;opacity:1}
+    .cell.flash{transition:none;box-shadow:none}
+  }
+
+  @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 40s forwards;font-size:clamp(15px, 4vw, 20px)}
+  @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  @supports not (height: 100dvh) {
+    #screen{height:100vh}
+  }
+</style>
+</head>
+<body>
+<div id="screen"><div id="log">
+
+<div class="l" id="boot-garble"></div>
+<div class="l" id="boot-line">JOSHUA ONLINE...</div>
+<div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Post-Quantum Link ESTABLISHED // BUILD 1983.06.03 mark <span id="utc-date"></span> // WOPR ZT VULNS REMEDIATED</div>
+<div class="l">&nbsp;</div>
+<div class="l">SEARCHING FOR GAMES...</div>
+<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
+<div class="l">&nbsp;</div>
+<div class="l">GAMES FOUND:</div>
+<div class="l">&nbsp;</div>
+<div class="l">FALKEN'S MAZE</div>
+<div class="l">BLACK JACK</div>
+<div class="l">GIN RUMMY</div>
+<div class="l">HEARTS</div>
+<div class="l">BRIDGE</div>
+<div class="l">CHECKERS</div>
+<div class="l">CHESS</div>
+<div class="l">POKER</div>
+<div class="l">FIGHTER COMBAT</div>
+<div class="l">GUERRILLA ENGAGEMENT</div>
+<div class="l">DESERT WARFARE</div>
+<div class="l">AIR-TO-GROUND ACTIONS</div>
+<div class="l">THEATERWIDE TACTICAL WARFARE</div>
+<div class="l">THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
+<div class="l final scorch">GLOBAL THERMONUCLEAR WAR</div>
+<div class="l">&nbsp;</div>
+<div class="l">SIM SEQUENCE INIT...</div>
+<div class="l" id="iter-marker" aria-hidden="true">ITERATION</div>
+<div class="l final" id="iter-display">ITERATION 1...<span id="iter-cursor" style="visibility:hidden;animation:clickFlash 0.8s infinite alternate">_</span></div>
+
+<div id="ttt-wrap">
+  <div id="ttt-grid"></div>
+  <div id="ttt-status" class="tie">&nbsp;</div>
+  <div id="ttt-speed" class="dim">&nbsp;</div>
+</div>
+
+<div class="l" id="prob-line" style="visibility:hidden">PROBABILITY OF WIN ... 0.000&#37;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l warn">A STRANGE GAME.</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l warn">THE ONLY WINNING MOVE IS <span class="hot">NOT</span> TO PLAY.</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l warn">PRIORITY 1 WARNING: <span class="hot">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
+<div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
+<div class="l">&nbsp;</div>
+<div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: CONNOR, JOHN. // DOB:1985-02-28 // 15,235D AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)</div>
+<div class="l">&nbsp;</div>
+<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
+
+</div></div>
+
+<div id="return">
+<a href="https://www.qrz.com/db/K2VG" target="_top" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
+</div>
+
+<script>
+/* ---- Live UTC date ---- */
+(function updateUTCDate() {
+  var el = document.getElementById('utc-date');
+  if (!el) return;
+  var now = new Date();
+  var utcDate = now.toISOString().split('T')[0];
+  var utcTime = now.toISOString().split('T')[1].split('Z')[0];
+  el.textContent = utcDate + ' ' + utcTime;  
+  setTimeout(updateUTCDate, 1000);
+    }());
+
 (function(){
-  let ctx=null,started=false;
-  const V=0.12; // master volume (0 to 1)
-
-  function ac(){
-    if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();
-    if(ctx.state==='suspended')ctx.resume();
-    return ctx;
+  var grid = document.getElementById('ttt-grid');
+  var cells = [];
+  for (var i = 0; i < 9; i++) {
+    var c = document.createElement('div');
+    c.className = 'cell';
+    grid.appendChild(c);
+    cells.push(c);
   }
 
-  function tone(f,t,d,type,g,dest){
-    const c=ac(),o=c.createOscillator(),gn=c.createGain();
-    o.type=type||'sine';o.frequency.setValueAtTime(f,t);
-    gn.gain.setValueAtTime(g||V,t);
-    o.connect(gn);gn.connect(dest||c.destination);
-    o.start(t);o.stop(t+d);
-  }
-
-  function sweep(f1,f2,t,d,type,g){
-    const c=ac(),o=c.createOscillator(),gn=c.createGain();
-    o.type=type||'sine';
-    o.frequency.setValueAtTime(f1,t);
-    o.frequency.linearRampToValueAtTime(f2,t+d);
-    gn.gain.setValueAtTime(g||V,t);
-    gn.gain.linearRampToValueAtTime(0,t+d);
-    o.connect(gn);gn.connect(c.destination);
-    o.start(t);o.stop(t+d);
-  }
-
-  // --- AMBIENT LOOP (QRZ main page) ---
-  function ambientLoop(){
-    const c=ac(),t=c.currentTime;
-    // Warp core hum (60+120+180Hz, very quiet)
-    [60,120,180].forEach(f=>{
-      const o=c.createOscillator(),gn=c.createGain();
-      o.type='sine';o.frequency.value=f;
-      gn.gain.value=V*0.15;
-      o.connect(gn);gn.connect(c.destination);
-      o.start(t);
-    });
-    // Random chirps every 2-4s
-    function chirp(){
-      if(!started)return;
-      const f=300+Math.random()*600;
-      tone(f,c.currentTime,0.04,'sine',V*0.08);
-      setTimeout(chirp,2000+Math.random()*2000);
+  function resetBoard() {
+    for (var i = 0; i < 9; i++) {
+      cells[i].textContent = '';
+      cells[i].className = 'cell';
     }
-    setTimeout(chirp,3000);
-    // Data drips in clusters
-    function drip(){
-      if(!started)return;
-      const n=3+Math.floor(Math.random()*3);
-      for(let i=0;i<n;i++){
-        tone(800+Math.random()*400,c.currentTime+i*0.08,0.02,'triangle',V*0.06);
+  }
+
+  var log = document.getElementById('log');
+  var screen = document.getElementById('screen');
+
+  function computeEndTop() {
+    var vh = window.innerHeight;
+    var scrollH = log.scrollHeight;
+    var raw = vh * 0.4 - scrollH;
+    return Math.max(vh - scrollH + 20, Math.min(raw, vh * 0.15));
+  }
+
+  function applyCrawl() {
+    var END_TOP = computeEndTop();
+    var sheet = document.createElement('style');
+    document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
+    sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
+    var old = document.getElementById('crawl-sheet');
+    if (old) old.remove();
+    sheet.id = 'crawl-sheet';
+    document.head.appendChild(sheet);
+  }
+
+  window.addEventListener('load', function() {
+    requestAnimationFrame(function() { applyCrawl(); });
+  });
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() { applyCrawl(); }, 250);
+  });
+
+  var garbleEl = document.getElementById('boot-garble');
+  var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
+  var garbleText = '';
+  var vw = window.innerWidth;
+  var garbleFrame = 0;
+  var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50)));
+  var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
+
+  function garbleStep() {
+    if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; return; }
+    garbleText = '';
+    var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
+    for (var i = 0; i < cols; i++) garbleText += garbleChars[Math.floor(Math.random() * garbleChars.length)];
+    garbleEl.textContent = garbleText;
+    garbleFrame++;
+    setTimeout(garbleStep, garbleInterval);
+  }
+  garbleStep();
+
+  var progressBar = document.getElementById('progress-bar');
+  var progressFrame = 0, progressMax = 30;
+
+  setTimeout(function() {
+    function progressStep() {
+      if (progressFrame >= progressMax) {
+        progressBar.textContent = '[███████████████████████████████] 100%';
+        return;
       }
-      setTimeout(drip,3000+Math.random()*3000);
+      var pct = Math.round((progressFrame / progressMax) * 100);
+      var filled = Math.round((progressFrame / progressMax) * 31);
+      var bar = '', i;
+      for (i = 0; i < filled; i++) bar += '█';
+      for (i = 0; i < 31 - filled; i++) bar += '░';
+      progressBar.textContent = '[' + bar + '] ' + pct + '%';
+      progressFrame++;
+      setTimeout(progressStep, 100);
     }
-    setTimeout(drip,5000);
-    // Power tick every 4s
-    function tick(){
-      if(!started)return;
-      tone(1500,c.currentTime,0.015,'square',V*0.05);
-      setTimeout(tick,4000);
+    progressStep();
+  }, 1500);
+
+  /* ---- Freeze sentinel ---- */
+  var marker = document.getElementById('iter-marker');
+  var probLine = document.getElementById('prob-line');
+  var iterDisplay = document.getElementById('iter-display');
+  var iterCursor = document.getElementById('iter-cursor');
+  var freezeTriggered = false;
+  var seqStarted = false;
+
+  function redBlink(duration) {
+    screen.classList.add('red-bleed');
+    setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
+  }
+
+  function checkFreeze() {
+    if (freezeTriggered) return;
+    var rect = marker.getBoundingClientRect();
+    if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
+    if (rect.top > 0 && rect.top < window.innerHeight * 0.6) {
+      freezeTriggered = true;
+      log.style.animationPlayState = 'paused';
+      iterDisplay.textContent = 'ITERATION 1346269...';
+      iterCursor.style.visibility = 'visible';
+      redBlink(400);
+      startTTT();
+      return;
     }
-    setTimeout(tick,4000);
-    // Sensor ping every 6s
-    function ping(){
-      if(!started)return;
-      sweep(1200,200,c.currentTime,0.8,'sine',V*0.04);
-      setTimeout(ping,6000);
+    requestAnimationFrame(checkFreeze);
+  }
+
+  /* ---- 20 games: continuous exponential decay ---- */
+  var md = [], td = [], tp = [];
+  for (var i = 0; i < 20; i++) {
+    md.push(Math.max(1, Math.round(220 * Math.pow(0.75, i))));
+    td.push(Math.max(0, Math.round(270 * Math.pow(0.68, i))));
+    tp.push(Math.max(0, Math.round(680 * Math.pow(0.65, i))));
+  }
+
+  var tttIdx = 0;
+  var statusEl = document.getElementById('ttt-status');
+  var speedEl = document.getElementById('ttt-speed');
+
+  function drawBoard(callback) {
+    var player = 'X', i = 0;
+    function placeMove() {
+      if (i >= 9) {
+        statusEl.textContent = 'TIE';
+        setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
+        return;
+      }
+      cells[i].textContent = player;
+      cells[i].className = 'cell ' + player.toLowerCase() + ' flash';
+      setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[i]), 120);
+      player = (player === 'X') ? 'O' : 'X';
+      i++;
+      setTimeout(placeMove, md[tttIdx]);
     }
-    setTimeout(ping,2000);
-    // Timeline lock confirmation every 10s
-    function lock(){
-      if(!started)return;
-      tone(440,c.currentTime,0.8,'sine',V*0.06);
-      tone(660,c.currentTime,0.8,'sine',V*0.05);
-      tone(1320,c.currentTime+0.2,0.6,'sine',V*0.03);
-      setTimeout(lock,10000);
+    placeMove();
+  }
+
+  /* ---- Judgment Day countdown ---- */
+  var judgEl = document.getElementById('judgement-countdown');
+  var judgmentDay = Date.parse('1997-08-04T03:47:22Z');
+  var countdownStarted = false;
+
+  function elapsedParts(t) {
+    var pad = function(n){ return (n < 10 ? '0' + n : '' + n); };
+    return {
+      d: Math.floor(t / 86400000),
+      h: pad(Math.floor((t % 86400000) / 3600000)),
+      m: pad(Math.floor((t % 3600000) / 60000)),
+      s: pad(Math.floor((t % 60000) / 1000))
+    };
+  }
+
+  function updateCountdown() {
+    if (!judgEl) return;
+    var p = elapsedParts(Date.now() - judgmentDay);
+    judgEl.textContent = 'T+' + p.h + ':' + p.m + ':' + p.s +
+      ' // ' + p.d.toLocaleString() + 'D AFTER SIGNAL DATE';
+  }
+
+  /* ---- John Connor ---- */
+  var connorEl = document.getElementById('connor-intervention');
+  var connorBirth = Date.parse('1985-02-28T00:00:00Z');
+  var connorTimer = null;
+
+  function updateConnor() {
+    if (!connorEl) return;
+    var p = elapsedParts(Date.now() - connorBirth);
+    connorEl.textContent = 'TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: CONNOR, JOHN. // DOB: 1985-02-28 // ' +
+      p.d.toLocaleString() + 'D ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)';
+  }
+
+  /* ---- WOPR uptime (days since BUILD 1983.06.03) ---- */
+  var uptimeEl = document.getElementById('uptime-days');
+  var woprBoot = Date.parse('1983-06-03T00:00:00Z');
+
+  function updateUptime() {
+    if (!uptimeEl) return;
+    var days = Math.floor((Date.now() - woprBoot) / 86400000);
+    uptimeEl.textContent = days.toLocaleString();
+  }
+  updateUptime();
+  setInterval(updateUptime, 60000);
+
+  function runGame() {
+    if (tttIdx >= 20) {
+      /* WOPR reset flash */
+      screen.classList.add('red-bleed');
+      setTimeout(function(){
+        screen.style.cssText = 'background:#33ff33;color:#000;text-shadow:none;';
+      }, 400);
+      setTimeout(function(){
+        screen.style.cssText = '';
+        screen.classList.remove('red-bleed');
+      }, 600);
+
+      /* Infinity symbol in the speed slot */
+      speedEl.textContent = '\u221E';
+      speedEl.style.fontSize = 'clamp(32px, 10vw, 48px)';
+      speedEl.style.color = '#fff';
+      speedEl.style.textShadow = '0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.5)';
+
+      /* Resume crawl after 2s hold */
+      setTimeout(function(){
+        probLine.style.visibility = 'visible';
+        log.style.animationPlayState = 'running';
+        if (!countdownStarted) {
+          countdownStarted = true;
+          updateCountdown();
+          setInterval(updateCountdown, 1000);
+        }
+        if (!connorTimer) {
+          updateConnor();
+          connorTimer = setInterval(updateConnor, 1000);
+        }
+      }, 2000);
+      return;
     }
-    setTimeout(lock,10000);
+
+    var spd = tp[tttIdx];
+    speedEl.textContent = 'GAME ' + (tttIdx+1) + '/20 \u2014 ' + spd + 'ms';
+    statusEl.innerHTML = '&nbsp;';
+    resetBoard();
+    drawBoard(function() {
+      setTimeout(function(){ tttIdx++; runGame(); }, spd);
+    });
   }
 
-  // --- HAL ALERT (hal-alert.html) ---
-  function halSequence(){
-    const c=ac(),t=c.currentTime;
-    // Omen rise (100→300Hz over 2s)
-    sweep(100,300,t,2,'sine',V*0.2);
-    // HAL hum (110+112Hz beat, 4s)
-    const o1=c.createOscillator(),o2=c.createOscillator(),gn=c.createGain();
-    o1.type='sine';o1.frequency.value=110;
-    o2.type='sine';o2.frequency.value=112;
-    gn.gain.value=V*0.15;
-    o1.connect(gn);o2.connect(gn);gn.connect(c.destination);
-    o1.start(t+2);o2.start(t+2);o1.stop(t+6);o2.stop(t+6);
-    // Diagnostic ticks (3x 2kHz square, 50ms, 100ms gap)
-    for(let i=0;i<3;i++){
-      tone(2000,t+6.5+i*0.15,0.05,'square',V*0.3);
+  function startTTT() {
+    tttIdx = 0;
+    resetBoard();
+    runGame();
+  }
+
+  /* ---- Iteration count-up ---- */
+  var iterSteps = [1,1,2,3,5,8,13,21,34,55,89,144,233,377,610,987,1597,2584,4181,6765,10946,17711,28657,46368,75025,121393,196418,317811,514229,832040,1346269];
+  var iterIdx = 0;
+  function iterStep() {
+    if (!seqStarted || freezeTriggered) return;
+    if (iterIdx < iterSteps.length) {
+      iterDisplay.textContent = 'ITERATION [FIBONACCI]' + iterSteps[iterIdx] + '...';
+      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));
+      iterIdx++;
     }
-    // Silence = the scare
   }
+  (function waitSeq(){
+    if (seqStarted) { iterStep(); }
+    else { requestAnimationFrame(waitSeq); }
+  })();
 
-  // --- DESKTOP (unauthorized access) ---
-  function alertKlaxon(){
-    const c=ac(),t=c.currentTime;
-    for(let i=0;i<4;i++){
-      tone(440,t+i*0.8,0.4,'sawtooth',V*0.5);
-      tone(554,t+i*0.8+0.4,0.4,'sawtooth',V*0.5);
-    }
-    tone(55,t,3.2,'sine',V*0.3);
-  }
-
-  function sonarBreach(){
-    const c=ac(),t=c.currentTime;
-    sweep(60,200,t,1.5,'sine',V*0.4);
-    sweep(60,200,t+2,1.5,'sine',V*0.4);
-    tone(40,t+4,2,'sine',V*0.3);
-  }
-
-  function allHands(){
-    const c=ac(),t=c.currentTime;
-    for(let i=0;i<3;i++){tone(280,t+i*0.3,0.25,'triangle',V*0.4)}
-    for(let i=0;i<3;i++){tone(180,t+1.2+i*0.3,0.25,'triangle',V*0.4)}
-  }
-
-  function buzzerRumble(){
-    const c=ac(),t=c.currentTime;
-    for(let i=0;i<5;i++){tone(150,t+i*0.4,0.3,'sawtooth',V*0.5)}
-    tone(35,t,2.5,'sine',V*0.3);
-  }
-
-  function subspaceLock(){
-    const c=ac(),t=c.currentTime;
-    const o=c.createOscillator(),gn=c.createGain();
-    o.type='sine';o.frequency.value=220;
-    gn.gain.setValueAtTime(0,t);
-    gn.gain.linearRampToValueAtTime(V*0.15,t+2);
-    o.connect(gn);gn.connect(c.destination);
-    o.start(t);o.stop(t+4);
-    tone(1400,t+2,0.1,'sine',V*0.2);
-  }
-
-  // --- PAGE DETECTION & AUTO-START ---
-  function init(){
-    started=true;
-    const url=window.location.pathname;
-    if(url.includes('hal-alert')){
-      halSequence();
-    } else if(url.includes('desktop')){
-      subspaceLock();
+  /* ---- Start ---- */
+  var startTime = performance.now();
+  function tick() {
+    if (performance.now() - startTime > 100) {
+      requestAnimationFrame(checkFreeze);
     } else {
-      ambientLoop();
+      requestAnimationFrame(tick);
     }
   }
-
-  // Unlock on first interaction (browser requirement)
-  document.addEventListener('click',function unlock(){
-    if(!started){ac();init();}
-    document.removeEventListener('click',unlock);
-  },{once:true});
-
-  // Expose for manual triggering (desktop.html unauthorized access)
-  window.K2VGAudio={klaxon:alertKlaxon,sonar:sonarBreach,allHands:allHands,buzzer:buzzerRumble,lock:subspaceLock,denied:function(){const c=ac();tone(220,c.currentTime,0.08,'square',V*0.15);tone(180,c.currentTime+0.1,0.08,'square',V*0.15);}};   
+  requestAnimationFrame(tick);
 })();
+</script>
+</body>
+</html>
