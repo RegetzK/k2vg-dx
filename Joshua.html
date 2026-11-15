@@ -304,6 +304,8 @@
         setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
         return;
       }
+      // Force last cell to O so the alternating board is a tie, not a win
+      if (i === 8) player = 'O';
       cells[i].textContent = player;
       cells[i].className = 'cell ' + player.toLowerCase() + ' flash';
       setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[i]), 120);
