@@ -144,7 +144,10 @@
 (function updateUTCDate() {
   var el = document.getElementById('utc-date');
   if (!el) return;
-  el.textContent = new Date().toISOString().split('T')[0];
+  var now = new Date();
+  var utcDate = now.toISOString().split('T')[0];
+  var utcTime = now.toISOString().split('T')[1].split('Z')[0]; // HH:MM:SS
+  el.textContent = utcDate + ' ' + utcTime;  
   setTimeout(updateUTCDate, 1000);
     }());
 
