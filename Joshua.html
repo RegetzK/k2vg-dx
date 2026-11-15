@@ -286,11 +286,18 @@
   }
 
   /* ---- TTT sequence ---- */
-  var md = [], td = [], tp = [];
-  for (var i = 0; i < 10; i++) {
-    md.push(Math.round(220 * Math.pow(0.75, i)));
-    td.push(Math.round(270 * Math.pow(0.68, i)));
-    tp.push(Math.round(680 * Math.pow(0.65, i)));
+    var md = [], td = [], tp = [];
+  for (var i = 0; i < 20; i++) {
+    if (i < 10) {
+      md.push(Math.round(220 * Math.pow(0.75, i)));
+      td.push(Math.round(270 * Math.pow(0.68, i)));
+      tp.push(Math.round(680 * Math.pow(0.65, i)));
+    } else {
+      // Exponential ramp: game 11 at ~200ms, game 20 near 0ms
+      md.push(Math.round(80 * Math.pow(0.6, i - 10)));
+      td.push(Math.round(100 * Math.pow(0.55, i - 10)));
+      tp.push(Math.round(200 * Math.pow(0.5, i - 10)));
+    }
   }
 
   var tttIdx = 0;
@@ -350,11 +357,41 @@
   }
 
   function runGame() {
-    if (tttIdx >= 10) {
-      statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
-      speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
-      probLine.style.visibility = 'visible';
-      log.style.animationPlayState = 'running';
+    if (tttIdx >= 20) {
+      // Green flash — WOPR reset effect from the film
+      screen.classList.add('red-bleed'); // reuse the class but invert
+      setTimeout(function(){
+        screen.style.background = '#33ff33';
+        screen.style.color = '#000';
+      }, 400);
+      setTimeout(function(){
+        screen.style.background = '';
+        screen.style.color = '';
+        screen.classList.remove('red-bleed');
+      }, 600);
+
+      // Infinity symbol
+      speedEl.textContent = '∞';
+      speedEl.style.color = '#fff';
+      speedEl.style.textShadow = '0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.5)';
+
+      // Hold for 2 seconds, then resume crawl
+      setTimeout(function(){
+        probLine.style.visibility = 'visible';
+        log.style.animationPlayState = 'running';
+
+        if (!countdownStarted) {
+          countdownStarted = true;
+          updateCountdown();
+          setInterval(updateCountdown, 1000);
+        }
+        if (!connorTimer) {
+          updateConnor();
+          connorTimer = setInterval(updateConnor, 1000);
+        }
+      }, 2000);
+      return;
+    }
 
       if (!countdownStarted) {
         countdownStarted = true;
