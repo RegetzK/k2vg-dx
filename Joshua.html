@@ -265,7 +265,7 @@
     if (rect.top > 0 && rect.top < window.innerHeight * 0.7) {
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
-      iterDisplay.textContent = 'ITERATION 15...';
+      iterDisplay.textContent = 'ITERATION 1346269...';
       iterCursor.style.visibility = 'visible';
       redBlink(400);
       startTTT();
@@ -372,7 +372,7 @@
   }
 
   /* ---- Iteration count-up ---- */
-  var iterSteps = [1,1,2,3,5,8,13,21,34,55,89,144,233,377,610,987,1597,2584,4181,6765];
+  var iterSteps = [1,1,2,3,5,8,13,21,34,55,89,144,233,377,610,987,1597,2584,4181,6765,10946,17711,28657,46368,75025,121393,196418,317811,514229,832040,1346269];
   var iterIdx = 0;
   function iterStep() {
     if (!seqStarted || freezeTriggered) return;
