@@ -295,6 +295,9 @@
   var tttIdx = 0;
   var statusEl = document.getElementById('ttt-status');
   var speedEl = document.getElementById('ttt-speed');
+  var totalMoves = 0;
+  var totalMovesMax = 180; // 20 × 9
+  var maxIter = 1346269;   
 
   /* ---- 16 guaranteed-tie boards: each is a legal move ORDER (cell indices) ---- */
   var tieBoards = [
@@ -319,25 +322,23 @@
     return _tieOrder[_tieIdx++ % _tieOrder.length];
   }
 
-  function drawBoard(callback) {
-    var moveOrder = nextTieBoard();
-    var player = 'X', i = 0;
-    function placeMove() {
-      if (i >= 9) {
-        statusEl.textContent = 'TIE';
-        setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
-        return;
-      }
-      var cellIdx = moveOrder[i];
-      cells[cellIdx].textContent = player;
-      cells[cellIdx].className = 'cell ' + player.toLowerCase() + ' flash';
-      setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[cellIdx]), 120);
-      player = (player === 'X') ? 'O' : 'X';
-      i++;
-      setTimeout(placeMove, md[tttIdx]);
+  function placeMove() {
+    if (i >= 9) {
+      statusEl.textContent = 'TIE';
+      setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
+      return;
     }
-    placeMove();
-  }
+    var cellIdx = moveOrder[i];
+    cells[cellIdx].textContent = player;
+    cells[cellIdx].className = 'cell ' + player.toLowerCase() + ' flash';
+    setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[cellIdx]), 120);
+    player = (player === 'X') ? 'O' : 'X';
+    i++;
+    totalMoves++;
+    var iterVal = Math.round(maxIter * Math.pow(totalMoves / totalMovesMax, 2.5));
+    speedEl.textContent = 'ITERATION ' + iterVal.toLocaleString() + '...';
+    setTimeout(placeMove, md[tttIdx]);
+  }   
 
   /* ---- Judgment Day countdown ---- */
   var judgEl = document.getElementById('judgement-countdown');
@@ -465,7 +466,7 @@
     }
 
     var spd = tp[tttIdx];
-    speedEl.textContent = 'GAME ' + (tttIdx+1) + '/20 \u2014 ' + spd + 'ms';
+    speedEl.textContent = 'ITERATION 0...';   
     statusEl.innerHTML = '&nbsp;';
     resetBoard();
     drawBoard(function() {
