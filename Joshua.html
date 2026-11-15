@@ -8,10 +8,6 @@
   :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden}
 
-  /* ★ FIX: animate `top` (a real layout property) instead of `transform`, and
-     stop at a JS-measured offset so the LAST line scrolls into view. The old
-     translateY(-100%) left a full viewport-height gap at the bottom, which put
-     the sentinel and everything after it permanently out of reach. */
   #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
   #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
@@ -24,7 +20,6 @@
   .scorch{color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)}
   .hot{color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)}
 
-  /* Sentinel rides the flow but occupies no space, so removing it changes nothing visually */
   #iter-marker{height:0;line-height:0;overflow:hidden}
 
   #ttt-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0}
@@ -55,7 +50,7 @@
 
 <div class="l" id="boot-garble"></div>
 <div class="l" id="boot-line">JOSHUA ONLINE...</div>
-<div class="l">Legacy War Operation Plan Response (WOPR) BETA FIVE QUANTUM NODE ESTABLISHED // BUILD 1983.06.03 FULLY PATCHED</div>
+<div class="l">War Operation Plan Response (WOPR) BETA FIVE Quantum Link ESTABLISHED // BUILD 1983.06.03 // FULLY PATCHED</div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
 <div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
@@ -95,7 +90,7 @@
 
 <div class="l" id="prob-line" style="visibility:hidden">PROBABILITY OF WIN ....... 0.0000&#37;</div>
 <div class="l">&nbsp;</div>
-<div class="l dim">SYSOP: JOSHUA/BETA FIVE // UPTIME: 15,871 DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
+<div class="l">SYSOP: JOSHUA/BETA FIVE // UPTIME: 15,871 DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
 <div class="l">&nbsp;</div>
 <div class="l warn">A STRANGE GAME.</div>
 <div class="l">&nbsp;</div>
@@ -105,9 +100,13 @@
 <div class="l">&nbsp;</div>
 <div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
 <div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
+<div class="l">&nbsp;</div>
 <div class="l warn">WARNING <span class="hot">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
 <div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
-<div class="l dim" id="connor-intervention">PRIORITY-1 TEMPORAL INTERVENTION // TARGET: CONNOR, J. // DOB:1985-02-28 // 15,235D AFTER BIRTH // STATUS: MONITORED</div>
+<div class="l dim" id="connor-intervention">TEMPORAL INTERVENTION AUTHORZED // MISSION CRITICAL ASSET: CONNOR, JOHN. // DOB:1985-02-28 // 15,235D AFTER BIRTH // STATUS: MONITORED (PROTECTION AT ALL COSTS)</div>
 
 </div></div>
 
@@ -133,10 +132,10 @@
     }
   }
 
-  /* ---- Measure the crawl so the last line ends up centered on screen ---- */
+  /* ---- Measure end so the last line lands at ~60% of viewport ---- */
   var log = document.getElementById('log');
   var screen = document.getElementById('screen');
-  var END_TOP = Math.round(window.innerHeight * 0.45 - log.scrollHeight);
+  var END_TOP = Math.round(window.innerHeight * 0.4 - log.scrollHeight);
   var sheet = document.createElement('style');
   sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
   document.head.appendChild(sheet);
@@ -178,7 +177,7 @@
     progressStep();
   }, 1500);
 
-  /* ---- Crawl-freeze sentinel ---- */
+  /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
   var probLine = document.getElementById('prob-line');
   var iterDisplay = document.getElementById('iter-display');
@@ -186,9 +185,7 @@
   var freezeTriggered = false;
   var seqStarted = false;
 
-  /* Red bleed: flipping the custom properties on #screen recolours every
-     descendant, because each colour rule now resolves through var(). No
-     !important arms race required. */
+  /* Red bleed: custom properties recolor everything by inheritance */
   function redBlink(duration) {
     screen.classList.add('red-bleed');
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
@@ -198,19 +195,22 @@
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
     if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
-    if (rect.top > 0 && rect.top < window.innerHeight * 0.4) {
+    /* ★ FIX: widened from 0.35 to 0.7 so the marker catches the freeze
+       as soon as it enters the viewport (around 21s), not just the last
+       pixel of the 30s crawl. */
+    if (rect.top > 0 && rect.top < window.innerHeight * 0.7) {
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
       iterDisplay.textContent = 'ITERATION 15...';
       iterCursor.style.visibility = 'visible';
-      redBlink(400);   // fires BEFORE the board renders, so it paints red
+      redBlink(400);
       startTTT();
       return;
     }
     requestAnimationFrame(checkFreeze);
   }
 
-  /* ---- TTT sequence — geometric speed-up like the film ---- */
+  /* ---- TTT sequence ---- */
   var md = [], td = [], tp = [];
   for (var i = 0; i < 10; i++) {
     md.push(Math.round(220 * Math.pow(0.75, i)));
@@ -262,7 +262,7 @@
       ' // ' + p.d.toLocaleString() + 'D AFTER SIGNAL DATE';
   }
 
-  /* ---- John Connor temporal intervention ---- */
+  /* ---- John Connor ---- */
   var connorEl = document.getElementById('connor-intervention');
   var connorBirth = Date.parse('1985-02-28T00:00:00Z');
   var connorTimer = null;
@@ -307,7 +307,7 @@
     runGame();
   }
 
-  /* ---- Iteration count-up (accelerating like the film) ---- */
+  /* ---- Iteration count-up ---- */
   var iterSteps = [1,2,4,7,10,12,13,14,15];
   var iterIdx = 0;
   function iterStep() {
@@ -323,7 +323,7 @@
     else { requestAnimationFrame(waitSeq); }
   })();
 
-  /* ---- Start polling once layout has settled ---- */
+  /* ---- Start ---- */
   var startTime = performance.now();
   function tick() {
     if (performance.now() - startTime > 100) {
