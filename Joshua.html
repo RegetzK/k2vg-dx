@@ -153,21 +153,14 @@
   var screen = document.getElementById('screen');
   var tttWrap = document.getElementById('ttt-wrap');
 
-  /* ---- Resting position: keep board + counters fully on screen ---- */
+  /* ---- FIX: clamp uses Math.max (never below bottom edge), not Math.min ---- */
   function computeEndTop() {
     var vh = window.innerHeight;
     var scrollH = log.scrollHeight;
-    var boardH = tttWrap.getBoundingClientRect().height || 0;
-
-    /* We want the BOTTOM of the TTT block sitting at ~88% of viewport height.
-       That leaves the whole grid plus both status lines visible with room to
-       breathe, regardless of zoom level or device. */
-    var wrapBottomInLog = tttWrap.offsetTop + boardH;
-    var raw = (vh * 0.88) - wrapBottomInLog;
-
-    /* Never push the last line above the top edge; never leave a gap at bottom */
-    var minTop = vh - scrollH;   // log bottom exactly at viewport bottom
-    return Math.min(raw, minTop);
+    var wrapBottom = tttWrap.offsetTop + (tttWrap.getBoundingClientRect().height || 0);
+    var raw = (vh * 0.88) - wrapBottom;
+    // Clamp: never scroll so far that content disappears above the viewport top
+    return Math.max(raw, vh - scrollH);
   }
 
   function applyCrawl() {
@@ -193,7 +186,7 @@
     setTimeout(applyCrawl, 400);
   });
 
-  /* ---- Boot garble ---- */
+  /* ---- Boot garble: delay 1s so user sees it before crawl starts ---- */
   var garbleEl = document.getElementById('boot-garble');
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
   var garbleText = '';
@@ -211,9 +204,9 @@
     garbleFrame++;
     setTimeout(garbleStep, garbleInterval);
   }
-  garbleStep();
+  setTimeout(garbleStep, 1000);
 
-  /* ---- Progress bar ---- */
+  /* ---- Progress bar: delay 1s longer ---- */
   var progressBar = document.getElementById('progress-bar');
   var progressFrame = 0, progressMax = 30;
 
@@ -233,7 +226,7 @@
       setTimeout(progressStep, 100);
     }
     progressStep();
-  }, 1500);
+  }, 2500);
 
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
@@ -333,10 +326,6 @@
       statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
       speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
       probLine.style.visibility = 'visible';
-      /* FIX: do NOT resume the crawl. The board + counters are now at the
-         correct resting position and we let the remaining content below
-         scroll naturally if the user scrolls further. The crawl stays
-         paused so the board never cuts off again. */
       log.style.animationPlayState = 'paused';
 
       if (!countdownStarted) {
@@ -395,3 +384,4 @@
 </script>
 </body>
 </html>
+
