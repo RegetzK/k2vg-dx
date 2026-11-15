@@ -7,12 +7,11 @@
 <title>JOSHUA // WOPR</title>
 <style>
   :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
-  html,body{margin:0;padding:0;background:#000;height:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
   #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
-  /* Padding at bottom ensures Terminator lore is never pushed off-screen */
-  #log{padding:20px 16px 80vh 16px;font-family:'Courier New',Courier,monospace}
+  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
@@ -42,14 +41,18 @@
     .l{letter-spacing:0;word-break:normal}
   }
 
+  /* iOS / accessibility zoom: cap growth so text doesn't overflow */
   @media (min-resolution: 3dppx), (-webkit-min-device-pixel-ratio: 2) {
     .l{font-size:clamp(16px, 4vw + 3px, 22px)}
     .final{font-size:clamp(18px, 5vw + 3px, 28px)}
     .cell{font-size:clamp(32px,10vw,60px)}
   }
 
+  /* Reduce motion for accessibility / iOS zoom scenarios */
   @media (prefers-reduced-motion: reduce) {
-    #return{opacity:1}
+    @keyframes crawl{to{top:var(--end-top, 0px)}}
+    #log{animation-duration:45s}
+    #return{animation:none;opacity:1}
     .cell.flash{transition:none;box-shadow:none}
   }
 
@@ -57,6 +60,7 @@
   #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 40s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
+  /* iOS dvh fallback: if dvh isn't supported, vh is already the fallback */
   @supports not (height: 100dvh) {
     #screen{height:100vh}
   }
@@ -67,7 +71,7 @@
 
 <div class="l" id="boot-garble"></div>
 <div class="l" id="boot-line">JOSHUA ONLINE...</div>
-<div class="l">War Operation Plan Response (WOPR) &lt;-&gt; BETA FIVE Quantum Link ESTABLISHED // BUILD 1983.06.03 mark 2026-11-15 // FULLY PATCHED</div>
+<div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Quantum Link ESTABLISHED // BUILD 1983.06.03 mark 2026-11-15 // FULLY PATCHED</div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
 <div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
@@ -107,7 +111,7 @@
 
 <div class="l" id="prob-line" style="visibility:hidden">PROBABILITY OF WIN ....... 0.0000&#37;</div>
 <div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA &lt;-&gt; BETA FIVE // UPTIME: 15,871 DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
+<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: 15,871 DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
 <div class="l">&nbsp;</div>
 <div class="l warn">A STRANGE GAME.</div>
 <div class="l">&nbsp;</div>
@@ -149,18 +153,55 @@
     }
   }
 
+  /* ---- FIX: measure end position AFTER all content is in the DOM ---- */
+  var log = document.getElementById('log');
   var screen = document.getElementById('screen');
-  var tttWrap = document.getElementById('ttt-wrap');
 
-  /* ---- Smooth scroll to TTT block, centered in viewport ---- */
-  function scrollToTTT() {
-    tttWrap.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+  // Compute a safe END_TOP with clamp to prevent negative/cutoff
+  function computeEndTop() {
+    var vh = window.innerHeight;
+    var scrollH = log.scrollHeight;
+    var raw = vh * 0.4 - scrollH;
+    // Clamp: never scroll past top, leave at least 20px padding
+    return Math.max(vh - scrollH + 20, Math.min(raw, vh * 0.15));
   }
 
-  /* ---- Boot garble: delay 1s ---- */
+  function applyCrawl() {
+    var END_TOP = computeEndTop();
+    var sheet = document.createElement('style');
+    // Set CSS variable for prefers-reduced-motion to pick up
+    document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
+    sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
+    // Remove any previous crawl stylesheet to avoid conflicts on resize
+    var old = document.getElementById('crawl-sheet');
+    if (old) old.remove();
+    sheet.id = 'crawl-sheet';
+    document.head.appendChild(sheet);
+  }
+
+  window.addEventListener('load', function() {
+    requestAnimationFrame(function() {
+      applyCrawl();
+    });
+  });
+
+  /* Resize / orientation guard: iOS zoom changes can invalidate crawl */
+  var resizeTimer = null;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      applyCrawl();
+    }, 250);
+  });
+
+  /* ---- Boot garble ---- */
   var garbleEl = document.getElementById('boot-garble');
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
   var garbleText = '';
+
+  /* FIX: scale garble duration by viewport width so it's readable at any zoom.
+     On narrow/zoomed screens (width < 500px), slow it down. On wide screens,
+     keep it snappy. */
   var vw = window.innerWidth;
   var garbleFrame = 0;
   var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50)));
@@ -175,8 +216,9 @@
     garbleFrame++;
     setTimeout(garbleStep, garbleInterval);
   }
-  setTimeout(garbleStep, 1000);
-  /* ---- Progress bar: delay 2.5s ---- */
+  garbleStep();
+
+  /* ---- Progress bar ---- */
   var progressBar = document.getElementById('progress-bar');
   var progressFrame = 0, progressMax = 30;
 
@@ -189,16 +231,16 @@
       var pct = Math.round((progressFrame / progressMax) * 100);
       var filled = Math.round((progressFrame / progressMax) * 36);
       var bar = '', i;
-      for (i = 0; i < filled; i++) bar += '\u2588';
-      for (i = 0; i < 36 - filled; i++) bar += '\u2591';
+      for (i = 0; i < filled; i++) bar += '█';
+      for (i = 0; i < 36 - filled; i++) bar += '░';
       progressBar.textContent = '[' + bar + '] ' + pct + '%';
       progressFrame++;
       setTimeout(progressStep, 100);
     }
     progressStep();
-  }, 2500);
+  }, 1500);
 
-  /* ---- Freeze sentinel: when iter-marker enters viewport, freeze & start TTT ---- */
+  /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
   var probLine = document.getElementById('prob-line');
   var iterDisplay = document.getElementById('iter-display');
@@ -206,6 +248,7 @@
   var freezeTriggered = false;
   var seqStarted = false;
 
+  /* Red bleed: custom properties recolor everything by inheritance */
   function redBlink(duration) {
     screen.classList.add('red-bleed');
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
@@ -217,11 +260,10 @@
     if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
     if (rect.top > 0 && rect.top < window.innerHeight * 0.7) {
       freezeTriggered = true;
+      log.style.animationPlayState = 'paused';
       iterDisplay.textContent = 'ITERATION 15...';
       iterCursor.style.visibility = 'visible';
       redBlink(400);
-      /* Scroll the TTT board into view, centered */
-      scrollToTTT();
       startTTT();
       return;
     }
@@ -297,6 +339,7 @@
       statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
       speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
       probLine.style.visibility = 'visible';
+      log.style.animationPlayState = 'running';
 
       if (!countdownStarted) {
         countdownStarted = true;
