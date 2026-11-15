@@ -71,7 +71,7 @@
 
 <div class="l" id="boot-garble"></div>
 <div class="l" id="boot-line">JOSHUA ONLINE...</div>
-<div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Quantum Link ESTABLISHED // BUILD 1983.06.03 mark 2026-11-15 // FULLY PATCHED</div>
+<div class="l">War Operation Plan Response (WOPR) Mainframe <-> BETA FIVE Post-Quantum Computing Link ESTABLISHED // BUILD 1983.06.03 mark mark <span id="utc-date"></span> // WOPR ZT VULNS REMEDIATED</div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
 <div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
@@ -140,6 +140,14 @@
 </div>
 
 <script>
+/* ---- Live UTC date ---- */
+(function updateUTCDate() {
+  var el = document.getElementById('utc-date');
+  if (!el) return;
+  el.textContent = new Date().toISOString().split('T')[0];
+  setTimeout(updateUTCDate, 1000);
+    }());
+
 (function(){
   var grid = document.getElementById('ttt-grid');
   var cells = [];
