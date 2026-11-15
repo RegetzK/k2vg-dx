@@ -7,7 +7,10 @@
 <style>
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden}
 
-  #screen{height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#33ff33;text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
+  /* ★ FIX: #screen must be position:relative or the absolute #iter-marker
+     resolves against the viewport instead of #log, freezing rect.top at 0
+     so the crawl-freeze sentinel can never trigger. */
+  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#33ff33;text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{color:#ff0000;text-shadow:0 0 8px rgba(255,0,0,0.7),0 0 20px rgba(255,0,0,0.3)}
   #log{padding:20px 16px 130px 16px;transform:translateY(100vh);animation:crawl 30s linear forwards}
 
@@ -97,11 +100,11 @@
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
-<!-- ★ Neural net anomaly — now the closing beat before Connor ★ -->
+<!-- ★ Neural net anomaly — closing beat, after the chess line ★ -->
 <div class="l warn">WARNING <span style="color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
 <div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
 <!-- ★ John Connor temporal intervention ★ -->
-<div class="l" id="connor-intervention"></div>
+<div class="l dim" id="connor-intervention"></div>
 
 </div></div>
 
@@ -186,27 +189,18 @@
   var iterCursor = document.getElementById('iter-cursor');
   var seqStarted = false;
 
-  /* ★ FIX #1: red bleed must survive the crawl repaint.
-     The .red-bleed rule only sets color/text-shadow on #screen, but
-     EVERY child line (.l/.warn/.final/.dim) and every inline span sets
-     its OWN color — so inheritance never reaches them and the flash is
-     invisible. We inject a temporary stylesheet that forces red on all
-     descendants for the duration of the blink. */
+  /* Red bleed: inject a stylesheet that forces Skynet red on every
+     descendant, because each .l/.warn/.final/.dim/span declares its own
+     color and would otherwise ignore the inherited swap on #screen. */
   var bleedSheet = null;
   function redBlink(duration) {
     if (!bleedSheet) {
       bleedSheet = document.createElement('style');
       bleedSheet.id = 'red-bleed-style';
       bleedSheet.textContent =
-        '#screen.red-bleed,' +
-        '#screen.red-bleed .l,' +
-        '#screen.red-bleed .dim,' +
-        '#screen.red-bleed .warn,' +
-        '#screen.red-bleed .tie,' +
-        '#screen.red-bleed .final,' +
-        '#screen.red-bleed .cell,' +
-        '#screen.red-bleed .cell.x,' +
-        '#screen.red-bleed .cell.o,' +
+        '#screen.red-bleed,#screen.red-bleed .l,#screen.red-bleed .dim,' +
+        '#screen.red-bleed .warn,#screen.red-bleed .tie,#screen.red-bleed .final,' +
+        '#screen.red-bleed .cell,#screen.red-bleed .cell.x,#screen.red-bleed .cell.o,' +
         '#screen.red-bleed span{' +
           'color:#ff0000 !important;' +
           'text-shadow:0 0 8px rgba(255,0,0,0.75),0 0 20px rgba(255,0,0,0.35) !important;' +
@@ -230,8 +224,7 @@
       log.style.animationPlayState = 'paused';
       iterDisplay.textContent = 'ITERATION 15...';
       iterCursor.style.visibility = 'visible';
-      // RED BLEED-THROUGH: fires BEFORE the board renders, so the
-      // TTT grid paints in Skynet red for one blink.
+      // Fires BEFORE the board renders so the TTT grid paints in red.
       redBlink(400);
       startTTT();
       return;
@@ -239,7 +232,7 @@
     requestAnimationFrame(checkFreeze);
   }
 
-  /* ---- TTT Sequence ---- */
+  /* ---- TTT Sequence — geometric speed-up like the film ---- */
   var md = [], td = [], tp = [];
   for (var i = 0; i < 10; i++) {
     md.push(Math.round(220 * Math.pow(0.75, i)));
@@ -331,9 +324,7 @@
         setInterval(updateCountdown, 1000);
       }
 
-      /* ★ FIX #2: guard was `if (!connorDisplay)` on a string that is
-         rewritten every tick — swap to an explicit timer flag so the
-         interval is created exactly once. */
+      // Guard on a timer flag, not a string that gets rewritten each tick.
       if (!connorTimer) {
         updateConnor();
         connorTimer = setInterval(updateConnor, 1000);
@@ -360,7 +351,7 @@
     runGame();
   }
 
-  /* ---- Iteration count-up ---- */
+  /* ---- Iteration count-up (accelerating like the film) ---- */
   var iterSteps = [1,2,4,7,10,12,13,14,15];
   var iterIdx = 0;
   function iterStep() {
