@@ -366,6 +366,49 @@
   var connorBirth = Date.parse('1985-02-28T00:00:00Z');
   var connorTimer = null;
 
+  /* ---- Mainframe reset SFX (Web Audio, no payload) ---- */
+  var audioCtx = null;
+  function playResetSfx() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      var sr = audioCtx.sampleRate, dur = 3.0;
+      var buf = audioCtx.createBuffer(1, Math.floor(sr * dur), sr);
+      var d = buf.getChannelData(0);
+      var phase = 0, phase2 = 0;
+      for (var i = 0; i < d.length; i++) {
+        var t = i / sr, val = 0;
+        // Rising electrical whine: ~400Hz -> ~16kHz over 2.7s, loudness builds exponentially
+        if (t <= 2.7) {
+          var p = t / 2.7;
+          var freq = 400 + 15600 * p * p;
+          var amp = 0.05 + 0.45 * Math.pow(p, 2.5);
+          phase += 2 * Math.PI * freq / sr;
+          phase2 += 2 * Math.PI * freq * 2.01 / sr;
+          val += amp * Math.sin(phase) + amp * 0.3 * Math.sin(phase2);
+        }
+        // Deep bass echoing double click/thump at end
+        var thump = function(center, a) {
+          if (t < center) return 0;
+          var dt = t - center;
+          return a * Math.exp(-dt / 0.18) * Math.sin(2 * Math.PI * 55 * dt);
+        };
+        val += thump(2.70, 1.0) + thump(2.85, 0.8);
+        // Sharp transient clicks at each thump onset
+        [2.70, 2.85].forEach(function(c) {
+          if (Math.abs(t - c) < 0.004) val += 0.4 * Math.exp(-Math.abs(t - c) / 0.001);
+        });
+        // Static burst tail
+        if (t >= 2.85 && t <= 3.0) val += 0.15 * Math.exp(-(t - 2.85) / 0.05) * (Math.random() * 2 - 1);
+        d[i] = Math.tanh(val * 0.9);
+      }
+      var src = audioCtx.createBufferSource();
+      src.buffer = buf;
+      src.connect(audioCtx.destination);
+      src.start();
+    } catch(e) {}
+  }
+
   function updateConnor() {
     if (!connorEl) return;
     var p = elapsedParts(Date.now() - connorBirth);
@@ -387,7 +430,8 @@
 
   function runGame() {
     if (tttIdx >= 20) {
-      /* WOPR reset flash */
+      /* WOPR reset flash + mainframe SFX */
+      playResetSfx();
       screen.classList.add('red-bleed');
       setTimeout(function(){
         screen.style.cssText = 'background:#33ff33;color:#000;text-shadow:none;';
