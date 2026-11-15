@@ -74,7 +74,7 @@
 <div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Quantum Link ESTABLISHED // BUILD 1983.06.03 mark 2026-11-15 // FULLY PATCHED</div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
-<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
+<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
 <div class="l">&nbsp;</div>
 <div class="l">GAMES FOUND:</div>
 <div class="l">&nbsp;</div>
@@ -229,14 +229,14 @@
   setTimeout(function() {
     function progressStep() {
       if (progressFrame >= progressMax) {
-        progressBar.textContent = '[████████████████████████████████████] 100%';
+        progressBar.textContent = '[███████████████████████████████] 100%';
         return;
       }
       var pct = Math.round((progressFrame / progressMax) * 100);
-      var filled = Math.round((progressFrame / progressMax) * 36);
+      var filled = Math.round((progressFrame / progressMax) * 31);
       var bar = '', i;
       for (i = 0; i < filled; i++) bar += '█';
-      for (i = 0; i < 36 - filled; i++) bar += '░';
+      for (i = 0; i < 31 - filled; i++) bar += '░';
       progressBar.textContent = '[' + bar + '] ' + pct + '%';
       progressFrame++;
       setTimeout(progressStep, 100);
