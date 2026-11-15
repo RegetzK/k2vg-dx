@@ -232,11 +232,13 @@
     garbleFrame++;
     setTimeout(garbleStep, garbleInterval);
   }
-  garbleStep();
+  /* FIX 1: delay garble until first crawl frame is on-screen */
+  setTimeout(garbleStep, 400);
 
   var progressBar = document.getElementById('progress-bar');
   var progressFrame = 0, progressMax = 30;
 
+  /* FIX 2: delay progress start so it animates while scrolling into view on mobile */
   setTimeout(function() {
     function progressStep() {
       if (progressFrame >= progressMax) {
@@ -253,7 +255,7 @@
       setTimeout(progressStep, 100);
     }
     progressStep();
-  }, 1500);
+  }, 2000);
 
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
@@ -268,11 +270,12 @@
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
   }
 
+  /* FIX 3: reduce freeze threshold from 0.6 to 0.45 so TTT board stays fully in viewport */
   function checkFreeze() {
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
     if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
-    if (rect.top > 0 && rect.top < window.innerHeight * 0.6) {
+    if (rect.top > 0 && rect.top < window.innerHeight * 0.45) {
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
       redBlink(400);
@@ -493,5 +496,3 @@
   
 })();
 </script>
-</body>
-</html>
