@@ -262,7 +262,7 @@
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
     if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
-    if (rect.top > 0 && rect.top < window.innerHeight * 0.9) {
+    if (rect.top > 0 && rect.top < window.innerHeight * 0.5) {
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
       iterDisplay.textContent = 'ITERATION 1346269...';
