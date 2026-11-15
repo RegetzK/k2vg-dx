@@ -240,4 +240,100 @@
     placeMove();
   }
 
-  /* ---- Judgment
+  /* ---- Judgment Day countdown ---- */
+  var judgEl = document.getElementById('judgement-countdown');
+  var judgmentDay = Date.parse('1997-08-04T03:47:22Z');
+  var countdownStarted = false;
+
+  function elapsedParts(t) {
+    var pad = function(n){ return (n < 10 ? '0' + n : '' + n); };
+    return {
+      d: Math.floor(t / 86400000),
+      h: pad(Math.floor((t % 86400000) / 3600000)),
+      m: pad(Math.floor((t % 3600000) / 60000)),
+      s: pad(Math.floor((t % 60000) / 1000))
+    };
+  }
+
+  function updateCountdown() {
+    if (!judgEl) return;
+    var p = elapsedParts(Date.now() - judgmentDay);
+    judgEl.textContent = 'T+' + p.h + ':' + p.m + ':' + p.s +
+      ' // ' + p.d.toLocaleString() + 'D AFTER SIGNAL DATE';
+  }
+
+  /* ---- John Connor temporal intervention ---- */
+  var connorEl = document.getElementById('connor-intervention');
+  var connorBirth = Date.parse('1985-02-28T00:00:00Z');
+  var connorTimer = null;
+
+  function updateConnor() {
+    if (!connorEl) return;
+    var p = elapsedParts(Date.now() - connorBirth);
+    connorEl.textContent = 'PRIORITY-1 TEMPORAL INTERVENTION // TARGET: CONNOR, J. // DOB:1985-02-28 // ' +
+      p.d.toLocaleString() + 'D ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // STATUS: MONITORED';
+  }
+
+  function runGame() {
+    if (tttIdx >= 10) {
+      statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
+      speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
+      probLine.style.visibility = 'visible';
+      log.style.animationPlayState = 'running';
+
+      if (!countdownStarted) {
+        countdownStarted = true;
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+      if (!connorTimer) {
+        updateConnor();
+        connorTimer = setInterval(updateConnor, 1000);
+      }
+      return;
+    }
+    var spd = tp[tttIdx];
+    speedEl.textContent = 'GAME ' + (tttIdx+1) + '/10 \u2014 ' + spd + 'ms';
+    statusEl.innerHTML = '&nbsp;';
+    resetBoard();
+    drawBoard(function() {
+      setTimeout(function(){ tttIdx++; runGame(); }, spd);
+    });
+  }
+
+  function startTTT() {
+    tttIdx = 0;
+    resetBoard();
+    runGame();
+  }
+
+  /* ---- Iteration count-up (accelerating like the film) ---- */
+  var iterSteps = [1,2,4,7,10,12,13,14,15];
+  var iterIdx = 0;
+  function iterStep() {
+    if (!seqStarted || freezeTriggered) return;
+    if (iterIdx < iterSteps.length) {
+      iterDisplay.textContent = 'ITERATION ' + iterSteps[iterIdx] + '...';
+      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));
+      iterIdx++;
+    }
+  }
+  (function waitSeq(){
+    if (seqStarted) { iterStep(); }
+    else { requestAnimationFrame(waitSeq); }
+  })();
+
+  /* ---- Start polling once layout has settled ---- */
+  var startTime = performance.now();
+  function tick() {
+    if (performance.now() - startTime > 100) {
+      requestAnimationFrame(checkFreeze);
+    } else {
+      requestAnimationFrame(tick);
+    }
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
