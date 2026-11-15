@@ -73,7 +73,7 @@
   }
 
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 40s forwards;font-size:clamp(15px, 4vw, 20px)}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 43s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
   @supports not (height: 100dvh) {
@@ -89,7 +89,7 @@
 <div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Post-Quantum Link ESTABLISHED // BUILD 1983.06.03 mark <span id="utc-date"></span> // WOPR ZT VULNS REMEDIATED</div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
-<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
+<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░] 0%</div>
 <div class="l">&nbsp;</div>
 <div class="l">GAMES FOUND:</div>
 <div class="l">&nbsp;</div>
@@ -220,8 +220,7 @@
   var garbleText = '';
   var vw = window.innerWidth;
   var garbleFrame = 0;
-  var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50)));
-  var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
+  var garbleMax = Math.max(40, Math.min(72, Math.round(vw / 12)));
 
   function garbleStep() {
     if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; return; }
@@ -240,14 +239,14 @@
   setTimeout(function() {
     function progressStep() {
       if (progressFrame >= progressMax) {
-        progressBar.textContent = '[███████████████████████████████] 100%';
+        progressBar.textContent = '[██████████████████████████] 100%';
         return;
       }
       var pct = Math.round((progressFrame / progressMax) * 100);
-      var filled = Math.round((progressFrame / progressMax) * 31);
+      var filled = Math.round((progressFrame / progressMax) * 26);
       var bar = '', i;
       for (i = 0; i < filled; i++) bar += '█';
-      for (i = 0; i < 31 - filled; i++) bar += '░';
+      for (i = 0; i < 26 - filled; i++) bar += '░';
       progressBar.textContent = '[' + bar + '] ' + pct + '%';
       progressFrame++;
       setTimeout(progressStep, 100);
