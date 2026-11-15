@@ -6,18 +6,18 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>JOSHUA // WOPR</title>
 <style>
-  :root{ --fg:#33ff33; --glow:rgba(51,255,255,0.7); }
+  :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
-  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,255,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
+  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
-  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 33s linear forwards;animation-play-state:paused}
+  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
   .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
   .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
-  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,255,0.3)}
+  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3)}
   .scorch{color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)}
   .hot{color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)}
 
@@ -25,8 +25,8 @@
 
   #ttt-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0}
   #ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:min(240px,60vw);aspect-ratio:1/1}
-  .cell{background:rgba(51,255,255,0.04);border:2px solid rgba(51,255,255,0.35);display:flex;align-items:center;justify-content:center;font-size:clamp(36px,12vw,72px);font-weight:bold;line-height:1;border-radius:4px;transition:border-color 0.15s ease}
-  .cell.x{color:var(--fg);text-shadow:0 0 10px var(--glow),0 0 22px rgba(51,255,255,0.4)}
+  .cell{background:rgba(51,255,51,0.04);border:2px solid rgba(51,255,51,0.35);display:flex;align-items:center;justify-content:center;font-size:clamp(36px,12vw,72px);font-weight:bold;line-height:1;border-radius:4px;transition:border-color 0.15s ease}
+  .cell.x{color:var(--fg);text-shadow:0 0 10px var(--glow),0 0 22px rgba(51,255,51,0.4)}
   .cell.o{color:#ff6633;text-shadow:0 0 10px rgba(255,102,51,0.9),0 0 22px rgba(255,102,51,0.4)}
   .cell.flash{border-color:rgba(255,255,255,0.9);box-shadow:0 0 14px rgba(255,255,255,0.6)}
   #ttt-status{text-align:center;margin-top:8px;min-height:1.7em}
@@ -57,7 +57,7 @@
   }
 
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 44s forwards;font-size:clamp(15px, 4vw, 20px)}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 40s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
   /* iOS dvh fallback: if dvh isn't supported, vh is already the fallback */
@@ -178,11 +178,9 @@
   }
 
   window.addEventListener('load', function() {
-    setTimeout(function() {
-      requestAnimationFrame(function() {
-        applyCrawl();
-      });
-    }, 1000);
+    requestAnimationFrame(function() {
+      applyCrawl();
+    });
   });
 
   /* Resize / orientation guard: iOS zoom changes can invalidate crawl */
@@ -238,7 +236,7 @@
       setTimeout(progressStep, 100);
     }
     progressStep();
-  }, 2500);
+  }, 1500);
 
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
