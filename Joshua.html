@@ -11,7 +11,8 @@
 
   #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
-  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
+  /* FIX 1: crawl starts immediately (no delay) so garble is visible while scrolling */
+  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards;animation-delay:0s}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
@@ -41,14 +42,12 @@
     .l{letter-spacing:0;word-break:normal}
   }
 
-  /* iOS / accessibility zoom: cap growth so text doesn't overflow */
   @media (min-resolution: 3dppx), (-webkit-min-device-pixel-ratio: 2) {
     .l{font-size:clamp(16px, 4vw + 3px, 22px)}
     .final{font-size:clamp(18px, 5vw + 3px, 28px)}
     .cell{font-size:clamp(32px,10vw,60px)}
   }
 
-  /* Reduce motion for accessibility / iOS zoom scenarios */
   @media (prefers-reduced-motion: reduce) {
     @keyframes crawl{to{top:var(--end-top, 0px)}}
     #log{animation-duration:45s}
@@ -60,7 +59,6 @@
   #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 40s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-  /* iOS dvh fallback: if dvh isn't supported, vh is already the fallback */
   @supports not (height: 100dvh) {
     #screen{height:100vh}
   }
@@ -153,26 +151,26 @@
     }
   }
 
-  /* ---- FIX: measure end position AFTER all content is in the DOM ---- */
+  /* ---- Measure end position AFTER all content is in the DOM ---- */
   var log = document.getElementById('log');
   var screen = document.getElementById('screen');
 
-  // Compute a safe END_TOP with clamp to prevent negative/cutoff
+  /* FIX 2: raise the resting point so the board + TRY counter stay visible.
+     Previously 0.4 put the bottom of the log at 40% down the screen, which on
+     tall/zoomed viewports left the board half off-screen. Now the log bottom
+     lands near the top third, leaving the whole board and status lines in view. */
   function computeEndTop() {
     var vh = window.innerHeight;
     var scrollH = log.scrollHeight;
-    var raw = vh * 0.4 - scrollH;
-    // Clamp: never scroll past top, leave at least 20px padding
-    return Math.max(vh - scrollH + 20, Math.min(raw, vh * 0.15));
+    var raw = vh * 0.15 - scrollH;   // was 0.4 -> now 0.15 (scrolls further up)
+    return Math.max(vh - scrollH + 20, Math.min(raw, vh * 0.05));
   }
 
   function applyCrawl() {
     var END_TOP = computeEndTop();
     var sheet = document.createElement('style');
-    // Set CSS variable for prefers-reduced-motion to pick up
     document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
     sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
-    // Remove any previous crawl stylesheet to avoid conflicts on resize
     var old = document.getElementById('crawl-sheet');
     if (old) old.remove();
     sheet.id = 'crawl-sheet';
@@ -185,7 +183,6 @@
     });
   });
 
-  /* Resize / orientation guard: iOS zoom changes can invalidate crawl */
   var resizeTimer = null;
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimer);
@@ -199,9 +196,9 @@
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
   var garbleText = '';
 
-  /* FIX: scale garble duration by viewport width so it's readable at any zoom.
-     On narrow/zoomed screens (width < 500px), slow it down. On wide screens,
-     keep it snappy. */
+  /* FIX 1b: start garble IMMEDIATELY (was delayed by layout). The crawl now
+     begins at animation-delay:0s, so the garble plays while the text scrolls
+     into view rather than finishing before the user sees it. */
   var vw = window.innerWidth;
   var garbleFrame = 0;
   var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50)));
@@ -248,7 +245,6 @@
   var freezeTriggered = false;
   var seqStarted = false;
 
-  /* Red bleed: custom properties recolor everything by inheritance */
   function redBlink(duration) {
     screen.classList.add('red-bleed');
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
