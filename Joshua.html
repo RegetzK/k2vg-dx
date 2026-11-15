@@ -318,24 +318,6 @@
     return _tieOrder[_tieIdx++ % _tieOrder.length];
   }
 
-  function placeMove() {
-    if (i >= 9) {
-      statusEl.textContent = 'TIE';
-      setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
-      return;
-    }
-    var cellIdx = moveOrder[i];
-    cells[cellIdx].textContent = player;
-    cells[cellIdx].className = 'cell ' + player.toLowerCase() + ' flash';
-    setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[cellIdx]), 120);
-    player = (player === 'X') ? 'O' : 'X';
-    i++;
-    totalMoves++;
-    var iterVal = Math.round(maxIter * Math.pow(totalMoves / totalMovesMax, 2.5));
-    speedEl.textContent = 'ITERATION ' + iterVal.toLocaleString() + '...';
-    setTimeout(placeMove, md[tttIdx]);
-  }   
-
   /* ---- Judgment Day countdown ---- */
   var judgEl = document.getElementById('judgement-countdown');
   var judgmentDay = Date.parse('1997-08-04T03:47:22Z');
@@ -426,79 +408,87 @@
   setInterval(updateUptime, 60000);
 
   function runGame() {
-    if (tttIdx >= 20) {
-      /* WOPR reset flash + mainframe SFX */
-      playResetSfx();
-      screen.classList.add('red-bleed');
-      setTimeout(function(){
-        screen.style.cssText = 'background:#33ff33;color:#000;text-shadow:none;';
-      }, 400);
-      setTimeout(function(){
-        screen.style.cssText = '';
-        screen.classList.remove('red-bleed');
-      }, 600);
+      if (tttIdx >= 20) {
+        playResetSfx();
+        screen.classList.add('red-bleed');
+        setTimeout(function(){
+          screen.style.cssText = 'background:#33ff33;color:#000;text-shadow:none;';
+        }, 400);
+        setTimeout(function(){
+          screen.style.cssText = '';
+          screen.classList.remove('red-bleed');
+        }, 600);
 
-      /* Infinity symbol in the speed slot */
-      speedEl.textContent = '\u221E';
-      speedEl.style.fontSize = 'clamp(32px, 10vw, 48px)';
-      speedEl.style.color = '#fff';
-      speedEl.style.textShadow = '0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.5)';
+        speedEl.textContent = '\u221E';
+        speedEl.style.fontSize = 'clamp(32px, 10vw, 48px)';
+        speedEl.style.color = '#fff';
+        speedEl.style.textShadow = '0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.5)';
 
-      /* Resume crawl after 2s hold */
-      setTimeout(function(){
-        probLine.style.visibility = 'visible';
-        log.style.animationPlayState = 'running';
-        if (!countdownStarted) {
-          countdownStarted = true;
-          updateCountdown();
-          setInterval(updateCountdown, 1000);
-        }
-        if (!connorTimer) {
-          updateConnor();
-          connorTimer = setInterval(updateConnor, 1000);
-        }
-      }, 2000);
-      return;
-    }
-
-  function drawBoard(callback) {
-    var moveOrder = nextTieBoard();
-    var player = 'X', i = 0;
-    function placeMove() {
-      if (i >= 9) {
-        statusEl.textContent = 'TIE';
-        setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
+        setTimeout(function(){
+          probLine.style.visibility = 'visible';
+          log.style.animationPlayState = 'running';
+          if (!countdownStarted) {
+            countdownStarted = true;
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+          }
+          if (!connorTimer) {
+            updateConnor();
+            connorTimer = setInterval(updateConnor, 1000);
+          }
+        }, 2000);
         return;
       }
-      var cellIdx = moveOrder[i];
-      cells[cellIdx].textContent = player;
-      cells[cellIdx].className = 'cell ' + player.toLowerCase() + ' flash';
-      setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[cellIdx]), 120);
-      player = (player === 'X') ? 'O' : 'X';
-      i++;
-      totalMoves++;
-      var iterVal = Math.round(maxIter * Math.pow(totalMoves / totalMovesMax, 2.5));
-      speedEl.textContent = 'ITERATION ' + iterVal.toLocaleString() + '...';
-      setTimeout(placeMove, md[tttIdx]);
-    }
-    placeMove();
-  }   
+
+      var spd = tp[tttIdx];
+      speedEl.textContent = 'ITERATION 0...';
+      statusEl.innerHTML = '&nbsp;';
+      resetBoard();
+      drawBoard(function() {
+        setTimeout(function(){ tttIdx++; runGame(); }, spd);
+      });
+  }
+
+  function drawBoard(callback) {
+      var moveOrder = nextTieBoard();
+      var player = 'X', i = 0;
+      function placeMove() {
+        if (i >= 9) {
+          statusEl.textContent = 'TIE';
+          setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
+          return;
+        }
+        var cellIdx = moveOrder[i];
+        cells[cellIdx].textContent = player;
+        cells[cellIdx].className = 'cell ' + player.toLowerCase() + ' flash';
+        setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[cellIdx]), 120);
+        player = (player === 'X') ? 'O' : 'X';
+        i++;
+        totalMoves++;
+        var iterVal = Math.round(maxIter * Math.pow(totalMoves / totalMovesMax, 2.5));
+        speedEl.textContent = 'ITERATION ' + iterVal.toLocaleString() + '...';
+        setTimeout(placeMove, md[tttIdx]);
+      }
+      placeMove();
+  }
+
   function startTTT() {
-    tttIdx = 0;
-    resetBoard();
-    runGame();
+      tttIdx = 0;
+      resetBoard();
+      runGame();
   }
 
   /* ---- Start ---- */
   var startTime = performance.now();
   function tick() {
-    if (performance.now() - startTime > 100) {
-      requestAnimationFrame(checkFreeze);
-    } else {
-      requestAnimationFrame(tick);
-    }
+      if (performance.now() - startTime > 100) {
+        requestAnimationFrame(checkFreeze);
+      } else {
+        requestAnimationFrame(tick);
+      }
   }
-  requestAnimationFrame(tick);
+  requestAnimationFrame(tick);   
+  
 })();
 </script>
 </body>
