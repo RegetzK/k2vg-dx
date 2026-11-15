@@ -97,11 +97,11 @@
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
-<!-- ★ Moved up: Neural net anomaly now sits after final chess line ★ -->
+<!-- ★ Neural net anomaly — now the closing beat before Connor ★ -->
 <div class="l warn">WARNING <span style="color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
 <div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
 <!-- ★ John Connor temporal intervention ★ -->
-<div class="l dim" id="connor-intervention"></div>
+<div class="l" id="connor-intervention"></div>
 
 </div></div>
 
@@ -186,6 +186,38 @@
   var iterCursor = document.getElementById('iter-cursor');
   var seqStarted = false;
 
+  /* ★ FIX #1: red bleed must survive the crawl repaint.
+     The .red-bleed rule only sets color/text-shadow on #screen, but
+     EVERY child line (.l/.warn/.final/.dim) and every inline span sets
+     its OWN color — so inheritance never reaches them and the flash is
+     invisible. We inject a temporary stylesheet that forces red on all
+     descendants for the duration of the blink. */
+  var bleedSheet = null;
+  function redBlink(duration) {
+    if (!bleedSheet) {
+      bleedSheet = document.createElement('style');
+      bleedSheet.id = 'red-bleed-style';
+      bleedSheet.textContent =
+        '#screen.red-bleed,' +
+        '#screen.red-bleed .l,' +
+        '#screen.red-bleed .dim,' +
+        '#screen.red-bleed .warn,' +
+        '#screen.red-bleed .tie,' +
+        '#screen.red-bleed .final,' +
+        '#screen.red-bleed .cell,' +
+        '#screen.red-bleed .cell.x,' +
+        '#screen.red-bleed .cell.o,' +
+        '#screen.red-bleed span{' +
+          'color:#ff0000 !important;' +
+          'text-shadow:0 0 8px rgba(255,0,0,0.75),0 0 20px rgba(255,0,0,0.35) !important;' +
+        '}' +
+        '#screen.red-bleed .cell{border-color:rgba(255,0,0,0.55) !important}';
+      document.head.appendChild(bleedSheet);
+    }
+    screen.classList.add('red-bleed');
+    setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
+  }
+
   function checkFreeze() {
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
@@ -198,9 +230,9 @@
       log.style.animationPlayState = 'paused';
       iterDisplay.textContent = 'ITERATION 15...';
       iterCursor.style.visibility = 'visible';
-      // RED BLEED-THROUGH
-      screen.classList.add('red-bleed');
-      setTimeout(function(){ screen.classList.remove('red-bleed'); }, 400);
+      // RED BLEED-THROUGH: fires BEFORE the board renders, so the
+      // TTT grid paints in Skynet red for one blink.
+      redBlink(400);
       startTTT();
       return;
     }
@@ -266,7 +298,7 @@
   /* ---- John Connor Temporal Intervention ---- */
   var connorEl = document.getElementById('connor-intervention');
   var connorBirth = new Date('1985-02-28T00:00:00Z').getTime();
-  var connorDisplay = '';
+  var connorTimer = null;
 
   function updateConnor() {
     var diff = Date.now() - connorBirth;
@@ -278,12 +310,10 @@
     var sign  = diff < 0 ? 'BEFORE' : 'AFTER';
     var pad   = function(n){ return (n < 10 ? '0' + n : '' + n); };
 
-    connorDisplay = 'PRIORITY-1 TEMPORAL INTERVENTION // TARGET: CONNOR, J. // DOB:' +
-      '1985-02-28 // ' + days + 'D ' + pad(hours) + ':' + pad(mins) + ':' + pad(secs) +
-      ' ' + sign + ' BIRTH // STATUS: MONITORED';
-
     if (connorEl) {
-      connorEl.textContent = connorDisplay;
+      connorEl.textContent = 'PRIORITY-1 TEMPORAL INTERVENTION // TARGET: CONNOR, J. // DOB:' +
+        '1985-02-28 // ' + days + 'D ' + pad(hours) + ':' + pad(mins) + ':' + pad(secs) +
+        ' ' + sign + ' BIRTH // STATUS: MONITORED';
     }
   }
 
@@ -301,9 +331,12 @@
         setInterval(updateCountdown, 1000);
       }
 
-      if (!connorDisplay) {
+      /* ★ FIX #2: guard was `if (!connorDisplay)` on a string that is
+         rewritten every tick — swap to an explicit timer flag so the
+         interval is created exactly once. */
+      if (!connorTimer) {
         updateConnor();
-        setInterval(updateConnor, 1000);
+        connorTimer = setInterval(updateConnor, 1000);
       }
       return;
     }
