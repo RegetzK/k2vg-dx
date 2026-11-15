@@ -5,22 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JOSHUA // WOPR</title>
 <style>
+  :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden}
 
-  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:#33ff33;text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
-  #screen.red-bleed{color:#ff0000;text-shadow:0 0 8px rgba(255,0,0,0.7),0 0 20px rgba(255,0,0,0.3)}
-  #log{padding:20px 16px 130px 16px;transform:translateY(100vh);animation:crawl 30s linear forwards}
+  /* ★ FIX: animate `top` (a real layout property) instead of `transform`, and
+     stop at a JS-measured offset so the LAST line scrolls into view. The old
+     translateY(-100%) left a full viewport-height gap at the bottom, which put
+     the sentinel and everything after it permanently out of reach. */
+  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
+  #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
+  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
   .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
   .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
-  .final{color:#33ff33;font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px rgba(51,255,51,0.7),0 0 20px rgba(51,255,51,0.3)}
+  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3)}
+  .scorch{color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)}
+  .hot{color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)}
+
+  /* Sentinel rides the flow but occupies no space, so removing it changes nothing visually */
+  #iter-marker{height:0;line-height:0;overflow:hidden}
 
   #ttt-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0}
   #ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:min(240px,60vw);aspect-ratio:1/1}
   .cell{background:rgba(51,255,51,0.04);border:2px solid rgba(51,255,51,0.35);display:flex;align-items:center;justify-content:center;font-size:clamp(36px,12vw,72px);font-weight:bold;line-height:1;border-radius:4px;transition:border-color 0.15s ease}
-  .cell.x{color:#33ff33;text-shadow:0 0 10px rgba(51,255,51,0.9),0 0 22px rgba(51,255,51,0.4)}
+  .cell.x{color:var(--fg);text-shadow:0 0 10px var(--glow),0 0 22px rgba(51,255,51,0.4)}
   .cell.o{color:#ff6633;text-shadow:0 0 10px rgba(255,102,51,0.9),0 0 22px rgba(255,102,51,0.4)}
   .cell.flash{border-color:rgba(255,255,255,0.9);box-shadow:0 0 14px rgba(255,255,255,0.6)}
   #ttt-status{text-align:center;margin-top:8px;min-height:1.7em}
@@ -35,7 +45,6 @@
     .l{letter-spacing:0;word-break:normal}
   }
 
-  @keyframes crawl{to{transform:translateY(-100%)}}
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
   #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 40s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -69,7 +78,7 @@
 <div class="l">THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
-<div class="l final" style="color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)">GLOBAL THERMONUCLEAR WAR</div>
+<div class="l final scorch">GLOBAL THERMONUCLEAR WAR</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
@@ -86,20 +95,19 @@
 
 <div class="l" id="prob-line" style="visibility:hidden">PROBABILITY OF WIN ....... 0.0000&#37;</div>
 <div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA/BETA FIVE // UPTIME: 15,870 DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
+<div class="l dim">SYSOP: JOSHUA/BETA FIVE // UPTIME: 15,871 DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
 <div class="l">&nbsp;</div>
 <div class="l warn">A STRANGE GAME.</div>
 <div class="l">&nbsp;</div>
-<div class="l warn">THE ONLY WINNING MOVE IS <span style="color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)">NOT</span> TO PLAY.</div>
+<div class="l warn">THE ONLY WINNING MOVE IS <span class="hot">NOT</span> TO PLAY.</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
-<div class="l warn">WARNING <span style="color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
+<div class="l">&nbsp;</div>
+<div class="l warn">WARNING <span class="hot">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
 <div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
-<div class="l dim" id="connor-intervention"></div>
+<div class="l dim" id="connor-intervention">PRIORITY-1 TEMPORAL INTERVENTION // TARGET: CONNOR, J. // DOB:1985-02-28 // 15,235D AFTER BIRTH // STATUS: MONITORED</div>
 
 </div></div>
 
@@ -125,12 +133,18 @@
     }
   }
 
+  /* ---- Measure the crawl so the last line ends up centered on screen ---- */
+  var log = document.getElementById('log');
+  var screen = document.getElementById('screen');
+  var END_TOP = Math.round(window.innerHeight * 0.45 - log.scrollHeight);
+  var sheet = document.createElement('style');
+  sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
+  document.head.appendChild(sheet);
+
   /* ---- Boot garble ---- */
   var garbleEl = document.getElementById('boot-garble');
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
-  var garbleText = '';
-  var garbleFrame = 0;
-  var garbleMax = 12;
+  var garbleText = '', garbleFrame = 0, garbleMax = 12;
 
   function garbleStep() {
     if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; return; }
@@ -144,8 +158,7 @@
 
   /* ---- Progress bar ---- */
   var progressBar = document.getElementById('progress-bar');
-  var progressFrame = 0;
-  var progressMax = 30;
+  var progressFrame = 0, progressMax = 30;
 
   setTimeout(function() {
     function progressStep() {
@@ -155,10 +168,9 @@
       }
       var pct = Math.round((progressFrame / progressMax) * 100);
       var filled = Math.round((progressFrame / progressMax) * 36);
-      var empty = 36 - filled;
-      var bar = '';
-      for (var i = 0; i < filled; i++) bar += '█';
-      for (var i = 0; i < empty; i++) bar += '░';
+      var bar = '', i;
+      for (i = 0; i < filled; i++) bar += '█';
+      for (i = 0; i < 36 - filled; i++) bar += '░';
       progressBar.textContent = '[' + bar + '] ' + pct + '%';
       progressFrame++;
       setTimeout(progressStep, 100);
@@ -166,34 +178,18 @@
     progressStep();
   }, 1500);
 
-  /* ---- Scroll-freeze sentinel ---- */
+  /* ---- Crawl-freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
-  var log = document.getElementById('log');
-  var screen = document.getElementById('screen');
   var probLine = document.getElementById('prob-line');
-  var paused = false;
-  var freezeTriggered = false;
   var iterDisplay = document.getElementById('iter-display');
   var iterCursor = document.getElementById('iter-cursor');
+  var freezeTriggered = false;
   var seqStarted = false;
 
-  /* Red bleed: !important stylesheet overrides every descendant's color */
-  var bleedSheet = null;
+  /* Red bleed: flipping the custom properties on #screen recolours every
+     descendant, because each colour rule now resolves through var(). No
+     !important arms race required. */
   function redBlink(duration) {
-    if (!bleedSheet) {
-      bleedSheet = document.createElement('style');
-      bleedSheet.id = 'red-bleed-style';
-      bleedSheet.textContent =
-        '#screen.red-bleed,#screen.red-bleed .l,#screen.red-bleed .dim,' +
-        '#screen.red-bleed .warn,#screen.red-bleed .tie,#screen.red-bleed .final,' +
-        '#screen.red-bleed .cell,#screen.red-bleed .cell.x,#screen.red-bleed .cell.o,' +
-        '#screen.red-bleed span{' +
-          'color:#ff0000 !important;' +
-          'text-shadow:0 0 8px rgba(255,0,0,0.75),0 0 20px rgba(255,0,0,0.35) !important;' +
-        '}' +
-        '#screen.red-bleed .cell{border-color:rgba(255,0,0,0.55) !important}';
-      document.head.appendChild(bleedSheet);
-    }
     screen.classList.add('red-bleed');
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
   }
@@ -202,20 +198,19 @@
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
     if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
-    if (rect.top > 0 && rect.top < window.innerHeight * 0.35) {
-      paused = true;
+    if (rect.top > 0 && rect.top < window.innerHeight * 0.4) {
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
       iterDisplay.textContent = 'ITERATION 15...';
       iterCursor.style.visibility = 'visible';
-      redBlink(400);
+      redBlink(400);   // fires BEFORE the board renders, so it paints red
       startTTT();
       return;
     }
     requestAnimationFrame(checkFreeze);
   }
 
-  /* ---- TTT Sequence ---- */
+  /* ---- TTT sequence — geometric speed-up like the film ---- */
   var md = [], td = [], tp = [];
   for (var i = 0; i < 10; i++) {
     md.push(Math.round(220 * Math.pow(0.75, i)));
@@ -228,8 +223,7 @@
   var speedEl = document.getElementById('ttt-speed');
 
   function drawBoard(callback) {
-    var player = 'X';
-    var i = 0;
+    var player = 'X', i = 0;
     function placeMove() {
       if (i >= 9) {
         statusEl.textContent = 'TIE';
@@ -246,107 +240,4 @@
     placeMove();
   }
 
-  /* ---- Judgment Day Countdown ---- */
-  var judgEl = document.getElementById('judgement-countdown');
-  var judgmentDay = new Date('1997-08-04T03:47:22Z').getTime();
-  var countdownStarted = false;
-
-  function updateCountdown() {
-    var diff = Date.now() - judgmentDay;
-    var absDiff = Math.abs(diff);
-    var days  = Math.floor(absDiff / 86400000);
-    var hours = Math.floor((absDiff % 86400000) / 3600000);
-    var mins  = Math.floor((absDiff % 3600000) / 60000);
-    var secs  = Math.floor((absDiff % 60000) / 1000);
-    var sign  = diff < 0 ? 'BEFORE' : 'AFTER';
-    var pad   = function(n){ return (n < 10 ? '0' + n : '' + n); };
-    if (judgEl) {
-      judgEl.textContent = 'T+' + pad(hours) + ':' + pad(mins) + ':' + pad(secs) +
-        ' // ' + days + 'D // ' + sign + ' SIGNAL DATE';
-    }
-  }
-
-  /* ---- John Connor ---- */
-  var connorEl = document.getElementById('connor-intervention');
-  var connorBirth = new Date('1985-02-28T00:00:00Z').getTime();
-  var connorTimer = null;
-
-  function updateConnor() {
-    var diff = Date.now() - connorBirth;
-    var absDiff = Math.abs(diff);
-    var days  = Math.floor(absDiff / 86400000);
-    var hours = Math.floor((absDiff % 86400000) / 3600000);
-    var mins  = Math.floor((absDiff % 3600000) / 60000);
-    var secs  = Math.floor((absDiff % 60000) / 1000);
-    var sign  = diff < 0 ? 'BEFORE' : 'AFTER';
-    var pad   = function(n){ return (n < 10 ? '0' + n : '' + n); };
-    if (connorEl) {
-      connorEl.textContent = 'PRIORITY-1 TEMPORAL INTERVENTION // TARGET: CONNOR, J. // DOB:' +
-        '1985-02-28 // ' + days + 'D ' + pad(hours) + ':' + pad(mins) + ':' + pad(secs) +
-        ' ' + sign + ' BIRTH // STATUS: MONITORED';
-    }
-  }
-
-  function runGame() {
-    if (tttIdx >= 10) {
-      statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
-      speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
-      probLine.style.visibility = 'visible';
-      log.style.animationPlayState = 'running';
-      paused = false;
-      if (!countdownStarted) {
-        countdownStarted = true;
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-      }
-      if (!connorTimer) {
-        updateConnor();
-        connorTimer = setInterval(updateConnor, 1000);
-      }
-      return;
-    }
-    var spd = tp[tttIdx];
-    speedEl.textContent = 'GAME ' + (tttIdx+1) + '/10 \u2014 ' + spd + 'ms';
-    statusEl.innerHTML = '&nbsp;';
-    resetBoard();
-    drawBoard(function() {
-      setTimeout(function(){ tttIdx++; runGame(); }, spd);
-    });
-  }
-
-  function startTTT() {
-    tttIdx = 0;
-    resetBoard();
-    runGame();
-  }
-
-  /* ---- Iteration count-up ---- */
-  var iterSteps = [1,2,4,7,10,12,13,14,15];
-  var iterIdx = 0;
-  function iterStep() {
-    if (!seqStarted || freezeTriggered) return;
-    if (iterIdx < iterSteps.length) {
-      iterDisplay.textContent = 'ITERATION ' + iterSteps[iterIdx] + '...';
-      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));
-      iterIdx++;
-    }
-  }
-  (function waitSeq(){
-    if (seqStarted) { iterStep(); }
-    else { requestAnimationFrame(waitSeq); }
-  })();
-
-  /* ---- Start ---- */
-  var startTime = performance.now();
-  function tick() {
-    if (performance.now() - startTime > 100) {
-      requestAnimationFrame(checkFreeze);
-    } else {
-      requestAnimationFrame(tick);
-    }
-  }
-  requestAnimationFrame(tick);
-})();
-</script>
-</body>
-</html>
+  /* ---- Judgment
