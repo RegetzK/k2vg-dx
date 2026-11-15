@@ -109,9 +109,7 @@
 <div class="l">THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
 <div class="l final scorch">GLOBAL THERMONUCLEAR WAR</div>
 <div class="l">&nbsp;</div>
-<div class="l">SIM SEQUENCE INIT...</div>
 <div class="l" id="iter-marker" aria-hidden="true">ITERATION</div>
-<div class="l final" id="iter-display">ITERATION 1...<span id="iter-cursor" style="visibility:hidden;animation:clickFlash 0.8s infinite alternate">_</span></div>
 
 <div id="ttt-wrap">
   <div id="ttt-grid"></div>
@@ -275,8 +273,6 @@
     if (rect.top > 0 && rect.top < window.innerHeight * 0.6) {
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
-      iterDisplay.textContent = 'ITERATION 1346269...';
-      iterCursor.style.visibility = 'visible';
       redBlink(400);
       startTTT();
       return;
@@ -465,36 +461,33 @@
       return;
     }
 
-    var spd = tp[tttIdx];
-    speedEl.textContent = 'ITERATION 0...';   
-    statusEl.innerHTML = '&nbsp;';
-    resetBoard();
-    drawBoard(function() {
-      setTimeout(function(){ tttIdx++; runGame(); }, spd);
-    });
-  }
-
+  function drawBoard(callback) {
+    var moveOrder = nextTieBoard();
+    var player = 'X', i = 0;
+    function placeMove() {
+      if (i >= 9) {
+        statusEl.textContent = 'TIE';
+        setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
+        return;
+      }
+      var cellIdx = moveOrder[i];
+      cells[cellIdx].textContent = player;
+      cells[cellIdx].className = 'cell ' + player.toLowerCase() + ' flash';
+      setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[cellIdx]), 120);
+      player = (player === 'X') ? 'O' : 'X';
+      i++;
+      totalMoves++;
+      var iterVal = Math.round(maxIter * Math.pow(totalMoves / totalMovesMax, 2.5));
+      speedEl.textContent = 'ITERATION ' + iterVal.toLocaleString() + '...';
+      setTimeout(placeMove, md[tttIdx]);
+    }
+    placeMove();
+  }   
   function startTTT() {
     tttIdx = 0;
     resetBoard();
     runGame();
   }
-
-  /* ---- Iteration count-up ---- */
-  var iterSteps = [1,1,2,3,5,8,13,21,34,55,89,144,233,377,610,987,1597,2584,4181,6765,10946,17711,28657,46368,75025,121393,196418,317811,514229,832040,1346269];
-  var iterIdx = 0;
-  function iterStep() {
-    if (!seqStarted || freezeTriggered) return;
-    if (iterIdx < iterSteps.length) {
-      iterDisplay.textContent = 'ITERATION [FIBONACCI]' + iterSteps[iterIdx] + '...';
-      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));
-      iterIdx++;
-    }
-  }
-  (function waitSeq(){
-    if (seqStarted) { iterStep(); }
-    else { requestAnimationFrame(waitSeq); }
-  })();
 
   /* ---- Start ---- */
   var startTime = performance.now();
