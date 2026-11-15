@@ -41,14 +41,12 @@
     .l{letter-spacing:0;word-break:normal}
   }
 
-  /* iOS / accessibility zoom: cap growth so text doesn't overflow */
   @media (min-resolution: 3dppx), (-webkit-min-device-pixel-ratio: 2) {
     .l{font-size:clamp(16px, 4vw + 3px, 22px)}
     .final{font-size:clamp(18px, 5vw + 3px, 28px)}
     .cell{font-size:clamp(32px,10vw,60px)}
   }
 
-  /* Reduce motion for accessibility / iOS zoom scenarios */
   @media (prefers-reduced-motion: reduce) {
     @keyframes crawl{to{top:var(--end-top, 0px)}}
     #log{animation-duration:45s}
@@ -60,7 +58,6 @@
   #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 40s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-  /* iOS dvh fallback: if dvh isn't supported, vh is already the fallback */
   @supports not (height: 100dvh) {
     #screen{height:100vh}
   }
@@ -146,7 +143,7 @@
   if (!el) return;
   var now = new Date();
   var utcDate = now.toISOString().split('T')[0];
-  var utcTime = now.toISOString().split('T')[1].split('Z')[0]; // HH:MM:SS
+  var utcTime = now.toISOString().split('T')[1].split('Z')[0];
   el.textContent = utcDate + ' ' + utcTime;  
   setTimeout(updateUTCDate, 1000);
     }());
@@ -168,26 +165,21 @@
     }
   }
 
-  /* ---- FIX: measure end position AFTER all content is in the DOM ---- */
   var log = document.getElementById('log');
   var screen = document.getElementById('screen');
 
-  // Compute a safe END_TOP with clamp to prevent negative/cutoff
   function computeEndTop() {
     var vh = window.innerHeight;
     var scrollH = log.scrollHeight;
     var raw = vh * 0.4 - scrollH;
-    // Clamp: never scroll past top, leave at least 20px padding
     return Math.max(vh - scrollH + 20, Math.min(raw, vh * 0.15));
   }
 
   function applyCrawl() {
     var END_TOP = computeEndTop();
     var sheet = document.createElement('style');
-    // Set CSS variable for prefers-reduced-motion to pick up
     document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
     sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
-    // Remove any previous crawl stylesheet to avoid conflicts on resize
     var old = document.getElementById('crawl-sheet');
     if (old) old.remove();
     sheet.id = 'crawl-sheet';
@@ -195,28 +187,18 @@
   }
 
   window.addEventListener('load', function() {
-    requestAnimationFrame(function() {
-      applyCrawl();
-    });
+    requestAnimationFrame(function() { applyCrawl(); });
   });
 
-  /* Resize / orientation guard: iOS zoom changes can invalidate crawl */
   var resizeTimer = null;
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-      applyCrawl();
-    }, 250);
+    resizeTimer = setTimeout(function() { applyCrawl(); }, 250);
   });
 
-  /* ---- Boot garble ---- */
   var garbleEl = document.getElementById('boot-garble');
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
   var garbleText = '';
-
-  /* FIX: scale garble duration by viewport width so it's readable at any zoom.
-     On narrow/zoomed screens (width < 500px), slow it down. On wide screens,
-     keep it snappy. */
   var vw = window.innerWidth;
   var garbleFrame = 0;
   var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50)));
@@ -233,7 +215,6 @@
   }
   garbleStep();
 
-  /* ---- Progress bar ---- */
   var progressBar = document.getElementById('progress-bar');
   var progressFrame = 0, progressMax = 30;
 
@@ -263,7 +244,6 @@
   var freezeTriggered = false;
   var seqStarted = false;
 
-  /* Red bleed: custom properties recolor everything by inheritance */
   function redBlink(duration) {
     screen.classList.add('red-bleed');
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
@@ -285,12 +265,19 @@
     requestAnimationFrame(checkFreeze);
   }
 
-  /* ---- TTT sequence ---- */
+  /* ---- 20 games: first 10 baseline speed, next 10 exponential ramp ---- */
   var md = [], td = [], tp = [];
-  for (var i = 0; i < 10; i++) {
-    md.push(Math.round(220 * Math.pow(0.75, i)));
-    td.push(Math.round(270 * Math.pow(0.68, i)));
-    tp.push(Math.round(680 * Math.pow(0.65, i)));
+  for (var i = 0; i < 20; i++) {
+    if (i < 10) {
+      md.push(Math.round(220 * Math.pow(0.75, i)));
+      td.push(Math.round(270 * Math.pow(0.68, i)));
+      tp.push(Math.round(680 * Math.pow(0.65, i)));
+    } else {
+      var j = i - 10;
+      md.push(Math.round(80 * Math.pow(0.6, j)));
+      td.push(Math.round(100 * Math.pow(0.55, j)));
+      tp.push(Math.round(200 * Math.pow(0.5, j)));
+    }
   }
 
   var tttIdx = 0;
@@ -350,25 +337,41 @@
   }
 
   function runGame() {
-    if (tttIdx >= 10) {
-      statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
-      speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
-      probLine.style.visibility = 'visible';
-      log.style.animationPlayState = 'running';
+    if (tttIdx >= 20) {
+      /* WOPR reset flash */
+      screen.classList.add('red-bleed');
+      setTimeout(function(){
+        screen.style.cssText = 'background:#33ff33;color:#000;text-shadow:none;';
+      }, 400);
+      setTimeout(function(){
+        screen.style.cssText = '';
+        screen.classList.remove('red-bleed');
+      }, 600);
 
-      if (!countdownStarted) {
-        countdownStarted = true;
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-      }
-      if (!connorTimer) {
-        updateConnor();
-        connorTimer = setInterval(updateConnor, 1000);
-      }
+      /* Infinity symbol in the speed slot */
+      speedEl.textContent = '\u221E';
+      speedEl.style.color = '#fff';
+      speedEl.style.textShadow = '0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.5)';
+
+      /* Resume crawl after 2s hold */
+      setTimeout(function(){
+        probLine.style.visibility = 'visible';
+        log.style.animationPlayState = 'running';
+        if (!countdownStarted) {
+          countdownStarted = true;
+          updateCountdown();
+          setInterval(updateCountdown, 1000);
+        }
+        if (!connorTimer) {
+          updateConnor();
+          connorTimer = setInterval(updateConnor, 1000);
+        }
+      }, 2000);
       return;
     }
+
     var spd = tp[tttIdx];
-    speedEl.textContent = 'GAME ' + (tttIdx+1) + '/10 \u2014 ' + spd + 'ms';
+    speedEl.textContent = 'GAME ' + (tttIdx+1) + '/20 \u2014 ' + spd + 'ms';
     statusEl.innerHTML = '&nbsp;';
     resetBoard();
     drawBoard(function() {
