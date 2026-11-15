@@ -89,7 +89,6 @@
 <div class="l">AIR-TO-GROUND ACTIONS</div>
 <div class="l">THEATERWIDE TACTICAL WARFARE</div>
 <div class="l">THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
-<div class="l">&nbsp;</div>
 <div class="l final scorch">GLOBAL THERMONUCLEAR WAR</div>
 <div class="l">&nbsp;</div>
 <div class="l">SIM SEQUENCE INIT...</div>
@@ -403,7 +402,7 @@
     if (!seqStarted || freezeTriggered) return;
     if (iterIdx < iterSteps.length) {
       iterDisplay.textContent = 'ITERATION [FIBONACCI]' + iterSteps[iterIdx] + '...';
-      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));
+      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));I
       iterIdx++;
     }
   }
