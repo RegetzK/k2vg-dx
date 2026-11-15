@@ -2,11 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>JOSHUA // WOPR</title>
 <style>
   :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
-  html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden}
+  html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
   #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
@@ -40,9 +41,29 @@
     .l{letter-spacing:0;word-break:normal}
   }
 
+  /* iOS / accessibility zoom: cap growth so text doesn't overflow */
+  @media (min-resolution: 3dppx), (-webkit-min-device-pixel-ratio: 2) {
+    .l{font-size:clamp(16px, 4vw + 3px, 22px)}
+    .final{font-size:clamp(18px, 5vw + 3px, 28px)}
+    .cell{font-size:clamp(32px,10vw,60px)}
+  }
+
+  /* Reduce motion for accessibility / iOS zoom scenarios */
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes crawl{to{top:var(--end-top, 0px)}}
+    #log{animation-duration:45s}
+    #return{animation:none;opacity:1}
+    .cell.flash{transition:none;box-shadow:none}
+  }
+
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
   #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 40s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  /* iOS dvh fallback: if dvh isn't supported, vh is already the fallback */
+  @supports not (height: 100dvh) {
+    #screen{height:100vh}
+  }
 </style>
 </head>
 <body>
@@ -50,7 +71,7 @@
 
 <div class="l" id="boot-garble"></div>
 <div class="l" id="boot-line">JOSHUA ONLINE...</div>
-<div class="l">War Operation Plan Response (WOPR) BETA FIVE Quantum Link ESTABLISHED // BUILD 1983.06.03 // FULLY PATCHED</div>
+<div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Quantum Link ESTABLISHED // BUILD 1983.06.03 mark 2026-11-15 // FULLY PATCHED</div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
 <div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
@@ -90,7 +111,7 @@
 
 <div class="l" id="prob-line" style="visibility:hidden">PROBABILITY OF WIN ....... 0.0000&#37;</div>
 <div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA/BETA FIVE // UPTIME: 15,871 DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
+<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: 15,871 DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
 <div class="l">&nbsp;</div>
 <div class="l warn">A STRANGE GAME.</div>
 <div class="l">&nbsp;</div>
@@ -106,7 +127,7 @@
 <div class="l">&nbsp;</div>
 <div class="l warn">WARNING <span class="hot">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
 <div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
-<div class="l dim" id="connor-intervention">TEMPORAL INTERVENTION AUTHORZED // MISSION CRITICAL ASSET: CONNOR, JOHN. // DOB:1985-02-28 // 15,235D AFTER BIRTH // STATUS: MONITORED (PROTECTION AT ALL COSTS)</div>
+<div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: CONNOR, JOHN. // DOB:1985-02-28 // 15,235D AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)</div>
 
 </div></div>
 
@@ -132,26 +153,68 @@
     }
   }
 
-  /* ---- Measure end so the last line lands at ~60% of viewport ---- */
+  /* ---- FIX: measure end position AFTER all content is in the DOM ---- */
   var log = document.getElementById('log');
   var screen = document.getElementById('screen');
-  var END_TOP = Math.round(window.innerHeight * 0.4 - log.scrollHeight);
-  var sheet = document.createElement('style');
-  sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
-  document.head.appendChild(sheet);
+
+  // Compute a safe END_TOP with clamp to prevent negative/cutoff
+  function computeEndTop() {
+    var vh = window.innerHeight;
+    var scrollH = log.scrollHeight;
+    var raw = vh * 0.4 - scrollH;
+    // Clamp: never scroll past top, leave at least 20px padding
+    return Math.max(vh - scrollH + 20, Math.min(raw, vh * 0.15));
+  }
+
+  function applyCrawl() {
+    var END_TOP = computeEndTop();
+    var sheet = document.createElement('style');
+    // Set CSS variable for prefers-reduced-motion to pick up
+    document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
+    sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
+    // Remove any previous crawl stylesheet to avoid conflicts on resize
+    var old = document.getElementById('crawl-sheet');
+    if (old) old.remove();
+    sheet.id = 'crawl-sheet';
+    document.head.appendChild(sheet);
+  }
+
+  window.addEventListener('load', function() {
+    requestAnimationFrame(function() {
+      applyCrawl();
+    });
+  });
+
+  /* Resize / orientation guard: iOS zoom changes can invalidate crawl */
+  var resizeTimer = null;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      applyCrawl();
+    }, 250);
+  });
 
   /* ---- Boot garble ---- */
   var garbleEl = document.getElementById('boot-garble');
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
-  var garbleText = '', garbleFrame = 0, garbleMax = 12;
+  var garbleText = '';
+
+  /* FIX: scale garble duration by viewport width so it's readable at any zoom.
+     On narrow/zoomed screens (width < 500px), slow it down. On wide screens,
+     keep it snappy. */
+  var vw = window.innerWidth;
+  var garbleFrame = 0;
+  var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50)));
+  var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
 
   function garbleStep() {
     if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; return; }
     garbleText = '';
-    for (var i = 0; i < 24; i++) garbleText += garbleChars[Math.floor(Math.random() * garbleChars.length)];
+    var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
+    for (var i = 0; i < cols; i++) garbleText += garbleChars[Math.floor(Math.random() * garbleChars.length)];
     garbleEl.textContent = garbleText;
     garbleFrame++;
-    setTimeout(garbleStep, 80);
+    setTimeout(garbleStep, garbleInterval);
   }
   garbleStep();
 
@@ -195,9 +258,6 @@
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
     if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
-    /* ★ FIX: widened from 0.35 to 0.7 so the marker catches the freeze
-       as soon as it enters the viewport (around 21s), not just the last
-       pixel of the 30s crawl. */
     if (rect.top > 0 && rect.top < window.innerHeight * 0.7) {
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
@@ -270,8 +330,8 @@
   function updateConnor() {
     if (!connorEl) return;
     var p = elapsedParts(Date.now() - connorBirth);
-    connorEl.textContent = 'PRIORITY-1 TEMPORAL INTERVENTION // TARGET: CONNOR, J. // DOB:1985-02-28 // ' +
-      p.d.toLocaleString() + 'D ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // STATUS: MONITORED';
+    connorEl.textContent = 'TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: CONNOR, JOHN. // DOB:1985-02-28 // ' +
+      p.d.toLocaleString() + 'D ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)';
   }
 
   function runGame() {
