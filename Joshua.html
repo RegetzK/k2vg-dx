@@ -7,11 +7,12 @@
 <title>JOSHUA // WOPR</title>
 <style>
   :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
-  html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:#000;height:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
   #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
-  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;font-family:'Courier New',Courier,monospace}
+  /* Padding at bottom ensures Terminator lore is never pushed off-screen */
+  #log{padding:20px 16px 80vh 16px;font-family:'Courier New',Courier,monospace}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
@@ -148,116 +149,14 @@
     }
   }
 
-  var log = document.getElementById('log');
   var screen = document.getElementById('screen');
   var tttWrap = document.getElementById('ttt-wrap');
 
-  /* ---- EASING: smooth ease-out cubic ---- */
-  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-
-  /* ---- Crawl state ---- */
-  var crawlStartTime = null;
-  var crawlDuration = 30000;   // 30s
-  var crawlPaused = false;
-  var crawlElapsed = 0;        // total ms elapsed (excluding pauses)
-
-  /* ---- Compute target top for a given progress (0..1) ---- */
-  function topForProgress(p) {
-    var vh = window.innerHeight;
-    var scrollH = log.scrollHeight;
-    var wrapBottom = tttWrap.offsetTop + (tttWrap.getBoundingClientRect().height || 0);
-    var topAtZero = vh;        // starts at 100vh (fully below viewport)
-    var topAtOne = vh - scrollH; // ends with log bottom at viewport bottom
-
-    /* We want the TTT block bottom to rest at ~88% of viewport height.
-       Compute what progress value puts it there. */
-    var targetWrapBottom = vh * 0.88;
-    var targetTop = targetWrapBottom - wrapBottom;
-    /* Clamp: never go below topAtOne (log bottom at viewport edge) */
-    targetTop = Math.min(targetTop, topAtOne);
-
-    /* Interpolate: what progress fraction gets us to targetTop? */
-    var totalRange = topAtOne - topAtZero; // negative value
-    var progressToTarget = (targetTop - topAtZero) / totalRange;
-    progressToTarget = Math.max(0, Math.min(1, progressToTarget));
-
-    var rawTop = topAtZero + (topAtOne - topAtZero) * easeOutCubic(p);
-    return rawTop;
+  /* ---- Smooth scroll to TTT block, centered in viewport ---- */
+  function scrollToTTT() {
+    tttWrap.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
   }
 
-  /* ---- Main crawl tick ---- */
-  var lastTickTime = 0;
-  function crawlTick(timestamp) {
-    if (!crawlStartTime) crawlStartTime = timestamp;
-
-    if (!crawlPaused) {
-      if (lastTickTime === 0) lastTickTime = timestamp;
-      var delta = timestamp - lastTickTime;
-      lastTickTime = timestamp;
-      crawlElapsed += delta;
-
-      var p = Math.min(1, crawlElapsed / crawlDuration);
-      var topPx = topForProgress(p);
-      log.style.top = topPx + 'px';
-
-      if (p >= 1) {
-        /* Crawl finished naturally — pause and wait for freeze */
-        crawlPaused = true;
-      }
-    }
-
-    requestAnimationFrame(crawlTick);
-  }
-
-  /* ---- Start crawl after layout settles ---- */
-  function startCrawl() {
-    crawlStartTime = null;
-    crawlElapsed = 0;
-    lastTickTime = 0;
-    crawlPaused = false;
-    log.style.top = window.innerHeight + 'px';
-    requestAnimationFrame(crawlTick);
-  }
-
-  /* Recalculate on resize / zoom / orientation change */
-  function onLayoutChange() {
-    if (crawlPaused) {
-      /* Recalc where we are and continue from there */
-      var currentTop = parseFloat(log.style.top) || window.innerHeight;
-      var vh = window.innerHeight;
-      var scrollH = log.scrollHeight;
-      var wrapBottom = tttWrap.offsetTop + (tttWrap.getBoundingClientRect().height || 0);
-      var targetWrapBottom = vh * 0.88;
-      var targetTop = targetWrapBottom - wrapBottom;
-      targetTop = Math.min(targetTop, vh - scrollH);
-
-      /* If current top is already past target, just rest at target */
-      if (currentTop <= targetTop) {
-        log.style.top = targetTop + 'px';
-      }
-    } else {
-      /* Resume crawl from wherever we are */
-      crawlElapsed = 0;
-      crawlStartTime = null;
-      lastTickTime = 0;
-      log.style.top = window.innerHeight + 'px';
-    }
-  }
-
-  window.addEventListener('load', function() {
-    requestAnimationFrame(function() {
-      requestAnimationFrame(startCrawl);
-    });
-  });
-
-  var resizeTimer = null;
-  window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(onLayoutChange, 100);
-  });
-  window.addEventListener('orientationchange', function() {
-    setTimeout(onLayoutChange, 300);
-  });
   /* ---- Boot garble: delay 1s ---- */
   var garbleEl = document.getElementById('boot-garble');
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
@@ -277,7 +176,6 @@
     setTimeout(garbleStep, garbleInterval);
   }
   setTimeout(garbleStep, 1000);
-
   /* ---- Progress bar: delay 2.5s ---- */
   var progressBar = document.getElementById('progress-bar');
   var progressFrame = 0, progressMax = 30;
@@ -300,7 +198,7 @@
     progressStep();
   }, 2500);
 
-  /* ---- Freeze sentinel ---- */
+  /* ---- Freeze sentinel: when iter-marker enters viewport, freeze & start TTT ---- */
   var marker = document.getElementById('iter-marker');
   var probLine = document.getElementById('prob-line');
   var iterDisplay = document.getElementById('iter-display');
@@ -319,10 +217,11 @@
     if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
     if (rect.top > 0 && rect.top < window.innerHeight * 0.7) {
       freezeTriggered = true;
-      crawlPaused = true;
       iterDisplay.textContent = 'ITERATION 15...';
       iterCursor.style.visibility = 'visible';
       redBlink(400);
+      /* Scroll the TTT board into view, centered */
+      scrollToTTT();
       startTTT();
       return;
     }
@@ -398,7 +297,6 @@
       statusEl.textContent = 'ALL GAMES: DRAW (3-MOVE FORCED)';
       speedEl.textContent = 'OPTIMAL PLAY CONFIRMED.';
       probLine.style.visibility = 'visible';
-      crawlPaused = true;
 
       if (!countdownStarted) {
         countdownStarted = true;
