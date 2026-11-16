@@ -104,6 +104,10 @@ body::after{
 @media (max-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
   .header { font-size: 16px !important; letter-spacing: 1px !important; }
 }
+
+/* Force header to 20px everywhere, beating @supports and hiDPI overrides */
+.header { font-size: 20px !important; letter-spacing: 3px !important; }
+
 </style>
 </head>
 <body>
