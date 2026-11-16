@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-15T21:59:50Z",
+  "timestamp": "2026-11-16T01:51:50Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -54,6 +54,105 @@
         "dxcc": "EARTH",
         "status": "MONITORED",
         "lore": true
+      },
+      {
+        "call": "IK4LZH",
+        "grid": "JN54qm06",
+        "band": null,
+        "freq": 10.1364,
+        "db": -18,
+        "dxcc": "IK",
+        "lore": false
+      },
+      {
+        "call": "DK6SP",
+        "grid": "JN68AE",
+        "band": null,
+        "freq": 10.138269,
+        "db": -18,
+        "dxcc": "DK",
+        "lore": false
+      },
+      {
+        "call": "IS0KNG",
+        "grid": "JM49OI",
+        "band": null,
+        "freq": 10.137591,
+        "db": -18,
+        "dxcc": "IS",
+        "lore": false
+      },
+      {
+        "call": "IY5PIS",
+        "grid": "JN53ep",
+        "band": null,
+        "freq": 10.137947,
+        "db": -18,
+        "dxcc": "IY",
+        "lore": false
+      },
+      {
+        "call": "F5RRS",
+        "grid": "JN36eb44",
+        "band": null,
+        "freq": 10.137934,
+        "db": -13,
+        "dxcc": "F5",
+        "lore": false
+      },
+      {
+        "call": "YV5WL",
+        "grid": "FK60OL",
+        "band": null,
+        "freq": 10.138108,
+        "db": -17,
+        "dxcc": "YV",
+        "lore": false
+      },
+      {
+        "call": "HA7TM",
+        "grid": "KN07TM",
+        "band": null,
+        "freq": 10.138886,
+        "db": -16,
+        "dxcc": "HA",
+        "lore": false
+      },
+      {
+        "call": "EA3EDU",
+        "grid": "JN01wk",
+        "band": null,
+        "freq": 10.137942,
+        "db": -12,
+        "dxcc": "EA",
+        "lore": false
+      },
+      {
+        "call": "EA4CFE",
+        "grid": "IN80EN",
+        "band": null,
+        "freq": 7.074859,
+        "db": -15,
+        "dxcc": "EA",
+        "lore": false
+      },
+      {
+        "call": "OK1WCF",
+        "grid": "JO80BJ",
+        "band": null,
+        "freq": 7.076254,
+        "db": -20,
+        "dxcc": "OK",
+        "lore": false
+      },
+      {
+        "call": "F4BPO",
+        "grid": "JN36DG",
+        "band": null,
+        "freq": 7.076433,
+        "db": -13,
+        "dxcc": "F4",
+        "lore": false
       }
     ]
   }
