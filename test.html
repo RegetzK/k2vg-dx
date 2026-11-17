@@ -514,20 +514,14 @@
       placeMove();
     }
 
-    /* ---- DEFCON ESCALATION SEQUENCE ---- */
+    /* ---- DEFCON ESCALATION SEQUENCE (auto-play at start) ---- */
+    var defconTriggered = false;
     var defconSeq = document.getElementById('defcon-sequence');
     var returnLink = document.getElementById('return-link');
-    var defconTriggered = false;
 
-    function triggerDefconSequence(e) {
-      if (e) e.preventDefault();
-      if (defconTriggered) {
-        window.location.href = 'https://www.qrz.com/db/K2VG';
-        return;
-      }
+    function triggerDefconSequence() {
+      if (defconTriggered) return;
       defconTriggered = true;
-      log.style.animationPlayState = 'paused';
-      defconSeq.style.visibility = 'visible';
 
       var d5 = document.getElementById('defcon-5');
       var d3 = document.getElementById('defcon-3');
@@ -540,29 +534,30 @@
       setTimeout(function(){ redBlink(200); whiteFlash(150); d2.classList.add('visible'); }, 3800);
       setTimeout(function(){ screen.classList.add('red-bleed'); d1.style.opacity = '1'; }, 5400);
       setTimeout(function(){ whiteFlash(300); jo.style.visibility = 'visible'; }, 7600);
-      setTimeout(function(){ screen.classList.remove('red-bleed'); log.style.animationPlayState = 'running'; }, 9200);
+      setTimeout(function(){ screen.classList.remove('red-bleed'); }, 9200);
     }
 
+    // Auto-trigger DEFCON escalation ~1.5s after page load
+    setTimeout(triggerDefconSequence, 1500);
+
+    // Click handler: only navigates if sequence already played
     if (returnLink) {
-      returnLink.addEventListener('click', triggerDefconSequence);
-    }
-
-    function startTTT() {
-        tttIdx = 0;
-        resetBoard();
-        runGame();
-    }
-
-    /* ---- Start ---- */
-    var startTime = performance.now();
-    function tick() {
-        if (performance.now() - startTime > 100) {
-          requestAnimationFrame(checkFreeze);
-        } else {
-          requestAnimationFrame(tick);
+      returnLink.addEventListener('click', function() {
+        if (defconTriggered) {
+          window.location.href = 'https://www.qrz.com/db/K2VG';
         }
+      });
     }
-    requestAnimationFrame(tick);
+
+    /* ---- TTT Game Runner ---- */
+    function startTTT() {
+      tttIdx = 0;
+      resetBoard();
+      runGame();
+    }
+
+    /* ---- Main Loop ---- */
+    requestAnimationFrame(checkFreeze);
 
 })();
 </script>
