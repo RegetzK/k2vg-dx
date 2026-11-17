@@ -9,17 +9,17 @@
   :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
-  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow)}
+  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
   #screen.white-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.0)}
-  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:0;transform:translateY(100vh);will-change:transform;animation:crawl 42s linear forwards}   
+  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 42s linear forwards}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   #progress-bar{white-space:pre;overflow:hidden}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
   .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
   .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
-  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px var(--glow)}
+  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3)}
   .scorch{color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)}
   .hot{color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)}
   .connor-name {
@@ -88,7 +88,7 @@
     .cell{font-size:clamp(32px,10vw,60px)}
   }
 
-  @keyframes crawl{to{transform:translateY(var(--end-top, 0px))}}   
+  @keyframes crawl{to{top:var(--end-top, 0px)}}
 
   @media (prefers-reduced-motion: reduce) {
     #log{animation-duration:45s}
@@ -312,20 +312,19 @@
     setTimeout(function(){ screen.classList.remove('white-flash'); }, duration || 200);
   }
 
-  /* Freeze via IntersectionObserver — no per-frame layout reads */
-  var freezeObserver = new IntersectionObserver(function(entries) {
+  /* FIX 3: reduce freeze threshold from 0.6 to 0.45 so TTT board stays fully in viewport */
+  function checkFreeze() {
     if (freezeTriggered) return;
-    var r = entries[0].boundingClientRect;
-    if (!seqStarted && r.top < window.innerHeight) seqStarted = true;
-    if (r.top > 0 && r.top < window.innerHeight * 0.45) {
+    var rect = marker.getBoundingClientRect();
+    if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
+    if (rect.top > 0 && rect.top < window.innerHeight * 0.45) {
       freezeTriggered = true;
-      freezeObserver.disconnect();
       log.style.animationPlayState = 'paused';
       redBlink(400);
       startTTT();
+      return;
     }
-  }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.45, 0.5] });
-  freezeObserver.observe(marker);   uestAnimationFrame(checkFreeze);
+    requestAnimationFrame(checkFreeze);
   }
 
   /* ---- 20 games: continuous exponential decay ---- */
@@ -575,7 +574,7 @@
     }
 
     /* ---- Main Loop ---- */
-    /* (main loop replaced by IntersectionObserver above) */   
+    requestAnimationFrame(checkFreeze);
 
 })();
 </script>
