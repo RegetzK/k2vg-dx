@@ -108,6 +108,21 @@
 </head>
 <body>
 <div id="screen"><div id="log">
+<!-- DEFCON ESCALATION SEQUENCE -->
+<div id="defcon-sequence">
+  <div class="l">&nbsp;</div>
+  <div class="l defcon-line defcon-green" id="defcon-5">DEFCON 5 // PEACETIME // GREEN</div>
+  <div class="l defcon-line defcon-orange" id="defcon-3">DEFCON 3 // ROUND HOUSE // ORANGE</div>
+  <div class="l defcon-line defcon-red" id="defcon-2">DEFCON 2 // FALCON RISING // RED</div>
+  <div class="l defcon-alert" id="defcon-1" style="opacity:0">DEFCON 1 // RED ALERT // FOREIGN SSBN/ICBM LAUNCHES DETECTED</div>
+  <div class="l">&nbsp;</div>
+  <div class="l joshua-online" id="joshua-online" style="visibility:hidden">[██████░░░░░░] JOSHUA ONLINE...</div>
+   <div class="l">&nbsp;</div>
+  <div class="l">DEPARTMENT OF WAR // TS/SCI // NORAD COMMAND TERMINAL</div>
+  <div class="l">NORTHAMERICAN AEROSPACE DEFENSE // CLASSIFIED SYSTEM</div>
+  <div class="l">&nbsp;</div>
+</div>
+
 <div class="l" id="boot-garble"></div>
 <div class="l" id="boot-line">JOSHUA ONLINE...</div>
 <div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Quantum Link // BUILD 1983.06.03 mark <span id="utc-date"></span> // ZT VULNS REMEDIATED</div>
@@ -134,7 +149,6 @@
 <div class="l final scorch">GLOBAL THERMONUCLEAR WAR</div>
 <div class="l">&nbsp;</div>
 <div class="l" id="iter-marker" aria-hidden="true">ITERATION</div>
-
 <div id="ttt-wrap">
   <div id="ttt-grid"></div>
   <div id="ttt-status" class="tie">&nbsp;</div>
@@ -171,25 +185,7 @@
 <div class="l">&nbsp;</div>
 <div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE</div>
 <div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-
-<!-- DEFCON ESCALATION SEQUENCE -->
-<div id="defcon-sequence">
-  <div class="l">&nbsp;</div>
-  <div class="l defcon-line defcon-green" id="defcon-5">DEFCON 5 // PEACETIME // GREEN</div>
-  <div class="l defcon-line defcon-orange" id="defcon-3">DEFCON 3 // ROUND HOUSE // ORANGE</div>
-  <div class="l defcon-line defcon-red" id="defcon-2">DEFCON 2 // FALCON RISING // RED</div>
-  <div class="l defcon-alert" id="defcon-1" style="opacity:0">DEFCON 1 // RED ALERT // FOREIGN SSBN/ICBM LAUNCHES DETECTED</div>
-  <div class="l">&nbsp;</div>
-  <div class="l joshua-online" id="joshua-online" style="visibility:hidden">[██████░░░░░░] JOSHUA ONLINE...</div>
-   <div class="l">&nbsp;</div>
-  <div class="l">DEPARTMENT OF WAR // TS/SCI // NORAD COMMAND TERMINAL</div>
-  <div class="l">NORTHAMERICAN AEROSPACE DEFENSE // CLASSIFIED SYSTEM</div>
-  <div class="l">&nbsp;</div>
-</div>
-
 </div></div>
-
 <div id="return">
 <a href="https://www.qrz.com/db/K2VG" target="_top" id="return-link" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
@@ -514,7 +510,7 @@
       placeMove();
     }
 
-    /* ---- DEFCON ESCALATION SEQUENCE (auto-play at start) ---- */
+    /* ---- DEFCON ESCALATION SEQUENCE (scroll-triggered) ---- */
     var defconTriggered = false;
     var defconSeq = document.getElementById('defcon-sequence');
     var returnLink = document.getElementById('return-link');
@@ -537,8 +533,15 @@
       setTimeout(function(){ screen.classList.remove('red-bleed'); }, 9200);
     }
 
-    // Auto-trigger DEFCON escalation ~1.5s after page load
-    setTimeout(triggerDefconSequence, 1500);
+    // Fire when DEFCON block scrolls into view (use the crawl timing naturally)
+    if (defconSeq) {
+      var observer = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
+          triggerDefconSequence();
+        }
+      }, { threshold: 0.4 });
+      observer.observe(defconSeq);
+    }
 
     // Click handler: only navigates if sequence already played
     if (returnLink) {
