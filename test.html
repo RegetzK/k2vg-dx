@@ -56,6 +56,7 @@
   .defcon-line{font-weight:bold;letter-spacing:1px;opacity:0;transition:opacity 0.3s ease}
   .defcon-line.visible{opacity:1}
   .defcon-green{color:#33ff33;text-shadow:0 0 10px rgba(51,255,51,0.8),0 0 20px rgba(51,255,51,0.4)}
+  .defcon-yellow{color:#ffff33;text-shadow:0 0 12px rgba(255,255,51,1.0),0 0 24px rgba(255,255,51,0.6)}
   .defcon-orange{color:#ff6633;text-shadow:0 0 12px rgba(255,102,51,0.9),0 0 24px rgba(255,102,51,0.5)}
   .defcon-red{color:#ff0000;text-shadow:0 0 14px rgba(255,0,0,1.0),0 0 28px rgba(255,0,0,0.6)}
   .defcon-alert{color:#ff0000;font-weight:900;font-size:clamp(22px, 6vw + 4px, 36px);text-shadow:0 0 15px rgba(255,0,0,1.0),0 0 35px rgba(255,0,0,0.7);animation:defcon-pulse 0.5s steps(1, end) infinite}
@@ -108,13 +109,19 @@
 </head>
 <body>
 <div id="screen"><div id="log">
+
+<!-- BOOT GARBLE (leads the sequence) -->
+<div class="l" id="boot-garble"></div>
+<div class="l" id="boot-line">JOSHUA ONLINE...</div>
+
 <!-- DEFCON ESCALATION SEQUENCE -->
 <div id="defcon-sequence">
   <div class="l">&nbsp;</div>
   <div class="l defcon-line defcon-green" id="defcon-5">DEFCON 5 // PEACETIME // GREEN</div>
+  <div class="l defcon-line defcon-yellow" id="defcon-4">DEFCON 4 // ELEVATED // YELLOW</div>
   <div class="l defcon-line defcon-orange" id="defcon-3">DEFCON 3 // ROUND HOUSE // ORANGE</div>
   <div class="l defcon-line defcon-red" id="defcon-2">DEFCON 2 // FALCON RISING // RED</div>
-  <div class="l defcon-alert" id="defcon-1" style="opacity:0">DEFCON 1 // RED ALERT // FOREIGN SSBN/ICBM LAUNCHES DETECTED</div>
+  <div class="l defcon-alert" id="defcon-1" style="opacity:0;animation:none">DEFCON 1 // RED ALERT // FOREIGN SSBN/ICBM LAUNCHES DETECTED</div>
   <div class="l">&nbsp;</div>
   <div class="l joshua-online" id="joshua-online" style="visibility:hidden">[██████░░░░░░] JOSHUA ONLINE...</div>
    <div class="l">&nbsp;</div>
@@ -123,8 +130,7 @@
   <div class="l">&nbsp;</div>
 </div>
 
-<div class="l" id="boot-garble"></div>
-<div class="l" id="boot-line">JOSHUA ONLINE...</div>
+<div class="l">&nbsp;</div>
 <div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Quantum Link // BUILD 1983.06.03 mark <span id="utc-date"></span> // ZT VULNS REMEDIATED</div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
@@ -189,7 +195,9 @@
 <div id="return">
 <a href="https://www.qrz.com/db/K2VG" target="_top" id="return-link" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
+
 <script>
+
 /* ---- Live UTC date ---- */
 (function updateUTCDate() {
   var el = document.getElementById('utc-date');
@@ -510,7 +518,7 @@
       placeMove();
     }
 
-    /* ---- DEFCON ESCALATION SEQUENCE (scroll-triggered) ---- */
+        /* ---- DEFCON ESCALATION SEQUENCE (scroll-triggered) ---- */
     var defconTriggered = false;
     var defconSeq = document.getElementById('defcon-sequence');
     var returnLink = document.getElementById('return-link');
@@ -520,17 +528,26 @@
       defconTriggered = true;
 
       var d5 = document.getElementById('defcon-5');
+      var d4 = document.getElementById('defcon-4');
       var d3 = document.getElementById('defcon-3');
       var d2 = document.getElementById('defcon-2');
       var d1 = document.getElementById('defcon-1');
       var jo = document.getElementById('joshua-online');
 
-      setTimeout(function(){ d5.classList.add('visible'); }, 600);
-      setTimeout(function(){ redBlink(250); d3.classList.add('visible'); }, 2200);
-      setTimeout(function(){ redBlink(200); whiteFlash(150); d2.classList.add('visible'); }, 3800);
-      setTimeout(function(){ screen.classList.add('red-bleed'); d1.style.opacity = '1'; }, 5400);
-      setTimeout(function(){ whiteFlash(300); jo.style.visibility = 'visible'; }, 7600);
-      setTimeout(function(){ screen.classList.remove('red-bleed'); }, 9200);
+      // Scoped red flashes — only on #screen, NOT --fg which recolors all text
+      function screenBlink(color, duration) {
+        screen.style.color = color;
+        screen.style.textShadow = '0 0 8px ' + color;
+        setTimeout(function(){ screen.style.color = ''; screen.style.textShadow = ''; }, duration || 400);
+      }
+
+      setTimeout(function(){ d5.classList.add('visible'); }, 400);
+      setTimeout(function(){ screenBlink('#ff0000', 200); d4.classList.add('visible'); }, 1800);
+      setTimeout(function(){ screenBlink('#ff0000', 200); d3.classList.add('visible'); }, 3200);
+      setTimeout(function(){ screenBlink('#ff0000', 200); d2.classList.add('visible'); }, 4600);
+      setTimeout(function(){ d1.style.opacity = '1'; d1.style.animation = 'defcon-pulse 0.5s steps(1, end) infinite'; }, 6000);
+      setTimeout(function(){ jo.style.visibility = 'visible'; }, 7400);
+      setTimeout(function(){ /* no cleanup needed — screen styles are auto-restored by screenBlink */ }, 9000);
     }
 
     // Fire when DEFCON block scrolls into view (use the crawl timing naturally)
