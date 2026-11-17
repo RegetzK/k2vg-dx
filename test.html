@@ -87,8 +87,9 @@
     .cell{font-size:clamp(32px,10vw,60px)}
   }
 
+  @keyframes crawl{to{top:var(--end-top, 0px)}}
+
   @media (prefers-reduced-motion: reduce) {
-    @keyframes crawl{to{top:var(--end-top, 0px)}}
     #log{animation-duration:45s}
     #return{animation:none;opacity:1}
     .cell.flash{transition:none;box-shadow:none}
