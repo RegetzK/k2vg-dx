@@ -99,7 +99,7 @@
   }
 
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 44s forwards;font-size:clamp(15px, 4vw, 20px)}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 52s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
   @supports not (height: 100dvh) {
@@ -112,7 +112,7 @@
 
 <!-- BOOT GARBLE (leads the sequence) -->
 <div class="l" id="boot-garble"></div>
-<div class="l" id="boot-line">JOSHUA ONLINE...</div>
+<div class="l" id="boot-line" style="visibility:hidden">JOSHUA ONLINE...</div>   
 
 <!-- DEFCON ESCALATION SEQUENCE -->
 <div id="defcon-sequence">
@@ -263,7 +263,7 @@
   var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
 
   function garbleStep() {
-    if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; return; }
+    if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; document.getElementById('boot-line').style.visibility = 'visible'; return; }   
     garbleText = '';
     var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
     for (var i = 0; i < cols; i++) garbleText += garbleChars[Math.floor(Math.random() * garbleChars.length)];
