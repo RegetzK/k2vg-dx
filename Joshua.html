@@ -11,7 +11,8 @@
 
   #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
-  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
+  #screen.white-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.0)}
+  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 42s linear forwards}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   #progress-bar{white-space:pre;overflow:hidden}
@@ -51,6 +52,26 @@
   #ttt-status{text-align:center;margin-top:8px;min-height:1.7em}
   #ttt-speed{text-align:center;min-height:1.7em}
 
+  /* DEFCON escalation styles */
+  .defcon-line{font-weight:bold;letter-spacing:1px;opacity:0;transition:opacity 0.3s ease}
+  .defcon-line.visible{opacity:1}
+  .defcon-green{color:#33ff33;text-shadow:0 0 10px rgba(51,255,51,0.8),0 0 20px rgba(51,255,51,0.4)}
+  .defcon-yellow{color:#ffff33;text-shadow:0 0 12px rgba(255,255,51,1.0),0 0 24px rgba(255,255,51,0.6)}
+  .defcon-orange{color:#ff6633;text-shadow:0 0 12px rgba(255,102,51,0.9),0 0 24px rgba(255,102,51,0.5)}
+  .defcon-red{color:#ff0000;text-shadow:0 0 14px rgba(255,0,0,1.0),0 0 28px rgba(255,0,0,0.6)}
+  .defcon-alert{color:#ff0000;font-weight:900;font-size:clamp(22px, 6vw + 4px, 36px);text-shadow:0 0 15px rgba(255,0,0,1.0),0 0 35px rgba(255,0,0,0.7);animation:defcon-pulse 0.5s steps(1, end) infinite}
+  .joshua-online{color:#ffffff;font-weight:900;font-size:clamp(24px, 7vw + 4px, 40px);text-shadow:0 0 20px rgba(255,255,255,1.0),0 0 40px rgba(255,255,255,0.8);animation:joshua-awaken 1.5s steps(3, end) forwards}
+
+  @keyframes defcon-pulse {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+  }
+  @keyframes joshua-awaken {
+    0% { opacity: 0; filter: blur(8px); }
+    40% { opacity: 0.5; filter: blur(3px); }
+    100% { opacity: 1; filter: blur(0px); }
+  }
+
   @media (min-width: 900px){
     .l{font-size:24px}
     .final{font-size:30px}
@@ -67,15 +88,18 @@
     .cell{font-size:clamp(32px,10vw,60px)}
   }
 
+  @keyframes crawl{to{top:var(--end-top, 0px)}}
+
   @media (prefers-reduced-motion: reduce) {
-    @keyframes crawl{to{top:var(--end-top, 0px)}}
     #log{animation-duration:45s}
     #return{animation:none;opacity:1}
     .cell.flash{transition:none;box-shadow:none}
+    .defcon-line{transition:none;opacity:1}
+    .joshua-online{animation:none;opacity:1;filter:none}
   }
 
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 44s forwards;font-size:clamp(15px, 4vw, 20px)}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 57s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
   @supports not (height: 100dvh) {
@@ -86,9 +110,25 @@
 <body>
 <div id="screen"><div id="log">
 
+<!-- BOOT GARBLE (leads the sequence) -->
 <div class="l" id="boot-garble"></div>
-<div class="l" id="boot-line">JOSHUA ONLINE...</div>
-<div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Quantum Link // BUILD 1983.06.03 mark <span id="utc-date"></span> // ZT VULNS REMEDIATED</div>
+<div class="l" id="boot-line" style="visibility:hidden">JOSHUA ONLINE...</div>   
+
+<!-- DEFCON ESCALATION SEQUENCE -->
+<div id="defcon-sequence">
+  <div class="l">&nbsp;</div>
+  <div class="l defcon-line defcon-green" id="defcon-5">DEFCON 5 // PEACETIME/FADE OUT // GREEN</div>
+  <div class="l defcon-line defcon-yellow" id="defcon-4">DEFCON 4 // ELEVATED/DOUBLE TAKE // YELLOW</div>
+  <div class="l defcon-line defcon-orange" id="defcon-3">DEFCON 3 // MOBILIZED/ROUND HOUSE // ORANGE</div>
+  <div class="l defcon-line defcon-red" id="defcon-2">DEFCON 2 // DEPLOYED/FAST PACE // RED</div>
+  <div class="l defcon-alert" id="defcon-1" style="opacity:0;animation:none">DEFCON 1 // IMMINENT/RED ALERT // INBOUND SSBN/ICBM LAUNCHES DETECTED</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">DEPARTMENT OF WAR // TS/SCI // NORAD COMMAND TERMINAL</div>
+  <div class="l">&nbsp;</div>
+</div>
+
+<div class="l">&nbsp;</div>
+<div class="l">WAR OPERATION PLAN RESPONSE (WOPR) <-> BETA FIVE QUANTUM LINK // BUILD 1983.06.03 mark <span id="utc-date"></span></div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
 <div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░] 0%</div>
@@ -112,7 +152,6 @@
 <div class="l final scorch">GLOBAL THERMONUCLEAR WAR</div>
 <div class="l">&nbsp;</div>
 <div class="l" id="iter-marker" aria-hidden="true">ITERATION</div>
-
 <div id="ttt-wrap">
   <div id="ttt-grid"></div>
   <div id="ttt-status" class="tie">&nbsp;</div>
@@ -147,17 +186,15 @@
 <div class="l">&nbsp;</div>
 <div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">15,235D</span> AFTER BIRTH // STATUS: MONITOR FOR TEMPORAL DISTURBANCES AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL</div>
 <div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE
+<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE/MS. LINCOLN IMMEDIATELY</div>
 <div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-
 </div></div>
-
 <div id="return">
-<a href="https://www.qrz.com/db/K2VG" target="_top" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
+<a href="https://www.qrz.com/db/K2VG" target="_top" id="return-link" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 
 <script>
+
 /* ---- Live UTC date ---- */
 (function updateUTCDate() {
   var el = document.getElementById('utc-date');
@@ -165,9 +202,9 @@
   var now = new Date();
   var utcDate = now.toISOString().split('T')[0];
   var utcTime = now.toISOString().split('T')[1].split('Z')[0];
-  el.textContent = utcDate + ' ' + utcTime;  
+  el.textContent = utcDate + ' ' + utcTime;
   setTimeout(updateUTCDate, 1000);
-    }());
+}());
 
 (function(){
   var grid = document.getElementById('ttt-grid');
@@ -200,13 +237,13 @@
     var END_TOP = computeEndTop();
     var sheet = document.createElement('style');
     document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
-    sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
     var old = document.getElementById('crawl-sheet');
     if (old) old.remove();
     sheet.id = 'crawl-sheet';
     document.head.appendChild(sheet);
   }
 
+  applyCrawl();
   window.addEventListener('load', function() {
     requestAnimationFrame(function() { applyCrawl(); });
   });
@@ -226,7 +263,7 @@
   var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
 
   function garbleStep() {
-    if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; return; }
+    if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; document.getElementById('boot-line').style.visibility = 'visible'; return; }   
     garbleText = '';
     var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
     for (var i = 0; i < cols; i++) garbleText += garbleChars[Math.floor(Math.random() * garbleChars.length)];
@@ -257,19 +294,22 @@
       setTimeout(progressStep, 100);
     }
     progressStep();
-  }, 3000);
+  }, 9000);
 
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
   var probLine = document.getElementById('prob-line');
-  var iterDisplay = document.getElementById('iter-display');
-  var iterCursor = document.getElementById('iter-cursor');
   var freezeTriggered = false;
   var seqStarted = false;
 
   function redBlink(duration) {
     screen.classList.add('red-bleed');
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
+  }
+
+  function whiteFlash(duration) {
+    screen.classList.add('white-flash');
+    setTimeout(function(){ screen.classList.remove('white-flash'); }, duration || 200);
   }
 
   /* FIX 3: reduce freeze threshold from 0.6 to 0.45 so TTT board stays fully in viewport */
@@ -300,7 +340,7 @@
   var speedEl = document.getElementById('ttt-speed');
   var totalMoves = 0;
   var totalMovesMax = 180; // 20 × 9
-  var maxIter = 1346269;   
+  var maxIter = 1346269;
 
   /* ---- 16 guaranteed-tie boards: each is a legal move ORDER (cell indices) ---- */
   var tieBoards = [
@@ -324,7 +364,6 @@
   function nextTieBoard() {
     return _tieOrder[_tieIdx++ % _tieOrder.length];
   }
-
   /* ---- Judgment Day countdown ---- */
   var judgEl = document.getElementById('judgement-countdown');
   var judgmentDay = Date.parse('1997-08-29T03:47:22Z');
@@ -364,7 +403,6 @@
       var phase = 0, phase2 = 0;
       for (var i = 0; i < d.length; i++) {
         var t = i / sr, val = 0;
-        // Rising electrical whine: ~400Hz -> ~16kHz over 2.7s, loudness builds exponentially
         if (t <= 2.7) {
           var p = t / 2.7;
           var freq = 400 + 15600 * p * p;
@@ -373,18 +411,15 @@
           phase2 += 2 * Math.PI * freq * 2.01 / sr;
           val += amp * Math.sin(phase) + amp * 0.3 * Math.sin(phase2);
         }
-        // Deep bass echoing double click/thump at end
         var thump = function(center, a) {
           if (t < center) return 0;
           var dt = t - center;
           return a * Math.exp(-dt / 0.18) * Math.sin(2 * Math.PI * 55 * dt);
         };
         val += thump(2.70, 1.0) + thump(2.85, 0.8);
-        // Sharp transient clicks at each thump onset
         [2.70, 2.85].forEach(function(c) {
           if (Math.abs(t - c) < 0.004) val += 0.4 * Math.exp(-Math.abs(t - c) / 0.001);
         });
-        // Static burst tail
         if (t >= 2.85 && t <= 3.0) val += 0.15 * Math.exp(-(t - 2.85) / 0.05) * (Math.random() * 2 - 1);
         d[i] = Math.tanh(val * 0.9);
       }
@@ -399,7 +434,7 @@
     if (!connorEl) return;
     var p = elapsedParts(Date.now() - connorBirth);
     connorEl.innerHTML = '<span style="color:#ff0000;font-weight:bold;text-shadow:0 0 8px rgba(255,0,0,0.7),0 0 16px rgba(255,0,0,0.4)">TEMPORAL INTERVENTION AUTHORIZED</span> // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">' +
-      p.d.toLocaleString() + 'D</span> ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)';
+      p.d.toLocaleString() + 'D</span> ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // ORDERS: MONITOR SITUATION AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL';
   }
 
   /* ---- WOPR uptime (days since BUILD 1983.06.03) ---- */
@@ -425,6 +460,7 @@
           screen.style.cssText = '';
           screen.classList.remove('red-bleed');
         }, 600);
+        whiteFlash(250);
 
         speedEl.textContent = '\u221E';
         speedEl.style.fontSize = 'clamp(32px, 10vw, 48px)';
@@ -477,25 +513,69 @@
         setTimeout(placeMove, md[tttIdx]);
       }
       placeMove();
-  }
+    }
 
-  function startTTT() {
+        /* ---- DEFCON ESCALATION SEQUENCE (scroll-triggered) ---- */
+    var defconTriggered = false;
+    var defconSeq = document.getElementById('defcon-sequence');
+    var returnLink = document.getElementById('return-link');
+
+    function triggerDefconSequence() {
+      if (defconTriggered) return;
+      defconTriggered = true;
+
+      var d5 = document.getElementById('defcon-5');
+      var d4 = document.getElementById('defcon-4');
+      var d3 = document.getElementById('defcon-3');
+      var d2 = document.getElementById('defcon-2');
+      var d1 = document.getElementById('defcon-1');
+      var jo = document.getElementById('joshua-online');
+
+      // Scoped red flashes — only on #screen, NOT --fg which recolors all text
+      function screenBlink(color, duration) {
+        screen.style.color = color;
+        screen.style.textShadow = '0 0 8px ' + color;
+        setTimeout(function(){ screen.style.color = ''; screen.style.textShadow = ''; }, duration || 400);
+      }
+
+      setTimeout(function(){ d5.classList.add('visible'); }, 400);
+      setTimeout(function(){ d4.classList.add('visible'); }, 1800);
+      setTimeout(function(){ d3.classList.add('visible'); }, 3200);
+      setTimeout(function(){ d2.classList.add('visible'); }, 4600);   
+      setTimeout(function(){ d1.style.opacity = '1'; d1.style.animation = 'defcon-pulse 0.5s steps(1, end) infinite'; }, 6000);
+      setTimeout(function(){ jo.style.visibility = 'visible'; }, 7400);
+      setTimeout(function(){ /* no cleanup needed — screen styles are auto-restored by screenBlink */ }, 9000);
+    }
+
+    // Fire when DEFCON block scrolls into view (use the crawl timing naturally)
+    if (defconSeq) {
+      var observer = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
+          triggerDefconSequence();
+        }
+      }, { threshold: 0.4 });
+      observer.observe(defconSeq);
+    }
+
+    // Click handler: only navigates if sequence already played
+    if (returnLink) {
+      returnLink.addEventListener('click', function() {
+        if (defconTriggered) {
+          window.location.href = 'https://www.qrz.com/db/K2VG';
+        }
+      });
+    }
+
+    /* ---- TTT Game Runner ---- */
+    function startTTT() {
       tttIdx = 0;
       resetBoard();
       runGame();
-  }
+    }
 
-  /* ---- Start ---- */
-  var startTime = performance.now();
-  function tick() {
-      if (performance.now() - startTime > 100) {
-        requestAnimationFrame(checkFreeze);
-      } else {
-        requestAnimationFrame(tick);
-      }
-  }
-  requestAnimationFrame(tick);   
-  
+    /* ---- Main Loop ---- */
+    requestAnimationFrame(checkFreeze);
+
 })();
 </script>
 </body>
