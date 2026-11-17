@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" "width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>JOSHUA // WOPR</title>
 <style>
@@ -107,7 +107,6 @@
 </head>
 <body>
 <div id="screen"><div id="log">
-
 <div class="l" id="boot-garble"></div>
 <div class="l" id="boot-line">JOSHUA ONLINE...</div>
 <div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Quantum Link // BUILD 1983.06.03 mark <span id="utc-date"></span> // ZT VULNS REMEDIATED</div>
@@ -169,24 +168,20 @@
 <div class="l">&nbsp;</div>
 <div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">15,235D</span> AFTER BIRTH // STATUS: MONITOR FOR TEMPORAL DISTURBANCES AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL</div>
 <div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE
+<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 
-<!-- DEFCON ESCALATION SEQUENCE (hidden until triggered) -->
+<!-- DEFCON ESCALATION SEQUENCE -->
 <div id="defcon-sequence" style="visibility:hidden">
   <div class="l">&nbsp;</div>
   <div class="l defcon-line defcon-green" id="defcon-5">DEFCON 5 // PEACETIME // GREEN</div>
-  <div class="l" id="defcon-pause-1">&nbsp;</div>
   <div class="l defcon-line defcon-orange" id="defcon-3">DEFCON 3 // ROUND HOUSE // ORANGE</div>
-  <div class="l" id="defcon-pause-2">&nbsp;</div>
   <div class="l defcon-line defcon-red" id="defcon-2">DEFCON 2 // FALCON RISING // RED</div>
-  <div class="l" id="defcon-pause-3">&nbsp;</div>
-  <div class="l defcon-alert" id="defcon-1">DEFCON 1 // RED ALERT // FOREIGN SSBN/ICBM LAUNCHES DETECTED</div>
-  <div class="l" id="defcon-pause-4">&nbsp;</div>
-  <div class="l" id="defcon-pause-5">&nbsp;</div>
-  <div class="l joshua-online" id="joshua-online">[██████░░░░░░] JOSHUA ONLINE...</div>
+  <div class="l defcon-alert" id="defcon-1" style="opacity:0">DEFCON 1 // RED ALERT // FOREIGN SSBN/ICBM LAUNCHES DETECTED</div>
   <div class="l">&nbsp;</div>
+  <div class="l joshua-online" id="joshua-online" style="visibility:hidden">[██████░░░░░░] JOSHUA ONLINE...</div>
+   <div class="l">&nbsp;</div>
   <div class="l">DEPARTMENT OF WAR // TS/SCI // NORAD COMMAND TERMINAL</div>
   <div class="l">NORTHAMERICAN AEROSPACE DEFENSE // CLASSIFIED SYSTEM</div>
   <div class="l">&nbsp;</div>
@@ -197,7 +192,6 @@
 <div id="return">
 <a href="https://www.qrz.com/db/K2VG" target="_top" id="return-link" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
-
 <script>
 /* ---- Live UTC date ---- */
 (function updateUTCDate() {
@@ -207,8 +201,8 @@
   var utcDate = now.toISOString().split('T')[0];
   var utcTime = now.toISOString().split('T')[1].split('Z')[0];
   el.textContent = utcDate + ' ' + utcTime;
-    setTimeout(updateUTCDate, 1000);
-      }());
+  setTimeout(updateUTCDate, 1000);
+}());
 
 (function(){
   var grid = document.getElementById('ttt-grid');
@@ -367,7 +361,6 @@
   function nextTieBoard() {
     return _tieOrder[_tieIdx++ % _tieOrder.length];
   }
-
   /* ---- Judgment Day countdown ---- */
   var judgEl = document.getElementById('judgement-countdown');
   var judgmentDay = Date.parse('1997-08-29T03:47:22Z');
@@ -407,7 +400,6 @@
       var phase = 0, phase2 = 0;
       for (var i = 0; i < d.length; i++) {
         var t = i / sr, val = 0;
-        // Rising electrical whine: ~400Hz -> ~16kHz over 2.7s, loudness builds exponentially
         if (t <= 2.7) {
           var p = t / 2.7;
           var freq = 400 + 15600 * p * p;
@@ -416,18 +408,15 @@
           phase2 += 2 * Math.PI * freq * 2.01 / sr;
           val += amp * Math.sin(phase) + amp * 0.3 * Math.sin(phase2);
         }
-        // Deep bass echoing double click/thump at end
         var thump = function(center, a) {
           if (t < center) return 0;
           var dt = t - center;
           return a * Math.exp(-dt / 0.18) * Math.sin(2 * Math.PI * 55 * dt);
         };
         val += thump(2.70, 1.0) + thump(2.85, 0.8);
-        // Sharp transient clicks at each thump onset
         [2.70, 2.85].forEach(function(c) {
           if (Math.abs(t - c) < 0.004) val += 0.4 * Math.exp(-Math.abs(t - c) / 0.001);
         });
-        // Static burst tail
         if (t >= 2.85 && t <= 3.0) val += 0.15 * Math.exp(-(t - 2.85) / 0.05) * (Math.random() * 2 - 1);
         d[i] = Math.tanh(val * 0.9);
       }
@@ -468,6 +457,7 @@
           screen.style.cssText = '';
           screen.classList.remove('red-bleed');
         }, 600);
+        whiteFlash(250);
 
         speedEl.textContent = '\u221E';
         speedEl.style.fontSize = 'clamp(32px, 10vw, 48px)';
@@ -522,71 +512,44 @@
       placeMove();
     }
 
+    /* ---- DEFCON ESCALATION SEQUENCE ---- */
+    var defconSeq = document.getElementById('defcon-sequence');
+    var returnLink = document.getElementById('return-link');
+    var defconTriggered = false;
+
+    function triggerDefconSequence(e) {
+      if (e) e.preventDefault();
+      if (defconTriggered) {
+        window.location.href = 'https://www.qrz.com/db/K2VG';
+        return;
+      }
+      defconTriggered = true;
+      log.style.animationPlayState = 'paused';
+      defconSeq.style.visibility = 'visible';
+
+      var d5 = document.getElementById('defcon-5');
+      var d3 = document.getElementById('defcon-3');
+      var d2 = document.getElementById('defcon-2');
+      var d1 = document.getElementById('defcon-1');
+      var jo = document.getElementById('joshua-online');
+
+      setTimeout(function(){ d5.classList.add('visible'); }, 600);
+      setTimeout(function(){ redBlink(250); d3.classList.add('visible'); }, 2200);
+      setTimeout(function(){ redBlink(200); whiteFlash(150); d2.classList.add('visible'); }, 3800);
+      setTimeout(function(){ screen.classList.add('red-bleed'); d1.style.opacity = '1'; }, 5400);
+      setTimeout(function(){ whiteFlash(300); jo.style.visibility = 'visible'; }, 7600);
+      setTimeout(function(){ screen.classList.remove('red-bleed'); log.style.animationPlayState = 'running'; }, 9200);
+    }
+
+    if (returnLink) {
+      returnLink.addEventListener('click', triggerDefconSequence);
+    }
+
     function startTTT() {
         tttIdx = 0;
         resetBoard();
         runGame();
     }
-
-/* ---- DEFCON ESCALATION SEQUENCE ---- */
-var defconSeq = document.getElementById('defcon-sequence');
-var returnLink = document.getElementById('return-link');
-var defconTriggered = false;
-
-function triggerDefconSequence(e) {
-  if (e) e.preventDefault();
-  if (defconTriggered) {
-    window.location.href = 'https://www.qrz.com/db/K2VG';
-    return;
-  }
-  defconTriggered = true;
-
-  // Pause the crawl immediately
-  log.style.animationPlayState = 'paused';
-
-  // Unhide the DEFCON block
-  defconSeq.style.visibility = 'visible';
-
-  var d5 = document.getElementById('defcon-5');
-  var d3 = document.getElementById('defcon-3');
-  var d2 = document.getElementById('defcon-2');
-  var d1 = document.getElementById('defcon-1');
-  var jo = document.getElementById('joshua-online');
-
-  setTimeout(function(){ d5.classList.add('visible'); }, 600);
-
-  setTimeout(function(){
-    redBlink(250);
-    d3.classList.add('visible');
-  }, 2200);
-
-  setTimeout(function(){
-    redBlink(200);
-    whiteFlash(150);
-    d2.classList.add('visible');
-  }, 3800);
-
-  setTimeout(function(){
-    screen.classList.add('red-bleed');
-    d1.style.opacity = '1';
-  }, 5400);
-
-  setTimeout(function(){
-    whiteFlash(300);
-    jo.style.visibility = 'visible';
-    jo.classList.add('visible');
-  }, 7600);
-
-  // Resume crawl after full sequence completes
-  setTimeout(function(){
-    screen.classList.remove('red-bleed');
-    log.style.animationPlayState = 'running';
-  }, 9200);
-}
-
-if (returnLink) {
-  returnLink.addEventListener('click', triggerDefconSequence);
-}
 
     /* ---- Start ---- */
     var startTime = performance.now();
