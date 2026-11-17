@@ -9,10 +9,10 @@
   :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
-  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
+  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow)}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
   #screen.white-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.0)}
-  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 42s linear forwards}
+  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:0;transform:translateY(var(--start-y,100vh));will-change:transform;animation:crawl 42s linear forwards}   
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   #progress-bar{white-space:pre;overflow:hidden}
@@ -88,7 +88,7 @@
     .cell{font-size:clamp(32px,10vw,60px)}
   }
 
-  @keyframes crawl{to{top:var(--end-top, 0px)}}
+  @keyframes crawl{to{transform:translateY(var(--end-top, 0px))}}
 
   @media (prefers-reduced-motion: reduce) {
     #log{animation-duration:45s}
@@ -237,6 +237,7 @@
     var END_TOP = computeEndTop();
     var sheet = document.createElement('style');
     document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
+    document.documentElement.style.setProperty('--start-y', window.innerHeight + 'px');   
     var old = document.getElementById('crawl-sheet');
     if (old) old.remove();
     sheet.id = 'crawl-sheet';
