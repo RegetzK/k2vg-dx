@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" "width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>JOSHUA // WOPR</title>
 <style>
@@ -11,7 +11,6 @@
 
   #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
-  #screen.white-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.0)}
   #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
@@ -52,25 +51,6 @@
   #ttt-status{text-align:center;margin-top:8px;min-height:1.7em}
   #ttt-speed{text-align:center;min-height:1.7em}
 
-  /* DEFCON escalation styles */
-  .defcon-line{font-weight:bold;letter-spacing:1px;opacity:0;transition:opacity 0.3s ease}
-  .defcon-line.visible{opacity:1}
-  .defcon-green{color:#33ff33;text-shadow:0 0 10px rgba(51,255,51,0.8),0 0 20px rgba(51,255,51,0.4)}
-  .defcon-orange{color:#ff6633;text-shadow:0 0 12px rgba(255,102,51,0.9),0 0 24px rgba(255,102,51,0.5)}
-  .defcon-red{color:#ff0000;text-shadow:0 0 14px rgba(255,0,0,1.0),0 0 28px rgba(255,0,0,0.6)}
-  .defcon-alert{color:#ff0000;font-weight:900;font-size:clamp(22px, 6vw + 4px, 36px);text-shadow:0 0 15px rgba(255,0,0,1.0),0 0 35px rgba(255,0,0,0.7);animation:defcon-pulse 0.5s steps(1, end) infinite}
-  .joshua-online{color:#ffffff;font-weight:900;font-size:clamp(24px, 7vw + 4px, 40px);text-shadow:0 0 20px rgba(255,255,255,1.0),0 0 40px rgba(255,255,255,0.8);animation:joshua-awaken 1.5s steps(3, end) forwards}
-
-  @keyframes defcon-pulse {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.3; }
-  }
-  @keyframes joshua-awaken {
-    0% { opacity: 0; filter: blur(8px); }
-    40% { opacity: 0.5; filter: blur(3px); }
-    100% { opacity: 1; filter: blur(0px); }
-  }
-
   @media (min-width: 900px){
     .l{font-size:24px}
     .final{font-size:30px}
@@ -92,8 +72,6 @@
     #log{animation-duration:45s}
     #return{animation:none;opacity:1}
     .cell.flash{transition:none;box-shadow:none}
-    .defcon-line{transition:none;opacity:1}
-    .joshua-online{animation:none;opacity:1;filter:none}
   }
 
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
@@ -173,29 +151,10 @@
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 
-<!-- DEFCON ESCALATION SEQUENCE (hidden until triggered) -->
-<div id="defcon-sequence" style="visibility:hidden">
-  <div class="l">&nbsp;</div>
-  <div class="l defcon-line defcon-green" id="defcon-5">DEFCON 5 // PEACETIME // GREEN</div>
-  <div class="l" id="defcon-pause-1">&nbsp;</div>
-  <div class="l defcon-line defcon-orange" id="defcon-3">DEFCON 3 // ROUND HOUSE // ORANGE</div>
-  <div class="l" id="defcon-pause-2">&nbsp;</div>
-  <div class="l defcon-line defcon-red" id="defcon-2">DEFCON 2 // FALCON RISING // RED</div>
-  <div class="l" id="defcon-pause-3">&nbsp;</div>
-  <div class="l defcon-alert" id="defcon-1">DEFCON 1 // RED ALERT // FOREIGN SSBN/ICBM LAUNCHES DETECTED</div>
-  <div class="l" id="defcon-pause-4">&nbsp;</div>
-  <div class="l" id="defcon-pause-5">&nbsp;</div>
-  <div class="l joshua-online" id="joshua-online">[██████░░░░░░] JOSHUA ONLINE...</div>
-  <div class="l">&nbsp;</div>
-  <div class="l">DEPARTMENT OF WAR // TS/SCI // NORAD COMMAND TERMINAL</div>
-  <div class="l">NORTHAMERICAN AEROSPACE DEFENSE // CLASSIFIED SYSTEM</div>
-  <div class="l">&nbsp;</div>
-</div>
-
 </div></div>
 
 <div id="return">
-<a href="https://www.qrz.com/db/K2VG" target="_top" id="return-link" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
+<a href="https://www.qrz.com/db/K2VG" target="_top" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 
 <script>
@@ -206,9 +165,9 @@
   var now = new Date();
   var utcDate = now.toISOString().split('T')[0];
   var utcTime = now.toISOString().split('T')[1].split('Z')[0];
-  el.textContent = utcDate + ' ' + utcTime;
-    setTimeout(updateUTCDate, 1000);
-      }());
+  el.textContent = utcDate + ' ' + utcTime;  
+  setTimeout(updateUTCDate, 1000);
+    }());
 
 (function(){
   var grid = document.getElementById('ttt-grid');
@@ -241,6 +200,7 @@
     var END_TOP = computeEndTop();
     var sheet = document.createElement('style');
     document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
+    sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
     var old = document.getElementById('crawl-sheet');
     if (old) old.remove();
     sheet.id = 'crawl-sheet';
@@ -302,17 +262,14 @@
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
   var probLine = document.getElementById('prob-line');
+  var iterDisplay = document.getElementById('iter-display');
+  var iterCursor = document.getElementById('iter-cursor');
   var freezeTriggered = false;
   var seqStarted = false;
 
   function redBlink(duration) {
     screen.classList.add('red-bleed');
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
-  }
-
-  function whiteFlash(duration) {
-    screen.classList.add('white-flash');
-    setTimeout(function(){ screen.classList.remove('white-flash'); }, duration || 200);
   }
 
   /* FIX 3: reduce freeze threshold from 0.6 to 0.45 so TTT board stays fully in viewport */
@@ -343,7 +300,7 @@
   var speedEl = document.getElementById('ttt-speed');
   var totalMoves = 0;
   var totalMovesMax = 180; // 20 × 9
-  var maxIter = 1346269;
+  var maxIter = 1346269;   
 
   /* ---- 16 guaranteed-tie boards: each is a legal move ORDER (cell indices) ---- */
   var tieBoards = [
@@ -520,88 +477,25 @@
         setTimeout(placeMove, md[tttIdx]);
       }
       placeMove();
-    }
+  }
 
-    function startTTT() {
-        tttIdx = 0;
-        resetBoard();
-        runGame();
-    }
+  function startTTT() {
+      tttIdx = 0;
+      resetBoard();
+      runGame();
+  }
 
-    /* ---- DEFCON ESCALATION SEQUENCE ---- */
-    var defconSeq = document.getElementById('defcon-sequence');
-    var returnLink = document.getElementById('return-link');
-    var defconTriggered = false;
-
-    function triggerDefconSequence(e) {
-      if (e) e.preventDefault();
-      if (defconTriggered) {
-        // Second click after sequence completes: actually navigate home
-        window.location.href = 'https://www.qrz.com/db/K2VG';
-        return;
+  /* ---- Start ---- */
+  var startTime = performance.now();
+  function tick() {
+      if (performance.now() - startTime > 100) {
+        requestAnimationFrame(checkFreeze);
+      } else {
+        requestAnimationFrame(tick);
       }
-      defconTriggered = true;
-
-      // Unhide the DEFCON block and scroll it into view
-      defconSeq.style.visibility = 'visible';
-      defconSeq.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-      var d5 = document.getElementById('defcon-5');
-      var d3 = document.getElementById('defcon-3');
-      var d2 = document.getElementById('defcon-2');
-      var d1 = document.getElementById('defcon-1');
-      var jo = document.getElementById('joshua-online');
-
-      // Beat 1: DEFCON 5 appears immediately
-      setTimeout(function(){ d5.classList.add('visible'); }, 600);
-
-      // Beat 2: DEFCON 3 (skipping 4) with red blink on arrival
-      setTimeout(function(){
-        redBlink(250);
-        d3.classList.add('visible');
-      }, 2200);
-
-      // Beat 3: DEFCON 2 with white flash layered over red
-      setTimeout(function(){
-        redBlink(200);
-        whiteFlash(150);
-        d2.classList.add('visible');
-      }, 3800);
-
-      // Beat 4: DEFCON 1 — full alarm state
-      setTimeout(function(){
-        screen.classList.add('red-bleed');
-        d1.style.opacity = '1';
-      }, 5400);
-
-      // Beat 5: dramatic pause, then JOSHUA ONLINE garble awakening
-      setTimeout(function(){
-        whiteFlash(300);
-        jo.style.visibility = 'visible';
-        jo.classList.add('visible');
-      }, 7600);
-
-      // Beat 6: resume crawl so the rest of the log scrolls past
-      setTimeout(function(){
-        log.style.animationPlayState = 'running';
-      }, 9200);
-    }
-
-    if (returnLink) {
-      returnLink.addEventListener('click', triggerDefconSequence);
-    }
-
-    /* ---- Start ---- */
-    var startTime = performance.now();
-    function tick() {
-        if (performance.now() - startTime > 100) {
-          requestAnimationFrame(checkFreeze);
-        } else {
-          requestAnimationFrame(tick);
-        }
-    }
-    requestAnimationFrame(tick);
-
+  }
+  requestAnimationFrame(tick);   
+  
 })();
 </script>
 </body>
