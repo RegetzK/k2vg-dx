@@ -241,6 +241,7 @@
     document.head.appendChild(sheet);
   }
 
+  applyCrawl();
   window.addEventListener('load', function() {
     requestAnimationFrame(function() { applyCrawl(); });
   });
