@@ -186,7 +186,7 @@
 <div class="l">&nbsp;</div>
 <div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">15,235D</span> AFTER BIRTH // STATUS: MONITOR FOR TEMPORAL DISTURBANCES AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL</div>
 <div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE</div>
+<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE/MS. LINCOLN IMMEDIATELY</div>
 <div class="l">&nbsp;</div>
 </div></div>
 <div id="return">
@@ -294,7 +294,7 @@
       setTimeout(progressStep, 100);
     }
     progressStep();
-  }, 3000);
+  }, 10000);
 
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
@@ -434,7 +434,7 @@
     if (!connorEl) return;
     var p = elapsedParts(Date.now() - connorBirth);
     connorEl.innerHTML = '<span style="color:#ff0000;font-weight:bold;text-shadow:0 0 8px rgba(255,0,0,0.7),0 0 16px rgba(255,0,0,0.4)">TEMPORAL INTERVENTION AUTHORIZED</span> // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">' +
-      p.d.toLocaleString() + 'D</span> ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)';
+      p.d.toLocaleString() + 'D</span> ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // ORDERS: MONITOR SITUATION AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL';
   }
 
   /* ---- WOPR uptime (days since BUILD 1983.06.03) ---- */
