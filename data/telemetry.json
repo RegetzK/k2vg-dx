@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-20T13:15:32Z",
+  "timestamp": "2026-11-20T21:16:51Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -56,84 +56,165 @@
         "lore": true
       },
       {
-        "call": "F5ADE",
-        "grid": "JN07MF",
+        "call": "LU4DBP",
+        "grid": "FF81uh",
         "band": null,
-        "freq": 28.075887,
+        "freq": 28.0764,
+        "db": -19,
+        "dxcc": "LU",
+        "lore": false
+      },
+      {
+        "call": "PR2EE",
+        "grid": "GG66RP",
+        "band": null,
+        "freq": 28.075932,
         "db": -15,
-        "dxcc": "F5",
+        "dxcc": "PR",
         "lore": false
       },
       {
-        "call": "F8NHF",
-        "grid": "JO10QJ",
+        "call": "PY3POE",
+        "grid": "GG40KH",
         "band": null,
-        "freq": 28.074876,
-        "db": -16,
-        "dxcc": "F8",
-        "lore": false
-      },
-      {
-        "call": "CR7BUJ",
-        "grid": "IM58HR",
-        "band": null,
-        "freq": 28.075231,
-        "db": -14,
-        "dxcc": "CR",
-        "lore": false
-      },
-      {
-        "call": "IK1JMJ",
-        "grid": "JN35ta",
-        "band": null,
-        "freq": 21.075373,
-        "db": -16,
-        "dxcc": "IK",
-        "lore": false
-      },
-      {
-        "call": "IZ0BTV",
-        "grid": "JN61is",
-        "band": null,
-        "freq": 21.076175,
+        "freq": 28.075966,
         "db": -17,
-        "dxcc": "IZ",
+        "dxcc": "PY",
         "lore": false
       },
       {
-        "call": "HA7TM",
-        "grid": "JN97kk60ia",
+        "call": "PY5BH",
+        "grid": "GG54JJ",
         "band": null,
-        "freq": 21.076103,
-        "db": -14,
-        "dxcc": "HA",
+        "freq": 28.075951,
+        "db": -11,
+        "dxcc": "PY",
         "lore": false
       },
       {
-        "call": "F5RRS",
-        "grid": "JN36eb44",
+        "call": "PY2MDA",
+        "grid": "GG67sn",
         "band": null,
-        "freq": 18.101865,
+        "freq": 28.075252,
         "db": -12,
-        "dxcc": "F5",
+        "dxcc": "PY",
         "lore": false
       },
       {
-        "call": "DL8TV",
-        "grid": "JN49DX",
+        "call": "PY5NT",
+        "grid": "GG54",
         "band": null,
-        "freq": 18.102406,
+        "freq": 28.075115,
         "db": -15,
-        "dxcc": "DL",
+        "dxcc": "PY",
         "lore": false
       },
       {
-        "call": "UA9LAO",
-        "grid": "MO27TC",
+        "call": "LW7DBP",
+        "grid": "GF05RK",
         "band": null,
-        "freq": 14.075222,
+        "freq": 28.075823,
+        "db": -13,
+        "dxcc": "LW",
+        "lore": false
+      },
+      {
+        "call": "CX3AS",
+        "grid": "GF15ud",
+        "band": null,
+        "freq": 28.075427,
+        "db": -16,
+        "dxcc": "CX",
+        "lore": false
+      },
+      {
+        "call": "PY3SC",
+        "grid": "GG30CH",
+        "band": null,
+        "freq": 28.075427,
+        "db": -16,
+        "dxcc": "PY",
+        "lore": false
+      },
+      {
+        "call": "LU1EFX",
+        "grid": "GF05PK",
+        "band": null,
+        "freq": 28.07494,
         "db": -17,
-        "dxcc": "UA",
+        "dxcc": "LU",
+        "lore": false
+      },
+      {
+        "call": "PU5BXB",
+        "grid": "GG52rh95",
+        "band": null,
+        "freq": 28.075683,
+        "db": -17,
+        "dxcc": "PU",
+        "lore": false
+      },
+      {
+        "call": "CA6SNT",
+        "grid": "FF30je",
+        "band": null,
+        "freq": 28.075021,
+        "db": -8,
+        "dxcc": "CA",
+        "lore": false
+      },
+      {
+        "call": "CX1RL",
+        "grid": "GF25MC",
+        "band": null,
+        "freq": 28.074715,
+        "db": -17,
+        "dxcc": "CX",
+        "lore": false
+      },
+      {
+        "call": "CX3TH",
+        "grid": "GF25UM",
+        "band": null,
+        "freq": 28.07551,
+        "db": -14,
+        "dxcc": "CX",
+        "lore": false
+      },
+      {
+        "call": "PP5HR",
+        "grid": "GG53IE",
+        "band": null,
+        "freq": 28.075226,
+        "db": -11,
+        "dxcc": "PP",
+        "lore": false
+      },
+      {
+        "call": "OM8GT",
+        "grid": "KN08or",
+        "band": null,
+        "freq": 18.101326,
+        "db": -3,
+        "dxcc": "OM",
+        "lore": false
+      },
+      {
+        "call": "HC2GRC",
+        "grid": "FI07AU",
+        "band": null,
+        "freq": 21.074485,
+        "db": -18,
+        "dxcc": "HC",
+        "lore": false
+      },
+      {
+        "call": "YV4EBD",
+        "grid": "FK60ae",
+        "band": null,
+        "freq": 21.075166,
+        "db": -16,
+        "dxcc": "YV",
         "lore": false
       }
     ]
