@@ -21,11 +21,16 @@ body { margin:0; padding:0; background:#b0a89e; }
 @keyframes c10{0%,8.33%{background:#ffee00;box-shadow:0 0 6px #ffee00}8.34%,100%{background:#888;box-shadow:none}}
 @keyframes c11{0%,8.33%{background:#ffee00;box-shadow:0 0 6px #ffee00}8.34%,100%{background:#888;box-shadow:none}}
 @keyframes c12{0%,8.33%{background:#ffee00;box-shadow:0 0 6px #ffee00}8.34%,100%{background:#888;box-shadow:none}}
-@keyframes blinkAlt{
-  0%,49.99%{opacity:1;filter:brightness(1.2)}
+@keyframes blinkA{
+  0%,49.99%{opacity:1;filter:brightness(1.3)}
   50%,100%{opacity:.15;filter:brightness(.3)}
 }
-.blink-alt{animation:blinkAlt 2s infinite ease-in-out}
+@keyframes blinkB{
+  0%,49.99%{opacity:.15;filter:brightness(.3)}
+  50%,100%{opacity:1;filter:brightness(1.3)}
+}
+.blinkA{animation:blinkA 2s infinite ease-in-out}
+.blinkB{animation:blinkB 2s infinite ease-in-out}
 </style>
 </head>
 <body>
@@ -110,16 +115,16 @@ body { margin:0; padding:0; background:#b0a89e; }
 <div style="clear:both"></div>
 </div>
 </td>
-<!-- COL 3: NARROW RED STRIP (INNER) -->
+<!-- COL 3: NARROW STRIP (INNER) - red inner / green outer -->
 <td style="padding:60px 3px 8px 3px;text-align:center;vertical-align:top;width:30px">
 <div style="background-color:#8c5530;border-radius:3px;padding:8px 5px">
 <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
 <div style="display:flex;gap:3px"><span class="lit" style="background:#FF2020;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #FF2020"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
+<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#20FF20;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #20FF20"></span></div>
+<div style="display:flex;gap:3px"><span class="blinkA" style="background:#FF2020;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #FF2020"></span><span class="blinkB" style="background:#20FF20;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #20FF20"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#FF2020;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #FF2020"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
+<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#20FF20;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #20FF20"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#FF2020;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #FF2020"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
 </div>
 </div>
 </td>
@@ -150,18 +155,19 @@ body { margin:0; padding:0; background:#b0a89e; }
 </div>
 </div>
 </td>
-<!-- COL 5: NARROW GREEN STRIP (OUTER) -->
+<!-- COL 5: NARROW STRIP (OUTER) - mirrored/reversed of COL 3 -->
 <td style="padding:60px 3px 8px 3px;text-align:center;vertical-align:top;width:30px">
 <div style="background-color:#8c5530;border-radius:3px;padding:8px 5px">
 <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-<div style="display:flex;gap:3px"><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit blink-alt" style="background:#20FF20;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #20FF20"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
-<div style="display:flex;gap:3px"><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
+<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#20FF20;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #20FF20"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#FF2020;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #FF2020"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
+<div style="display:flex;gap:3px"><span class="blinkB" style="background:#FF2020;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #FF2020"></span><span class="blinkA" style="background:#20FF20;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #20FF20"></span></div>
+<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#20FF20;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #20FF20"></span></div>
+<div style="display:flex;gap:3px"><span class="lit" style="background:#FF2020;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #FF2020"></span><span style="background:#006400;border-radius:50%;display:inline-block;height:4px;width:4px"></span></div>
+<div style="display:flex;gap:3px"><span style="background:#8B0000;border-radius:50%;display:inline-block;height:4px;width:4px"></span><span class="lit" style="background:#20FF20;border-radius:50%;display:inline-block;height:4px;width:4px;box-shadow:0 0 6px #20FF20"></span></div>
 </div>
 </div>
+</td>
 </td><!-- COL 6: GREY CONTROL PANEL (MIXED LIT/UNLIT) - packed tight ~150px tall -->
 <td style="padding:0 4px 8px 4px;text-align:center;vertical-align:top;width:1%">
 <div style="background-color:#bfb8b0;border-radius:3px;margin:0 auto;max-height:150px;overflow:hidden;padding:4px;width:112px">
