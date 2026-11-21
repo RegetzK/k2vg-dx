@@ -273,6 +273,10 @@ const MAX_ROWS=20;
 const STALE_THRESHOLD_MS=3600000;
 let refreshTimer=null;
 
+// ===== ALERT STATE: track what's already been shown so we only alert on NEW filtered rows =====
+const seenKeys=new Set();   // keys of rows already rendered/alerted
+let firstLoadDone=false;    // suppress alert on very first paint (boot noise)
+
 function getStardate(){
   const now=new Date();
   const year=now.getUTCFullYear();
@@ -324,8 +328,20 @@ async function load(){
     const tb=document.querySelector('tbody');
     tb.querySelectorAll('tr.telemetry').forEach(r=>r.remove());
     const tracks=d.telemetry.dx_tracks||[];
+    // This `filtered` array IS exactly what gets rendered on screen.
     const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX).slice(0,MAX_ROWS);
+
+    // Build the set of keys currently visible on screen.
+    const currentKeys=new Set(filtered.map(t=>(t.call||'')+'|'+(t.band||bandFromFreq(t.freq))));
+
+    // Determine which visible rows are NEW since last poll.
     let hadNew=false;
+    for(const t of filtered){
+      const key=(t.call||'')+'|'+(t.band||bandFromFreq(t.freq));
+      if(!seenKeys.has(key))hadNew=true;
+    }
+
+    // Render only what passed the filter (unchanged rendering logic).
     for(const t of filtered){
       const reg=iaruRegion(t.grid);
       const zl=isZL(t.grid)?' zl':'';
@@ -339,6 +355,11 @@ async function load(){
       });
       tb.appendChild(tr);
     }
+
+    // Commit the visible set so next poll knows what was already on screen.
+    seenKeys.clear();
+    currentKeys.forEach(k=>seenKeys.add(k));
+
     if(!filtered.length){
       const tr=document.createElement('tr');
       tr.className='telemetry';
@@ -370,7 +391,15 @@ async function load(){
     }
     const zlPresent=filtered.some(t=>isZL(t.grid));
     if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO GARY SEVEN';statusEl.className='live';}
-    if(hadNew&&audioArmed)playAlert();
+
+    // ===== FILTER-AWARE ALERTING =====
+    // Fire ONLY if: audio armed AND at least one row currently ON SCREEN is new.
+    // First load just seeds the seen-set silently so boot doesn't chirp.
+    if(!firstLoadDone){
+      firstLoadDone=true;
+    } else if(hadNew&&audioArmed){
+      playAlert();
+    }
   }catch(e){
     document.getElementById('status').textContent='DEGRADED';
     document.getElementById('status').className='degraded';
@@ -389,4 +418,4 @@ scheduleRefresh();
   <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">CLICK HERE // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 </body>
-</html>   
+</html>
