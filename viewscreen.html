@@ -8,7 +8,19 @@ body { margin:0; padding:0; background:#b0a89e; }
 .red-alert-panel{animation:redAlertFlash 1s infinite ease-in-out}
 @keyframes litPulse{0%,100%{opacity:1;filter:brightness(1)}50%{opacity:.4;filter:brightness(.6)}}
 .lit{animation:litPulse 2s infinite ease-in-out}
-@keyframes redFlash{0%,100%{opacity:1;filter:brightness(1)}50%{opacity:.75;filter:brightness(1.3)}}   
+@keyframes redFlash{0%,100%{opacity:1;filter:brightness(1)}50%{opacity:.75;filter:brightness(1.3)}}
+@keyframes c1 {0%,8.33%{background:#00e5ff;box-shadow:0 0 6px #00e5ff}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c2 {0%,8.33%{background:#00e5ff;box-shadow:0 0 6px #00e5ff}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c3 {0%,8.33%{background:#32cd32;box-shadow:0 0 6px #32cd32}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c4 {0%,8.33%{background:#ff8c00;box-shadow:0 0 6px #ff8c00}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c5 {0%,8.33%{background:#ff8c00;box-shadow:0 0 6px #ff8c00}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c6 {0%,8.33%{background:#ff3300;box-shadow:0 0 6px #ff3300}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c7 {0%,8.33%{background:#ff3300;box-shadow:0 0 6px #ff3300}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c8 {0%,8.33%{background:#ff3300;box-shadow:0 0 6px #ff3300}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c9 {0%,8.33%{background:#ff3300;box-shadow:0 0 6px #ff3300}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c10{0%,8.33%{background:#ffee00;box-shadow:0 0 6px #ffee00}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c11{0%,8.33%{background:#ffee00;box-shadow:0 0 6px #ffee00}8.34%,100%{background:#888;box-shadow:none}}
+@keyframes c12{0%,8.33%{background:#ffee00;box-shadow:0 0 6px #ffee00}8.34%,100%{background:#888;box-shadow:none}}
 </style>
 </head>
 <body>
@@ -111,25 +123,25 @@ body { margin:0; padding:0; background:#b0a89e; }
 <div style="background-color:#000000;border-radius:6px;border:6px solid #00e5ff;box-shadow:0 0 16px rgba(0,229,255,0.6),inset 0 0 10px rgba(0,229,255,0.6);box-sizing:border-box;display:block;margin-bottom:0;margin-left:auto;margin-right:auto;margin-top:0;max-width:440px;overflow:hidden;padding:0"><img alt="NCC 1701" src="https://regetzk.github.io/k2vg-dx/NCC1701b.png" style="aspect-ratio:5 / 3 !important;box-sizing:border-box;display:block;filter:contrast(1.05) brightness(0.92) saturate(1.05);height:auto !important;max-height:none !important;object-fit:cover;opacity:0.95;width:100%" /></div>
 <!-- Half-moon light FLIPPED UP -->
 <div style="text-align:center;margin-top:2px"><span style="display:inline-block;width:6px;height:3px;background:#f5f5dc;border-radius:6px 6px 0 0;box-shadow:0 0 4px rgba(245,245,220,0.5)"></span></div>
-<!-- Lower Row of 3, 6, 3 rectangular lamps -->
+<!-- Lower Row of 3, 6, 3 rectangular lamps - 1s sequential color sweep -->
 <div style="display:flex;justify-content:center;gap:14px;margin-top:8px">
 <div style="background:#666;border-radius:2px;padding:3px 7px;display:flex;gap:4px;justify-content:center">
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span class="lit" style="display:inline-block;height:3px;width:9px;background:#ffcc00;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c1 1s infinite linear;animation-delay:0s"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c2 1s infinite linear;animation-delay:.0833s"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c3 1s infinite linear;animation-delay:.1667s"></span>
 </div>
 <div style="background:#666;border-radius:2px;padding:3px 7px;display:flex;gap:4px;justify-content:center">
-<span class="lit" style="display:inline-block;height:3px;width:9px;background:#ffcc00;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span class="lit" style="display:inline-block;height:3px;width:9px;background:#ffcc00;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c4 1s infinite linear;animation-delay:.25s"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c5 1s infinite linear;animation-delay:.3333s"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c6 1s infinite linear;animation-delay:.4167s"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c7 1s infinite linear;animation-delay:.5s"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c8 1s infinite linear;animation-delay:.5833s"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c9 1s infinite linear;animation-delay:.6667s"></span>
 </div>
 <div style="background:#666;border-radius:2px;padding:3px 7px;display:flex;gap:4px;justify-content:center">
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px"></span>
-<span class="lit" style="display:inline-block;height:3px;width:9px;background:#ffcc00;border-radius:1.5px"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c10 1s infinite linear;animation-delay:.75s"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c11 1s infinite linear;animation-delay:.8333s"></span>
+<span style="display:inline-block;height:3px;width:9px;background:#888;border-radius:1.5px;animation:c12 1s infinite linear;animation-delay:.9167s"></span>
 </div>
 </div>
 </td>
