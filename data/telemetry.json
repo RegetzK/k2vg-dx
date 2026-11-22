@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-21T22:18:13Z",
+  "timestamp": "2026-11-22T02:22:15Z",
   "station": {
     "callsign": "K2VG",
     "grid": "FM05",
@@ -54,105 +54,6 @@
         "dxcc": "EARTH",
         "status": "MONITORED",
         "lore": true
-      },
-      {
-        "call": "HC2GRC",
-        "grid": "FI07AU",
-        "band": null,
-        "freq": 21.0766,
-        "db": -13,
-        "dxcc": "HC",
-        "lore": false
-      },
-      {
-        "call": "PY2ATI",
-        "grid": "GG58CI90",
-        "band": null,
-        "freq": 21.076189,
-        "db": -17,
-        "dxcc": "PY",
-        "lore": false
-      },
-      {
-        "call": "RG5A",
-        "grid": "KN93",
-        "band": null,
-        "freq": 21.07679,
-        "db": 2,
-        "dxcc": "RG",
-        "lore": false
-      },
-      {
-        "call": "HK1BNL",
-        "grid": "FJ28BR",
-        "band": null,
-        "freq": 21.074779,
-        "db": -19,
-        "dxcc": "HK",
-        "lore": false
-      },
-      {
-        "call": "PY4GC",
-        "grid": "GG67QW",
-        "band": null,
-        "freq": 21.074962,
-        "db": -13,
-        "dxcc": "PY",
-        "lore": false
-      },
-      {
-        "call": "YY4CZS",
-        "grid": "FK60AG",
-        "band": null,
-        "freq": 21.076364,
-        "db": -19,
-        "dxcc": "YY",
-        "lore": false
-      },
-      {
-        "call": "PP1NY",
-        "grid": "GG99up",
-        "band": null,
-        "freq": 21.075914,
-        "db": -20,
-        "dxcc": "PP",
-        "lore": false
-      },
-      {
-        "call": "I5MPN",
-        "grid": "JN53ju",
-        "band": null,
-        "freq": 21.075131,
-        "db": -7,
-        "dxcc": "I5",
-        "lore": false
-      },
-      {
-        "call": "D2UY",
-        "grid": "JI64DL",
-        "band": null,
-        "freq": 21.075944,
-        "db": -18,
-        "dxcc": "D2",
-        "lore": false
-      },
-      {
-        "call": "OZ9FF",
-        "grid": "JO75LB",
-        "band": null,
-        "freq": 21.07571,
-        "db": -22,
-        "dxcc": "OZ",
-        "lore": false
-      },
-      {
-        "call": "HK4EIC",
-        "grid": "FJ26gf",
-        "band": null,
-        "freq": 21.07426,
-        "db": -14,
-        "dxcc": "HK",
-        "lore": false
       }
     ]
   }
