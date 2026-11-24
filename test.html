@@ -396,88 +396,67 @@ scheduleRefresh();
   <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">[   <span style="color:#ffff00 !important;font-size:12px;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span>   ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 <script src="../audio.js"></script>
-<!-- ===== GHOST IN THE MACHINE v3 — H:M:S. three-digit anomaly ===== -->
-<!-- Paste into desktop.html before </body>. Remove to revert. -->
+<!-- ===== GHOST IN THE MACHINE v4 — chaos paint, locked hostage, feedback rain ===== -->
 <div id="ghostHost"></div>
 <script>
 (function(){
 'use strict';
+var ghostCount=0, permanentDrift=false;
 
-/* ---------- state ---------- */
-var ghostCount = 0;
-var permanentDrift = false;
-var rainTriggered = false;
-var rainActivated = false;
-
-/* ---------- styles ---------- */
-var css = [
+var css=[
 '#ghOv{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;',
 ' z-index:99998;display:flex;align-items:center;justify-content:center;',
-' gap:18px;cursor:default;overflow:hidden;user-select:none}',
-'.ghD{position:relative;width:120px;height:200px}',
-'.ghD i{position:absolute;background:#c1121f;opacity:.12;',
-' transition:opacity .08s linear}',
-'.ghD i.on{background:#ff2a2a;opacity:1;',
-' box-shadow:0 0 14px #ff2a2a,0 0 30px rgba(255,42,42,.65)}',
-'.ghD i.ember{background:#5a0d12;opacity:.5;box-shadow:none}',
+' gap:16px;cursor:default;overflow:hidden;user-select:none}',
+'.ghD{position:relative;width:90px;height:150px}',
+'.ghD i{position:absolute;background:#c1121f;opacity:.10;transition:opacity .07s linear}',
+'.ghD i.on{background:#ff2a2a;opacity:1;box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6)}',
+'.ghD i.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
 '.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
-'.ghD i.garble{animation:ghGarble .1s steps(2) infinite}',
-'.ghD i.a{top:0;left:18px;width:84px;height:16px}',
-'.ghD i.g{top:92px;left:18px;width:84px;height:16px}',
-'.ghD i.d{bottom:0;left:18px;width:84px;height:16px}',
-'.ghD i.f{top:12px;left:0;width:16px;height:84px}',
-'.ghD i.b{top:12px;right:0;width:16px;height:84px}',
-'.ghD i.e{bottom:12px;left:0;width:16px;height:84px}',
-'.ghD i.c{bottom:12px;right:0;width:16px;height:16px}',
+'.ghD i.a{top:0;left:14px;width:62px;height:12px}',
+'.ghD i.g{top:69px;left:14px;width:62px;height:12px}',
+'.ghD i.d{bottom:0;left:14px;width:62px;height:12px}',
+'.ghD i.f{top:9px;left:0;width:12px;height:62px}',
+'.ghD i.b{top:9px;right:0;width:12px;height:62px}',
+'.ghD i.e{bottom:9px;left:0;width:12px;height:62px}',
+'.ghD i.c{bottom:9px;right:0;width:12px;height:62px}',
 '.ghD i.a,.ghD i.g,.ghD i.d{clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%)}',
 '.ghD i.f,.ghD i.b,.ghD i.e,.ghD i.c{clip-path:polygon(50% 0,100% 8%,100% 92%,50% 100%,0 92%,0 8%)}',
-'.ghDot{width:16px;height:16px;background:#c1121f;border-radius:50%;',
-' box-shadow:0 0 8px rgba(193,18,31,.5);transition:opacity .08s;margin-top:140px;align-self:flex-end}',
-'.ghDot.on{background:#ff2a2a;box-shadow:0 0 14px rgba(255,42,42,.65)}',
-'.ghDot.ember{background:#5a0d12;opacity:.5;box-shadow:none}',
+'.ghPeriod{position:absolute;bottom:0;right:-22px;width:12px;height:12px;',
+' background:#ff2a2a;border-radius:50%;box-shadow:0 0 10px rgba(255,42,42,.6);',
+' transition:opacity .07s}',
+'.ghPeriod.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
+'.ghPeriod.off{opacity:.10;background:#c1121f;box-shadow:none}',
 '#ghRain{position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;opacity:0;',
-' font-family:monospace;font-size:16px;color:rgba(0,255,70,.16);',
-' white-space:pre;line-height:1.1;pointer-events:none}',
+' font-family:monospace;font-size:15px;color:rgba(0,255,70,.18);white-space:pre;',
+' line-height:1.1;pointer-events:none;transition:opacity .15s}',
 '#ghRain.vis{opacity:1}'].join('\n');
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
-/* ---------- segment map ---------- */
-var SEG={
-  '0':'abcdef','1':'bc','2':'abdeg','3':'abcdg','4':'bcfg',
-  '5':'acdfg','6':'acdefg','7':'abc','8':'abcdefg','9':'abcdfg',
-  '-':'g','?':'ab','X':'abcdefg',' ':''
-};
+var SEG={'0':'abcdef','1':'bc','2':'abdeg','3':'abcdg','4':'bcfg',
+ '5':'acdfg','6':'acdefg','7':'abc','8':'abcdefg','9':'abcdfg',' ':'','X':'abcdefg','?':'ab'};
 function mkDigit(){
  var d=document.createElement('div');d.className='ghD';
  'abcdefg'.split('').forEach(function(k){
-   var i=document.createElement('i');i.className=k;i.setAttribute('data-s',k);
-   d.appendChild(i);});
+   var i=document.createElement('i');i.setAttribute('data-s',k);d.appendChild(i);});
  return d;
 }
-function setDig(d,ch,ember){
+function setDig(d,ch,mode){
  var lit=SEG[ch]!==undefined?SEG[ch]:'';
  Array.prototype.forEach.call(d.children,function(i){
-   var s=i.getAttribute('data-s');
-   i.className=s;
-   if(lit.indexOf(s)>-1) i.className+=' on';
-   if(ember) i.className+=' ember';
- });
+   var s=i.getAttribute('data-s'),cls=s;
+   if(lit.indexOf(s)>-1)cls+=(mode==='ember'?' ember':' on');
+   i.className=cls;});
 }
-function randSeg(d,p,ember){
- Array.prototype.forEach.call(d.children,function(i){
-   var s=i.getAttribute('data-s');
-   i.className=s;
-   if(Math.random()<p) i.className+=' on';
-   if(ember) i.className+=' ember';
- });
+/* CHAOS PAINT — random partial illumination, all three digits */
+function chaosPaint(digits,p,mode){
+ digits.forEach(function(d){
+   Array.prototype.forEach.call(d.children,function(i){
+     var s=i.getAttribute('data-s'),cls=s;
+     if(Math.random()<p)cls+=(mode==='ember'?' ember':' on');
+     i.className=cls;});});
 }
-function garbleDigit(d){
- var shapes=['?','X','-'];
- setDig(d,shapes[Math.floor(Math.random()*shapes.length)],false);
- d.classList.add('garble');
-}
+function garbleDigit(d){setDig(d,Math.random()<.5?'X':'?',false);}
 
-/* ---------- audio: power sag ---------- */
 function powerSag(){
  try{
    var c=new (window.AudioContext||window.webkitAudioContext)(),
@@ -493,140 +472,96 @@ function powerSag(){
  }catch(e){}
 }
 
-/* ---------- matrix rain ---------- */
 function glyphRain(){
- var cols=5,out=[];
- var glyphs='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789';
- for(var c=0;c<cols;c++){
-   var col='';
-   for(var r=0;r<32;r++) col+=(Math.random()<.25?glyphs[Math.floor(Math.random()*glyphs.length)]:' ')+'\n';
-   out.push(col);
- }
+ var cols=5,out=[],gl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789';
+ for(var c=0;c<cols;c++){var col='';
+   for(var r=0;r<32;r++)col+=(Math.random()<.25?gl[Math.floor(Math.random()*gl.length)]:' ')+'\n';
+   out.push(col);}
  return out.join('     ');
 }
 
-/* ---------- the ghost — 10s hostage ---------- */
 function showGhost(done){
  ghostCount++;
  var ov=document.createElement('div');ov.id='ghOv';
  var d1=mkDigit(),d2=mkDigit(),d3=mkDigit();
- var dot=document.createElement('div');dot.className='ghDot';
+ var period=document.createElement('div');period.className='ghPeriod';
+ d3.style.position='relative';d3.appendChild(period); /* ONE dot, lower right */
  var rain=document.createElement('div');rain.id='ghRain';
- ov.appendChild(rain);
- ov.appendChild(d1);ov.appendChild(d2);ov.appendChild(d3);ov.appendChild(dot);
+ ov.appendChild(rain);ov.appendChild(d1);ov.appendChild(d2);ov.appendChild(d3);
  document.body.appendChild(ov);
 
- /* tap/click to escape -> triggers rain */
- var onEscape=function(){
-   if(rainActivated)return;
-   rainActivated=true;
+ /* FEEDBACK RAIN — they cannot escape; tapping only provokes the machine */
+ var busy=false;
+ function feedback(){
+   if(busy)return;busy=true;
    rain.textContent=glyphRain();
    rain.classList.add('vis');
-   ov.style.background='rgba(0,0,0,.85)';
-   /* rain persists, clock frozen in garble */
-   setTimeout(function(){
-     rain.classList.remove('vis');
-     ov.remove();
-     if(done)done();
-   },2500);
-   ov.removeEventListener('click',onEscape);
-   ov.removeEventListener('touchstart',onEscape);
- };
- ov.addEventListener('click',onEscape);
- ov.addEventListener('touchstart',onEscape,{passive:true});
+   setTimeout(function(){rain.classList.remove('vis');busy=false;},800);
+ }
+ ov.addEventListener('click',feedback);
+ ov.addEventListener('touchstart',feedback,{passive:true});
 
- var T=function(){
+ function T(){
    var n=new Date();
    if(permanentDrift)n=new Date(n.getTime()-90000);
-   return [String(n.getHours()).toString(),
-           String(n.getMinutes()).toString(),
-           String(n.getSeconds()).toString()];
- };
- function paint(){
+   return [String(n.getHours()%12||12),String(n.getMinutes()),String(n.getSeconds())];
+ }
+ function paint(mode){
    var t=T();
-   setDig(d1,t[0].charAt(0),false);
-   setDig(d2,t[1].charAt(0),false);
-   setDig(d3,t[2].charAt(0),false);
-   dot.className='ghDot on';
+   setDig(d1,t[0].slice(-1),mode);
+   setDig(d2,t[1].slice(-1),mode);
+   setDig(d3,t[2].slice(-1),mode);
+   period.className='ghPeriod'+(mode==='ember'?' ember':'');
  }
 
- /* 10-second choreography — dramatic, cover-art style */
+ /* dilating ticks: fast -> slow across 10s */
  var beats=[
-  {ms:100,f:function(){paint();}},           /* t=0   : alive, ticking */
-  {ms:1000,f:function(){paint();}},          /* t=1   : seconds rolled */
-  {ms:1800,f:function(){paint();}},          /* t=1.8 : slight drag */
-  {ms:2800,f:function(){setDig(d3,T()[2].charAt(0),true);
-      d3.classList.add('flicker');}},        /* t=2.8 : ember + flicker begins */
-  {ms:3800,f:function(){setDig(d2,T()[1].charAt(0),true);
-      d2.classList.add('flicker');}},        /* t=3.8 : second digit dying */
-  {ms:4800,f:function(){setDig(d1,T()[0].charAt(0),true);
-      d1.classList.add('flicker');
-      dot.className='ghDot ember';}},        /* t=4.8 : first digit dying */
-  {ms:5800,f:function(){garbleDigit(d3);
-      randSeg(d2,.6,true);}},                /* t=5.8 : corruption starts */
-  {ms:6400,f:function(){garbleDigit(d2);
-      randSeg(d1,.5,true);}},                /* t=6.4 : second digit garbled */
-  {ms:6900,f:function(){garbleDigit(d1);
-      randSeg(d3,.4,true);}},                /* t=6.9 : first digit garbled */
-  {ms:7400,f:function(){d1.classList.remove('flicker');
-      d2.classList.remove('flicker');
-      d3.classList.remove('flicker');
-      randSeg(d1,.3,false);randSeg(d2,.3,false);
-      randSeg(d3,.3,false);
-      dot.className='ghDot';}},              /* t=7.4 : flickers stop, all raw */
-  {ms:7800,f:function(){randSeg(d1,.5,false);
-      randSeg(d2,.5,false);randSeg(d3,.5,false);
-      setDig(d1,'X');setDig(d2,'?');
-      setDig(d3,'X');}},                     /* t=7.8 : invalid glyphs peak */
-  {ms:8200,f:function(){randSeg(d1,.7,false);
-      randSeg(d2,.65,false);randSeg(d3,.6,false);}}, /* t=8.2 : pure chaos */
-  {ms:8600,f:function(){randSeg(d1,.2,false);
-      randSeg(d2,.15,false);randSeg(d3,.1,false);}},/* t=8.6 : dying to ember */
-  {ms:9200,f:function(){randSeg(d1,0,false);
-      randSeg(d2,0,false);randSeg(d3,0,false);
-      dot.className='ghDot ember';}},       /* t=9.2 : near blackout */
-  {ms:9800,f:function(){/* hold darkness */}}, /* t=9.8 : total darkness */
-  {ms:10000,f:function(){/* 10s complete */}}
+  {ms:200,f:function(){paint();}},
+  {ms:200,f:function(){paint();}},
+  {ms:250,f:function(){paint();}},
+  {ms:300,f:function(){paint();}},
+  {ms:400,f:function(){paint();chaosPaint([d3],.35);}},      /* first chaos flicker on S */
+  {ms:500,f:function(){paint();chaosPaint([d2,d3],.4);}},    /* chaos spreads */
+  {ms:650,f:function(){paint('ember');d3.classList.add('flicker');}},
+  {ms:800,f:function(){paint('ember');d2.classList.add('flicker');
+      chaosPaint([d1,d2,d3],.45,'ember');}},                 /* ALL THREE chaotic */
+  {ms:1000,f:function(){garbleDigit(d3);chaosPaint([d1,d2],.5,'ember');}},
+  {ms:1200,f:function(){garbleDigit(d2);chaosPaint([d1],.55,'ember');
+      period.className='ghPeriod ember';}},
+  {ms:1400,f:function(){garbleDigit(d1);chaosPaint([d1,d2,d3],.6);}}, /* peak cover-art chaos */
+  {ms:1600,f:function(){chaosPaint([d1,d2,d3],.45);}},
+  {ms:1800,f:function(){chaosPaint([d1,d2,d3],.3);}},
+  {ms:2000,f:function(){chaosPaint([d1,d2,d3],.15,'ember');
+      period.className='ghPeriod off';}},
+  {ms:2200,f:function(){chaosPaint([d1,d2,d3],0);}},          /* blackout hold */
+  {ms:2400,f:function(){}},
+  {ms:2600,f:function(){}}                                    /* ~10s reached */
  ];
-
  var i=0;
  function step(){
    if(i>=beats.length){
-     /* timeout — machine holds them 10s */
      ov.remove();
      if(ghostCount>=3)permanentDrift=true;
-     if(!rainActivated){
-       /* no escape attempt — fire redout normally */
-       if(done)done();
-     }
-     return;
-   }
+     if(done)done();
+     return;}
    beats[i].f();
    setTimeout(step,beats[i].ms);
    i++;
  }
-
  powerSag();
  step();
 }
 
-/* ---------- wire the five controls ---------- */
-function ghostLock(msg){
- showGhost(function(){ztMsg(msg);});
-}
+function ghostLock(msg){showGhost(function(){ztMsg(msg);});}
 function bind(id,msg){
- var b=document.getElementById(id);
- if(!b)return;
- b.addEventListener('click',function(e){
-   e.preventDefault();e.stopPropagation();
-   ghostLock(msg);
- },true);
+ var b=document.getElementById(id);if(!b)return;
+ b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();ghostLock(msg);},true);
 }
 bind('pollNow','ADMIN FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');
 bind('armAudio','AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');
 bind('testAlert','ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');
 })();
 </script>
-<!-- ===== END GHOST IN THE MACHINE v3 ===== -->   
+<!-- ===== END GHOST IN THE MACHINE v4 ===== -->
 </body>
 </html>
