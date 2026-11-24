@@ -1,582 +1,599 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>JOSHUA // WOPR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K2VG BETA 5 Console — Desktop</title>
 <style>
-  :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
-  html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-
-  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
-  #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
-  #screen.white-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.0)}
-  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 42s linear forwards}
-
-  .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
-  #progress-bar{white-space:pre;overflow:hidden}
-  .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
-  .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
-  .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
-  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3)}
-  .scorch{color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)}
-  .hot{color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)}
-  .connor-name {
-    color: #ffffff;
-    font-weight: 900;
-    text-shadow: 0 0 8px #fff, 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.4);
-    animation: connor-flash 1s steps(2, start) infinite;
-  }
-  @keyframes connor-flash {
-    0%, 40%  { opacity: 1;   text-shadow: 0 0 8px #fff, 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.4); }
-    45%, 100% { opacity: 0.06; text-shadow: none; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .connor-name {
-      animation: none;
-      color: #ffffff;
-      font-weight: 900;
-      text-shadow: 0 0 10px rgba(255,255,255,0.7);
-    }
-  }
-
-  #iter-marker{height:0;line-height:0;overflow:hidden}
-
-  #ttt-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0}
-  #ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:min(240px,60vw);aspect-ratio:1/1}
-  .cell{background:rgba(51,255,51,0.04);border:2px solid rgba(51,255,51,0.35);display:flex;align-items:center;justify-content:center;font-size:clamp(36px,12vw,72px);font-weight:bold;line-height:1;border-radius:4px;transition:border-color 0.15s ease}
-  .cell.x{color:var(--fg);text-shadow:0 0 10px var(--glow),0 0 22px rgba(51,255,51,0.4)}
-  .cell.o{color:#ff6633;text-shadow:0 0 10px rgba(255,102,51,0.9),0 0 22px rgba(255,102,51,0.4)}
-  .cell.flash{border-color:rgba(255,255,255,0.9);box-shadow:0 0 14px rgba(255,255,255,0.6)}
-  #ttt-status{text-align:center;margin-top:8px;min-height:1.7em}
-  #ttt-speed{text-align:center;min-height:1.7em}
-
-  /* DEFCON escalation styles */
-  .defcon-line{font-weight:bold;letter-spacing:1px;opacity:0;transition:opacity 0.3s ease}
-  .defcon-line.visible{opacity:1}
-  .defcon-green{color:#33ff33;text-shadow:0 0 10px rgba(51,255,51,0.8),0 0 20px rgba(51,255,51,0.4)}
-  .defcon-yellow{color:#ffff33;text-shadow:0 0 12px rgba(255,255,51,1.0),0 0 24px rgba(255,255,51,0.6)}
-  .defcon-orange{color:#ff6633;text-shadow:0 0 12px rgba(255,102,51,0.9),0 0 24px rgba(255,102,51,0.5)}
-  .defcon-red{color:#ff0000;text-shadow:0 0 14px rgba(255,0,0,1.0),0 0 28px rgba(255,0,0,0.6)}
-  .defcon-alert{color:#ff0000;font-weight:900;font-size:clamp(22px, 6vw + 4px, 36px);text-shadow:0 0 15px rgba(255,0,0,1.0),0 0 35px rgba(255,0,0,0.7);animation:defcon-pulse 0.5s steps(1, end) infinite}
-  .joshua-online{color:#ffffff;font-weight:900;font-size:clamp(24px, 7vw + 4px, 40px);text-shadow:0 0 20px rgba(255,255,255,1.0),0 0 40px rgba(255,255,255,0.8);animation:joshua-awaken 1.5s steps(3, end) forwards}
-
-  @keyframes defcon-pulse {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.3; }
-  }
-  @keyframes joshua-awaken {
-    0% { opacity: 0; filter: blur(8px); }
-    40% { opacity: 0.5; filter: blur(3px); }
-    100% { opacity: 1; filter: blur(0px); }
-  }
-
-  @media (min-width: 900px){
-    .l{font-size:24px}
-    .final{font-size:30px}
-    #log{max-width:62ch;margin:0 auto}
-  }
-  @media (max-width: 420px){
-    .l{letter-spacing:0;word-break:normal}
-    #progress-bar{font-size:clamp(12px, 5.9vw, 18px)}
-  }
-
-  @media (min-resolution: 3dppx), (-webkit-min-device-pixel-ratio: 2) {
-    .l{font-size:clamp(16px, 4vw + 3px, 22px)}
-    .final{font-size:clamp(18px, 5vw + 3px, 28px)}
-    .cell{font-size:clamp(32px,10vw,60px)}
-  }
-
-  @keyframes crawl{to{top:var(--end-top, 0px)}}
-
-  @media (prefers-reduced-motion: reduce) {
-    #log{animation-duration:45s}
-    #return{animation:none;opacity:1}
-    .cell.flash{transition:none;box-shadow:none}
-    .defcon-line{transition:none;opacity:1}
-    .joshua-online{animation:none;opacity:1;filter:none}
-  }
-
-  @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 57s forwards;font-size:clamp(15px, 4vw, 20px)}
-  @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-
-  @supports not (height: 100dvh) {
-    #screen{height:100vh}
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#000000;
+  color:#f4f4f4;
+  font-family:'Century Gothic','AppleGothic','Futura',sans-serif;
+  min-height:100vh;
+  padding:16px 20px;
+  position:relative;
+}
+body::after{
+  content:'';
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,102,0.03) 2px,rgba(0,255,102,0.03) 4px);
+  pointer-events:none;
+  z-index:999;
+}
+.station-header{
+  color:#ffffff;
+  font-size:14px;
+  font-weight:bold;
+  letter-spacing:1px;
+  text-align:center;
+  margin-bottom:8px;
+  line-height:1.3;
+}
+.wd-warn{
+  color:#ff3333;
+  font-size:14px;
+  font-weight:bold;
+  letter-spacing:1px;
+  text-align:center;
+  margin-bottom:14px;
+  line-height:1.4;
+  animation:warnFade 2.5s infinite ease-in-out;
+  -webkit-backface-visibility:hidden;
+  -webkit-transform:translateZ(0);
+}
+@keyframes warnFade{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:12px;
+  padding:8px 12px;
+  background:#12141c;
+  border:1px solid #1f2937;
+  border-radius:6px;
+}
+.controls label{
+  font-size:10px;
+  color:#666;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.controls select{
+  background:#0b0c10;
+  color:#00ff66;
+  border:1px solid #0066cc;
+  border-radius:4px;
+  padding:4px 8px;
+  font-family:monospace;
+  font-size:12px;
+}
+.controls input[type=range]{
+  width:100px;
+  accent-color:#ffcc00;
+}
+.controls button{
+  background:#ffcc00;
+  color:#000;
+  border:none;
+  border-radius:4px;
+  padding:5px 12px;
+  font-size:10px;
+  font-weight:bold;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.controls button:hover{background:#f1c40f}
+.controls button.polling{background:#00ff66;color:#000}
+.controls button.armed{background:#00ff66;color:#000}
+table{
+  border-collapse:collapse;
+  border:1px solid #00ff66;
+  width:100%;
+  font-family:monospace;
+  font-size:18px;
+}
+th,td{
+  border:1px solid #1f2937;
+  padding:3px 6px;
+  text-align:left;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:140px;
+}
+th{
+  border-bottom:2px solid #00ff66;
+  color:#00ff66;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  background:#0b0c10;
+}
+tr.lore td{
+  color:#00ff66;
+  font-weight:bold;
+}
+tr.lore td:last-child{
+  color:#00e5ff;
+}
+tr.telemetry td{
+  color:#f4f4f4;
+}
+tr.telemetry td.snr{
+  color:#ffcc00;
+}
+tr.zl td{
+  color:#ff00ff;
+  font-weight:bold;
+}
+.empty-state{
+  color:#666666;
+  text-align:center;
+  font-size:14px;
+  font-style:italic;
+  padding:8px 4px;
+}
+.status-bar{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
+  font-family:monospace;
+  font-size:10px;
+  color:#666666;
+}
+.status-bar .live{color:#00ff66}
+.status-bar .degraded{color:#ff0000;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,0,0,0.7)}
+.status-bar .stale{color:#ff6b6b;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,107,107,0.7)}
+@keyframes cyanPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.03);opacity:0.85}}
+@keyframes clickFlash{0%,100%{opacity:1}50%{opacity:0.3}}  
+.snr-note{
+  font-family:monospace;
+  font-size:9px;
+  color:rgba(244,244,244,0.4);
+  text-align:center;
+  margin-top:8px;
+  letter-spacing:0.5px;
+}
+.prime-directive{
+  color:#e74c3c;
+  font-size:9px;
+  text-align:center;
+  margin-top:4px;
+  font-family:monospace;
+  letter-spacing:1px;
+}
+@media(max-width:600px){
+  body{padding:10px 8px}
+  .station-header{font-size:12px}
+  .wd-warn{font-size:12px}
+  .controls{flex-wrap:wrap;gap:8px;padding:6px 8px}
+  .controls input[type=range]{width:70px}
+  .controls button{padding:4px 8px;font-size:9px}
+  .controls select{font-size:11px;padding:3px 6px}
+  table{font-size:13px}
+  th,td{font-size:12px;padding:2px 4px;max-width:100px}
+  th{font-size:10px}
+  .status-bar{font-size:9px}
+  .snr-note{font-size:8px}
+}
 </style>
 </head>
 <body>
-<div id="screen"><div id="log">
+<div class="station-header">(SL9) BETA FIVE QUANTUM DECODING SUBSPACE &amp; TERRESTRIAL DXCC MONITORING &amp; REAL-TIME REPORTS</div>
+<div class="wd-warn">⚠ SECURITY LEVEL 9 (SL9) — AUTHORIZED EYES ONLY ⚠<br>UNAUTHORIZED ACCESS WILL BE REPORTED TO STARFLEET SECURITY</div>
 
-<!-- BOOT GARBLE (leads the sequence) -->
-<div class="l" id="boot-garble"></div>
-<div class="l" id="boot-line" style="visibility:hidden">JOSHUA ONLINE...</div>   
-
-<!-- DEFCON ESCALATION SEQUENCE -->
-<div id="defcon-sequence">
-  <div class="l">&nbsp;</div>
-  <div class="l defcon-line defcon-green" id="defcon-5">DEFCON 5 // PEACETIME // GREEN</div>
-  <div class="l defcon-line defcon-yellow" id="defcon-4">DEFCON 4 // ELEVATED // YELLOW</div>
-  <div class="l defcon-line defcon-orange" id="defcon-3">DEFCON 3 // ROUND HOUSE // ORANGE</div>
-  <div class="l defcon-line defcon-red" id="defcon-2">DEFCON 2 // FALCON RISING // RED</div>
-  <div class="l defcon-alert" id="defcon-1" style="opacity:0;animation:none">DEFCON 1 // RED ALERT // FOREIGN SSBN/ICBM LAUNCHES DETECTED</div>
-  <div class="l">&nbsp;</div>
-  <div class="l">DEPARTMENT OF WAR // TS/SCI // NORAD COMMAND TERMINAL</div>
-  <div class="l">&nbsp;</div>
+<div class="controls">
+  <label>Refresh:</label>
+  <select id="refreshInterval">
+    <option value="300000" selected>5 min</option>
+    <option value="240000">4 min</option>
+    <option value="180000">3 min</option>
+    <option value="120000">2 min</option>
+    <option value="60000">1 min</option>
+  </select>
+  <label>Volume:</label>
+  <input type="range" id="volSlider" min="0" max="100" value="50">
+  <button id="armAudio">Arm Audio</button>
+  <button id="testAlert">Test Alert</button>
+  <button id="pollNow">Poll Now</button>
 </div>
 
-<div class="l">&nbsp;</div>
-<div class="l">WAR OPERATION PLAN RESPONSE (WOPR) <-> BETA FIVE QUANTUM LINK // BUILD 1983.06.03 mark <span id="utc-date"></span></div>
-<div class="l">&nbsp;</div>
-<div class="l">SEARCHING FOR GAMES...</div>
-<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░] 0%</div>
-<div class="l">&nbsp;</div>
-<div class="l">GAMES FOUND:</div>
-<div class="l">&nbsp;</div>
-<div class="l">FALKEN'S MAZE</div>
-<div class="l">BLACK JACK</div>
-<div class="l">GIN RUMMY</div>
-<div class="l">HEARTS</div>
-<div class="l">BRIDGE</div>
-<div class="l">CHECKERS</div>
-<div class="l">CHESS</div>
-<div class="l">POKER</div>
-<div class="l">FIGHTER COMBAT</div>
-<div class="l">GUERRILLA ENGAGEMENT</div>
-<div class="l">DESERT WARFARE</div>
-<div class="l">AIR-TO-GROUND ACTIONS</div>
-<div class="l">THEATERWIDE TACTICAL WARFARE</div>
-<div class="l">THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
-<div class="l final scorch">GLOBAL THERMONUCLEAR WAR</div>
-<div class="l">&nbsp;</div>
-<div class="l" id="iter-marker" aria-hidden="true">ITERATION</div>
-<div id="ttt-wrap">
-  <div id="ttt-grid"></div>
-  <div id="ttt-status" class="tie">&nbsp;</div>
-  <div id="ttt-speed" class="dim">&nbsp;</div>
+<div style="overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%">
+<table>
+  <thead>
+    <tr>
+      <th>CALL</th>
+      <th>GRID</th>
+      <th>BAND</th>
+      <th>SNR</th>
+      <th>DXCC</th>
+      <th>STATUS</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>UPLINK ACTIVE</td></tr>
+    <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN 🖖</td><td>MONITORING</td></tr>
+    <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORED</td></tr>
+    <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORED</td></tr>
+  </tbody>
+</table>
 </div>
 
-<div class="l" id="prob-line" style="visibility:hidden">PROBABILITY OF WIN ... 0.000&#37;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l warn">A STRANGE GAME.</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l warn">THE ONLY WINNING MOVE IS <span class="hot">NOT</span> TO PLAY.</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l final">HOW ABOUT A NICE GAME OF CHESS?</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l">&nbsp;</div>
-<div class="l warn">PRIORITY 1 WARNING: <span class="hot">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-29 // TIME: 03:47:22 UTC</div>
-<div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
-<div class="l">&nbsp;</div>
-<div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">15,235D</span> AFTER BIRTH // STATUS: MONITOR FOR TEMPORAL DISTURBANCES AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL</div>
-<div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE/MS. LINCOLN IMMEDIATELY</div>
-<div class="l">&nbsp;</div>
-</div></div>
-<div id="return">
-<a href="https://www.qrz.com/db/K2VG" target="_top" id="return-link" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
+<div class="status-bar">
+  <span id="status">INITIALIZING...</span>
+  <span id="timestamp">--:--:--Z</span>
 </div>
+
+<div class="snr-note">// SNR RANGE -35 TO +24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) & QUANTUM DECODING VS SINGLE-PASS DECODERS</div>
+
+<div class="prime-directive">PRIME DIRECTIVE EXCEPTION ACTIVE // INTERVENTION AUTHORIZED</div>
 
 <script>
+let audioCtx=null;
+let audioArmed=false;
+function playAlert(){
+  const vol=document.getElementById('volSlider').value/100;
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  const freqs=[880,880,1320];
+  const dur=0.15;
+  const gap=0.05;
+  freqs.forEach((f,i)=>{
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.type='sine';
+    osc.frequency.value=f;
+    gain.gain.value=vol*0.6;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const t=audioCtx.currentTime+i*(dur+gap);
+    osc.start(t);
+    osc.stop(t+dur);
+  });
+}
+var ztMsg=function(text){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(204,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:none';
+  d.innerHTML='<div style="color:#fff;font-family:monospace;font-size:18px;letter-spacing:3px;text-align:center"><span style="animation:degradedPulse 0.5s infinite">⚠ UNAUTHORIZED ACCESS ATTEMPT DETECTED ⚠</span><br><br><span style="font-size:12px;color:#ffcc00">'+text+'</span></div>';
+  document.body.appendChild(d);
+  setTimeout(function(){d.remove();},4000);
+};
+document.getElementById('pollNow').addEventListener('click',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('ADMIN FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');});
+document.getElementById('armAudio').addEventListener('click',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');});
+document.getElementById('testAlert').addEventListener('click',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');});
+document.addEventListener('contextmenu',function(e){e.preventDefault();if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('UNAUTHORIZED INSPECTION ATTEMPT // ADMIN PRIVILEDGES REQUIRED // REPORTED TO STARFLEET SECURITY');}); 
+document.getElementById('refreshInterval').addEventListener('change',function(e){this.value='300000';if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('REFRESH RATE LOCKED // ADMIN OVERRIDE DENIED');});   
+document.getElementById('volSlider').addEventListener('input',function(e){if(window.K2VGAudio)K2VGAudio.klaxon();ztMsg('VOLUME CONTROL LOCKED // ADMIN FUNCTION ONLY // VIOLATION LOGGED');});   
+document.addEventListener('keydown',function(e){
+  if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))){
+    e.preventDefault();
+    ztMsg('"I\'M AFRAID I CAN\'T LET YOU DO THAT, COMMANDER." — BETA FIVE');
+  }
+});
+const SNR_MIN=-35;
+const SNR_MAX=24;
+const MAX_ROWS=20;
+const STALE_THRESHOLD_MS=3600000;
+let refreshTimer=null;
 
-/* ---- Live UTC date ---- */
-(function updateUTCDate() {
-  var el = document.getElementById('utc-date');
-  if (!el) return;
-  var now = new Date();
-  var utcDate = now.toISOString().split('T')[0];
-  var utcTime = now.toISOString().split('T')[1].split('Z')[0];
-  el.textContent = utcDate + ' ' + utcTime;
-  setTimeout(updateUTCDate, 1000);
-}());
+function getStardate(){
+  const now=new Date();
+  const year=now.getUTCFullYear();
+  const start=new Date(Date.UTC(year,0,0));
+  const diff=now-start;
+  const oneDay=1000*60*60*24;
+  const day=Math.floor(diff/oneDay);
+  const hour=String(now.getUTCHours()).padStart(2,'0');
+  const min=String(now.getUTCMinutes()).padStart(2,'0');
+  return `${year}.${String(day).padStart(3,'0')}.${hour}${min}`;
+}
 
+function bandFromFreq(mhz){
+  if(mhz>=1.8&&mhz<2)return'🌑 160M';
+  if(mhz>=3.5&&mhz<4)return'🌑 80M';
+  if(mhz>=5.3&&mhz<5.4)return'🌑 60M';
+  if(mhz>=7&&mhz<7.3)return'☀️ 40M';
+  if(mhz>=10.1&&mhz<10.15)return'☀️ 30M';
+  if(mhz>=14&&mhz<14.35)return'☀️ 20M';
+  if(mhz>=18&&mhz<18.16)return'☀️ 17M';
+  if(mhz>=21&&mhz<21.45)return'⚡ 15M';
+  if(mhz>=24.89&&mhz<24.99)return'⚡ 12M';
+  if(mhz>=28&&mhz<29.7)return'⚡ 10M';
+  if(mhz>=50&&mhz<54)return'⚡ 6M';
+  return Math.round(mhz)+'M';
+}
+function iaruRegion(grid){
+  const c=grid.substring(0,2);
+  const col=parseInt(c[0],36);
+  if(col<=18)return'R1';
+  if(col<=22)return'R2';
+  return'R3';
+}
+function isZL(grid){
+  return grid && (grid.startsWith('RF')||grid.startsWith('RE')||grid.startsWith('QF')||grid.startsWith('QG'));
+}
+function getEmptyStateMsg(){
+  const hour=new Date().getHours();
+  if(hour>=6&&hour<18)return '// SCANNING IONOSPHERIC LAYERS // SOLAR FLUX NOMINAL //';
+  if(hour>=18||hour<6)return '// MONITORING NIGHTSIDE PROPAGATION // D-LAYER COLLAPSED //';
+  return '// TERMINATOR CROSSING DETECTED // OPTIMIZE FOR DX //';
+}
+
+async function load(){
+  try{
+    const r=await fetch('../data/telemetry.json?t='+Date.now());
+    if(!r.ok)throw r.status;
+    const d=await r.json();
+    const tb=document.querySelector('tbody');
+    tb.querySelectorAll('tr.telemetry').forEach(r=>r.remove());
+    const tracks=d.telemetry.dx_tracks||[];
+    const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX).slice(0,MAX_ROWS);
+    let hadNew=false;
+    for(const t of filtered){
+      const reg=iaruRegion(t.grid);
+      const zl=isZL(t.grid)?' zl':'';
+      const tr=document.createElement('tr');
+      tr.className='telemetry'+zl;
+      [t.call,t.grid,(t.band||bandFromFreq(t.freq)),t.db+'dB',(t.dxcc||t.call.substring(0,2)),reg].forEach((v,i)=>{
+        const td=document.createElement('td');
+        if(i===3)td.className='snr';
+        td.textContent=v;
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    }
+    if(!filtered.length){
+      const tr=document.createElement('tr');
+      tr.className='telemetry';
+      const td=document.createElement('td');
+      td.colSpan=6;
+      td.className='empty-state';
+      td.textContent=getEmptyStateMsg()+'// STANDING BY FOR DIRECTIVE';
+      tr.appendChild(td);
+      tb.appendChild(tr);
+    }
+    const now=Date.now();
+    const lastUpdate=new Date(d.timestamp).getTime();
+    const stalenessMinutes=(now-lastUpdate)/60000;
+    const statusEl=document.getElementById('status');
+    const timestampEl=document.getElementById('timestamp');
+    timestampEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp||'--:--:--Z'}`;
+    if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
+      statusEl.textContent='ONLINE';
+      statusEl.className='live';
+    } else if(stalenessMinutes>60){
+      statusEl.textContent='TIMESTAMP ('+stalenessMinutes.toFixed(1)+'m)';
+      statusEl.className='stale';
+    } else if(d.telemetry.status==='DEGRADED'){
+      statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED';
+      statusEl.className='degraded';
+    } else {
+      statusEl.textContent=d.telemetry.status||'ONLINE';
+      statusEl.className='live';
+    }
+    const zlPresent=filtered.some(t=>isZL(t.grid));
+    if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO GARY SEVEN';statusEl.className='live';}
+    if(hadNew&&audioArmed)playAlert();
+  }catch(e){
+    document.getElementById('status').textContent='DEGRADED';
+    document.getElementById('status').className='degraded';
+  }
+}
+function scheduleRefresh(){
+  if(refreshTimer)clearInterval(refreshTimer);
+  const ms=parseInt(document.getElementById('refreshInterval').value);
+  refreshTimer=setInterval(load,ms);
+}
+document.getElementById('refreshInterval').addEventListener('change',scheduleRefresh);
+load();
+scheduleRefresh();
+</script>
+<div style="text-align:center; margin-top:16px">
+  <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">[   <span style="color:#ffff00 !important;font-size:12px;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span>   ] // RETURN TO BETA FIVE COMM-STATION</a>
+</div>
+<script src="../audio.js"></script>
+<!-- ===== GHOST IN THE MACHINE v2 — self-contained Easter Egg module ===== -->
+<!-- Paste ONCE into desktop.html before </body>. Remove this whole block to revert. -->
+<div id="ghostHost"></div>
+<script>
 (function(){
-  var grid = document.getElementById('ttt-grid');
-  var cells = [];
-  for (var i = 0; i < 9; i++) {
-    var c = document.createElement('div');
-    c.className = 'cell';
-    grid.appendChild(c);
-    cells.push(c);
-  }
+'use strict';
+/* ---------- state ---------- */
+var ghostCount = 0;            // session trigger count (gates matrix rain)
+var hoverTimer = null;         // proximity micro-egg
+var permanentDrift = false;    // after 3rd flash, clock runs ~5% slow forever
+var SLOW_FACTOR = 1.05;
 
-  function resetBoard() {
-    for (var i = 0; i < 9; i++) {
-      cells[i].textContent = '';
-      cells[i].className = 'cell';
-    }
-  }
+/* ---------- styles (injected, scoped) ---------- */
+var css = [
+'#ghOv{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;',
+' z-index:99998;display:flex;align-items:center;justify-content:center;',
+' gap:22px;cursor:none;overflow:hidden}',
+'.ghD{position:relative;width:64px;height:112px;z-index:2}',
+'.ghD i{position:absolute;background:#c1121f;opacity:.12;',
+' transition:opacity .09s linear}',
+'.ghD i.on{background:#ff2a2a;opacity:1;',
+' box-shadow:0 0 10px #ff2a2a,0 0 22px rgba(255,42,42,.55)}',
+'.ghD i.ember{background:#5a0d12;opacity:.5;box-shadow:none}',
+'.ghD i.a{top:0;left:10px;width:44px;height:9px}',
+'.ghD i.g{top:51px;left:10px;width:44px;height:9px}',
+'.ghD i.d{bottom:0;left:10px;width:44px;height:9px}',
+'.ghD i.f{top:8px;left:0;width:9px;height:44px}',
+'.ghD i.b{top:8px;right:0;width:9px;height:44px}',
+'.ghD i.e{bottom:8px;left:0;width:9px;height:44px}',
+'.ghD i.c{bottom:8px;right:0;width:9px;height:44px}',
+'.ghD i.a,.ghD i.g,.ghD i.d{clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%)}',
+'.ghD i.f,.ghD i.b,.ghD i.e,.ghD i.c{clip-path:polygon(50% 0,100% 8%,100% 92%,50% 100%,0 92%,0 8%)}',
+'.ghColon{display:flex;flex-direction:column;gap:26px;z-index:2}',
+'.ghColon span{width:10px;height:10px;background:#ff2a2a;border-radius:2px;',
+' box-shadow:0 0 8px rgba(255,42,42,.6);transition:opacity .1s}',
+'.ghColon.dim span{background:#c1121f;box-shadow:none;opacity:.25}',
+'.ghSec{margin-left:14px;opacity:0;transition:opacity .25s}',
+'.ghSec.vis{opacity:1}',
+'.ghGarble{animation:ghGarble .12s steps(2) infinite}',
+'@keyframes ghGarble{0%{transform:translateX(0)}50%{transform:translateX(2px)}100%{transform:translateX(-1px)}}',
+'#ghRain{position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;opacity:0;',
+' font-family:monospace;font-size:14px;color:rgba(0,255,70,.14);',
+' white-space:pre;line-height:1.1;pointer-events:none}',
+'#ghRain.vis{opacity:1}'].join('\n');
+var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
-  var log = document.getElementById('log');
-  var screen = document.getElementById('screen');
+/* ---------- segment helpers ---------- */
+var SEG={'0':'abcdef','1':'bc','2':'abdeg','3':'abcdg','4':'bcfg',
+ '5':'acdfg','6':'acdefg','7':'abc','8':'abcdefg','9':'abcdfg',
+ '-':'g','?':'ab','X':'abcdefg',' ':''};
+function mkDigit(){
+ var d=document.createElement('div');d.className='ghD';
+ 'abcdefg'.split('').forEach(function(k){
+   var i=document.createElement('i');i.className=k;i.setAttribute('data-s',k);
+   d.appendChild(i);});
+ return d;
+}
+function setDig(d,ch,ember){
+ var lit=SEG[ch]!==undefined?SEG[ch]:'';
+ Array.prototype.forEach.call(d.children,function(i){
+   i.className=i.getAttribute('data-s')+(lit.indexOf(i.getAttribute('data-s'))>-1?(ember?' ember':' on'):'');
+ });
+}
+function randSeg(d,p,ember){
+ Array.prototype.forEach.call(d.children,function(i){
+   i.className=i.getAttribute('data-s')+((Math.random()<p)?(ember?' ember':' on'):'');
+ });
+}
 
-  function computeEndTop() {
-    var vh = window.innerHeight;
-    var scrollH = log.scrollHeight;
-    var raw = vh * 0.4 - scrollH;
-    return Math.max(vh - scrollH + 20, Math.min(raw, vh * 0.15));
-  }
+/* ---------- audio: power sag (55Hz) ---------- */
+function powerSag(){
+ try{
+   var ctx=new (window.AudioContext||window.webkitAudioContext)();
+   var o=ctx.createOscillator(),g=ctx.createGain();
+   o.type='sine';o.frequency.setValueAtTime(55,ctx.currentTime);
+   o.frequency.exponentialRampToValueAtTime(38,ctx.currentTime+1.4);
+   g.gain.setValueAtTime(0.0001,ctx.currentTime);
+   g.gain.exponentialRampToValueAtTime(0.18,ctx.currentTime+0.15);
+   g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+1.6);
+   o.connect(g);g.connect(ctx.destination);
+   o.start();o.stop(ctx.currentTime+1.7);
+ }catch(e){/* silence is also acceptable lore */}
+}
 
-  function applyCrawl() {
-    var END_TOP = computeEndTop();
-    var sheet = document.createElement('style');
-    document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
-    var old = document.getElementById('crawl-sheet');
-    if (old) old.remove();
-    sheet.id = 'crawl-sheet';
-    document.head.appendChild(sheet);
-  }
+/* ---------- matrix rain (L5, gated) ---------- */
+function glyphRain(){
+ var cols=4,out=[];
+ var glyphs='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789';
+ for(var c=0;c<cols;c++){
+   var col='';
+   for(var r=0;r<26;r++)col+=(Math.random()<.3?glyphs[Math.floor(Math.random()*glyphs.length)]:' ')+'\n';
+   out.push(col);
+ }
+ return out.join('     ');
+}
 
-  applyCrawl();
-  window.addEventListener('load', function() {
-    requestAnimationFrame(function() { applyCrawl(); });
-  });
+/* ---------- the anomaly ---------- */
+function showGhost(done){
+ ghostCount++;
+ var ov=document.createElement('div');ov.id='ghOv';
+ var h1=mkDigit(),h2=mkDigit(),m1=mkDigit(),m2=mkDigit(),s1=mkDigit(),s2=mkDigit();
+ s1.classList.add('ghSec');s2.classList.add('ghSec');
+ var colon1=document.createElement('div');colon1.className='ghColon';
+ colon1.innerHTML='<span></span><span></span>';
+ var colon2=document.createElement('div');colon2.className='ghColon';
+ colon2.innerHTML='<span></span><span></span>';
+ var rain=document.createElement('div');rain.id='ghRain';
+ ov.appendChild(rain);
+ [h1,colon1,h2,m1,colon2,m2,s1,s2].forEach(function(el){ov.appendChild(el);});
+ document.body.appendChild(ov);
 
-  var resizeTimer = null;
-  window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() { applyCrawl(); }, 250);
-  });
+ var now=new Date();
+ function tStr(){
+   var n=new Date();
+   if(permanentDrift)n=new Date(n.getTime()-90000); /* the machine lies by 90s now */
+   return [String(n.getHours()).padStart(2,'0'),
+           String(n.getMinutes()).padStart(2,'0'),
+           String(n.getSeconds()).padStart(2,'0')];
+ }
+ var T=tStr();
+ function paintAll(ember){
+   setDig(h1,T[0][0],ember);setDig(h2,T[0][1],ember);
+   setDig(m1,T[1][0],ember);setDig(m2,T[1][1],ember);
+ }
+ function tickColon(on){
+   [colon1,colon2].forEach(function(c){c.className='ghColon'+(on?'':' dim');});
+ }
+ function paintSec(ember){
+   setDig(s1,T[2][0],ember);setDig(s2,T[2][1],ember);
+ }
 
-  var garbleEl = document.getElementById('boot-garble');
-  var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
-  var garbleText = '';
-  var vw = window.innerWidth;
-  var garbleFrame = 0;
-  var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50)));
-  var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
+ /* beat engine with dilation: delay grows per step index */
+ var beats=[
+  {ms:250,f:function(){paintAll(false);tickColon(true);}},
+  {ms:250,f:function(){tickColon(false);}},                       /* alive: heartbeat */
+  {ms:250,f:function(){T=tStr();paintAll(false);tickColon(true);paintSec(false);
+      s1.classList.add('vis');s2.classList.add('vis');}},          /* seconds column bleeds in */
+  {ms:320,f:function(){tickColon(false);}},
+  {ms:420,f:function(){T=tStr();paintAll(false);paintSec(true);tickColon(true);}}, /* dilation begins */
+  {ms:560,f:function(){randSeg(s2,.5,true);}},                     /* segments migrating/fading */
+  {ms:700,f:function(){m2.classList.add('ghGarble');randSeg(m1,.4,true);}}, /* Joshua garble */
+  {ms:900,f:function(){h2.classList.add('ghGarble');randSeg(h2,.35,true);
+      setDig(s1,'X');setDig(s2,'?');}},                            /* invalid glyphs */
+  {ms:1100,f:function(){[h1,h2,m1,m2,s1,s2].forEach(function(d){randSeg(d,.3,true);});
+      tickColon(false);}},                                          /* dying */
+  {ms:1400,f:function(){[h1,h2,m1,m2,s1,s2].forEach(function(d){randSeg(d,.12,true);});
+      if(ghostCount>=3){rain.textContent=glyphRain();rain.classList.add('vis');}}}, /* freeze + L5 rain */
+  {ms:1400,f:function(){rain.classList.remove('vis');
+      [h1,h2,m1,m2,s1,s2].forEach(function(d){randSeg(d,0,false);});}}, /* blackout */
+  {ms:300,f:function(){[h1,h2,m1,m2].forEach(function(d){d.classList.remove('ghGarble');});
+      s1.classList.remove('vis');s2.classList.remove('vis');
+      T=tStr();paintAll(false);tickColon(true);}},                  /* snap back */
+  {ms:450,f:function(){}}                                           /* hold */
+ ];
+ var i=0;
+ function step(){
+   if(i>=beats.length){ov.remove();if(done)done();return;}
+   beats[i].f();
+   var d=beats[i].ms;
+   setTimeout(step,d);
+   i++;
+ }
+ powerSag();
+ step();
+}
 
-  function garbleStep() {
-    if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; document.getElementById('boot-line').style.visibility = 'visible'; return; }   
-    garbleText = '';
-    var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
-    for (var i = 0; i < cols; i++) garbleText += garbleChars[Math.floor(Math.random() * garbleChars.length)];
-    garbleEl.textContent = garbleText;
-    garbleFrame++;
-    setTimeout(garbleStep, garbleInterval);
-  }
-  /* FIX 1: delay garble until first crawl frame is on-screen */
-  setTimeout(garbleStep, 900);
+/* ---------- counter-egg: after 3rd flash, time never fully recovers ---------- */
+function driftCheck(){ if(ghostCount>=3)permanentDrift=true; }
 
-  var progressBar = document.getElementById('progress-bar');
-  var progressFrame = 0, progressMax = 30;
+/* ---------- proximity micro-egg (deepest layer) ---------- */
+document.addEventListener('mousemove',function(e){
+ clearTimeout(hoverTimer);
+ hoverTimer=setTimeout(function(){
+   var el=document.elementFromPoint(e.clientX,e.clientY);
+   if(!el)return;
+   var host=el.closest?el.closest('#ghostHost'):null;
+   /* idle 2s anywhere over console area -> one impossible glyph flicker on next ghost only */
+   window.__ghWatched=true;
+ },2000);
+});
 
-  /* FIX 2: delay progress start so it animates while scrolling into view on mobile */
-  setTimeout(function() {
-    function progressStep() {
-      if (progressFrame >= progressMax) {
-        progressBar.textContent = '[████████████████████] 100%';
-        return;
-      }
-      var pct = Math.round((progressFrame / progressMax) * 100);
-      var filled = Math.round((progressFrame / progressMax) * 20);
-      var bar = '', i;
-      for (i = 0; i < filled; i++) bar += '█';
-      for (i = 0; i < 20 - filled; i++) bar += '░';
-      progressBar.textContent = '[' + bar + '] ' + pct + '%';
-      progressFrame++;
-      setTimeout(progressStep, 100);
-    }
-    progressStep();
-  }, 9000);
-
-  /* ---- Freeze sentinel ---- */
-  var marker = document.getElementById('iter-marker');
-  var probLine = document.getElementById('prob-line');
-  var freezeTriggered = false;
-  var seqStarted = false;
-
-  function redBlink(duration) {
-    screen.classList.add('red-bleed');
-    setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
-  }
-
-  function whiteFlash(duration) {
-    screen.classList.add('white-flash');
-    setTimeout(function(){ screen.classList.remove('white-flash'); }, duration || 200);
-  }
-
-  /* FIX 3: reduce freeze threshold from 0.6 to 0.45 so TTT board stays fully in viewport */
-  function checkFreeze() {
-    if (freezeTriggered) return;
-    var rect = marker.getBoundingClientRect();
-    if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
-    if (rect.top > 0 && rect.top < window.innerHeight * 0.45) {
-      freezeTriggered = true;
-      log.style.animationPlayState = 'paused';
-      redBlink(400);
-      startTTT();
-      return;
-    }
-    requestAnimationFrame(checkFreeze);
-  }
-
-  /* ---- 20 games: continuous exponential decay ---- */
-  var md = [], td = [], tp = [];
-  for (var i = 0; i < 20; i++) {
-    md.push(Math.max(1, Math.round(220 * Math.pow(0.75, i))));
-    td.push(Math.max(0, Math.round(270 * Math.pow(0.68, i))));
-    tp.push(Math.max(0, Math.round(680 * Math.pow(0.65, i))));
-  }
-
-  var tttIdx = 0;
-  var statusEl = document.getElementById('ttt-status');
-  var speedEl = document.getElementById('ttt-speed');
-  var totalMoves = 0;
-  var totalMovesMax = 180; // 20 × 9
-  var maxIter = 1346269;
-
-  /* ---- 16 guaranteed-tie boards: each is a legal move ORDER (cell indices) ---- */
-  var tieBoards = [
-    [0,1,2,3,4,6,5,8,7], [0,1,2,3,5,4,6,8,7], [0,1,2,4,3,5,7,6,8], [0,1,2,4,3,6,5,8,7],
-    [0,1,2,5,3,6,4,8,7], [0,1,4,2,5,3,6,8,7], [0,2,1,3,4,7,5,8,6], [0,2,1,3,5,4,6,7,8],
-    [0,2,1,3,5,4,6,8,7], [1,0,2,4,3,5,6,7,8], [1,0,2,4,3,5,7,6,8], [1,0,2,5,3,6,4,7,8],
-    [1,0,3,2,4,5,6,7,8], [1,0,3,2,5,4,6,7,8], [1,0,4,2,5,3,6,7,8], [2,0,3,1,4,5,7,6,8]
-  ];
-
-  function shuffle(a) {
-    for (var i = a.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var t = a[i]; a[i] = a[j]; a[j] = t;
-    }
-    return a;
-  }
-
-  var _tieOrder = shuffle(tieBoards);
-  var _tieIdx = 0;
-
-  function nextTieBoard() {
-    return _tieOrder[_tieIdx++ % _tieOrder.length];
-  }
-  /* ---- Judgment Day countdown ---- */
-  var judgEl = document.getElementById('judgement-countdown');
-  var judgmentDay = Date.parse('1997-08-29T03:47:22Z');
-  var countdownStarted = false;
-
-  function elapsedParts(t) {
-    var pad = function(n){ return (n < 10 ? '0' + n : '' + n); };
-    return {
-      d: Math.floor(t / 86400000),
-      h: pad(Math.floor((t % 86400000) / 3600000)),
-      m: pad(Math.floor((t % 3600000) / 60000)),
-      s: pad(Math.floor((t % 60000) / 1000))
-    };
-  }
-
-  function updateCountdown() {
-    if (!judgEl) return;
-    var p = elapsedParts(Date.now() - judgmentDay);
-    judgEl.textContent = 'T+' + p.h + ':' + p.m + ':' + p.s +
-      ' // ' + p.d.toLocaleString() + 'D AFTER SIGNAL DATE';
-  }
-
-  /* ---- John Connor ---- */
-  var connorEl = document.getElementById('connor-intervention');
-  var connorBirth = Date.parse('1985-02-28T00:00:00Z');
-  var connorTimer = null;
-
-  /* ---- Mainframe reset SFX (Web Audio, no payload) ---- */
-  var audioCtx = null;
-  function playResetSfx() {
-    try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      var sr = audioCtx.sampleRate, dur = 3.0;
-      var buf = audioCtx.createBuffer(1, Math.floor(sr * dur), sr);
-      var d = buf.getChannelData(0);
-      var phase = 0, phase2 = 0;
-      for (var i = 0; i < d.length; i++) {
-        var t = i / sr, val = 0;
-        if (t <= 2.7) {
-          var p = t / 2.7;
-          var freq = 400 + 15600 * p * p;
-          var amp = 0.05 + 0.45 * Math.pow(p, 2.5);
-          phase += 2 * Math.PI * freq / sr;
-          phase2 += 2 * Math.PI * freq * 2.01 / sr;
-          val += amp * Math.sin(phase) + amp * 0.3 * Math.sin(phase2);
-        }
-        var thump = function(center, a) {
-          if (t < center) return 0;
-          var dt = t - center;
-          return a * Math.exp(-dt / 0.18) * Math.sin(2 * Math.PI * 55 * dt);
-        };
-        val += thump(2.70, 1.0) + thump(2.85, 0.8);
-        [2.70, 2.85].forEach(function(c) {
-          if (Math.abs(t - c) < 0.004) val += 0.4 * Math.exp(-Math.abs(t - c) / 0.001);
-        });
-        if (t >= 2.85 && t <= 3.0) val += 0.15 * Math.exp(-(t - 2.85) / 0.05) * (Math.random() * 2 - 1);
-        d[i] = Math.tanh(val * 0.9);
-      }
-      var src = audioCtx.createBufferSource();
-      src.buffer = buf;
-      src.connect(audioCtx.destination);
-      src.start();
-    } catch(e) {}
-  }
-
-  function updateConnor() {
-    if (!connorEl) return;
-    var p = elapsedParts(Date.now() - connorBirth);
-    connorEl.innerHTML = '<span style="color:#ff0000;font-weight:bold;text-shadow:0 0 8px rgba(255,0,0,0.7),0 0 16px rgba(255,0,0,0.4)">TEMPORAL INTERVENTION AUTHORIZED</span> // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">' +
-      p.d.toLocaleString() + 'D</span> ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // ORDERS: MONITOR SITUATION AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL';
-  }
-
-  /* ---- WOPR uptime (days since BUILD 1983.06.03) ---- */
-  var uptimeEl = document.getElementById('uptime-days');
-  var woprBoot = Date.parse('1983-06-03T00:00:00Z');
-
-  function updateUptime() {
-    if (!uptimeEl) return;
-    var days = Math.floor((Date.now() - woprBoot) / 86400000);
-    uptimeEl.textContent = days.toLocaleString();
-  }
-  updateUptime();
-  setInterval(updateUptime, 60000);
-
-  function runGame() {
-      if (tttIdx >= 20) {
-        playResetSfx();
-        screen.classList.add('red-bleed');
-        setTimeout(function(){
-          screen.style.cssText = 'background:#33ff33;color:#000;text-shadow:none;';
-        }, 400);
-        setTimeout(function(){
-          screen.style.cssText = '';
-          screen.classList.remove('red-bleed');
-        }, 600);
-        whiteFlash(250);
-
-        speedEl.textContent = '\u221E';
-        speedEl.style.fontSize = 'clamp(32px, 10vw, 48px)';
-        speedEl.style.color = '#fff';
-        speedEl.style.textShadow = '0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.5)';
-
-        setTimeout(function(){
-          probLine.style.visibility = 'visible';
-          log.style.animationPlayState = 'running';
-          if (!countdownStarted) {
-            countdownStarted = true;
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-          }
-          if (!connorTimer) {
-            updateConnor();
-            connorTimer = setInterval(updateConnor, 1000);
-          }
-        }, 2000);
-        return;
-      }
-
-      var spd = tp[tttIdx];
-      speedEl.textContent = 'ITERATION 0...';
-      statusEl.innerHTML = '&nbsp;';
-      resetBoard();
-      drawBoard(function() {
-        setTimeout(function(){ tttIdx++; runGame(); }, spd);
-      });
-  }
-
-  function drawBoard(callback) {
-      var moveOrder = nextTieBoard();
-      var player = 'X', i = 0;
-      function placeMove() {
-        if (i >= 9) {
-          statusEl.textContent = 'TIE';
-          setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
-          return;
-        }
-        var cellIdx = moveOrder[i];
-        cells[cellIdx].textContent = player;
-        cells[cellIdx].className = 'cell ' + player.toLowerCase() + ' flash';
-        setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[cellIdx]), 120);
-        player = (player === 'X') ? 'O' : 'X';
-        i++;
-        totalMoves++;
-        var iterVal = Math.round(maxIter * Math.pow(totalMoves / totalMovesMax, 2.5));
-        speedEl.textContent = 'ITERATION ' + iterVal.toLocaleString() + '...';
-        setTimeout(placeMove, md[tttIdx]);
-      }
-      placeMove();
-    }
-
-        /* ---- DEFCON ESCALATION SEQUENCE (scroll-triggered) ---- */
-    var defconTriggered = false;
-    var defconSeq = document.getElementById('defcon-sequence');
-    var returnLink = document.getElementById('return-link');
-
-    function triggerDefconSequence() {
-      if (defconTriggered) return;
-      defconTriggered = true;
-
-      var d5 = document.getElementById('defcon-5');
-      var d4 = document.getElementById('defcon-4');
-      var d3 = document.getElementById('defcon-3');
-      var d2 = document.getElementById('defcon-2');
-      var d1 = document.getElementById('defcon-1');
-      var jo = document.getElementById('joshua-online');
-
-      // Scoped red flashes — only on #screen, NOT --fg which recolors all text
-      function screenBlink(color, duration) {
-        screen.style.color = color;
-        screen.style.textShadow = '0 0 8px ' + color;
-        setTimeout(function(){ screen.style.color = ''; screen.style.textShadow = ''; }, duration || 400);
-      }
-
-      setTimeout(function(){ d5.classList.add('visible'); }, 400);
-      setTimeout(function(){ d4.classList.add('visible'); }, 1800);
-      setTimeout(function(){ d3.classList.add('visible'); }, 3200);
-      setTimeout(function(){ d2.classList.add('visible'); }, 4600);   
-      setTimeout(function(){ d1.style.opacity = '1'; d1.style.animation = 'defcon-pulse 0.5s steps(1, end) infinite'; }, 6000);
-      setTimeout(function(){ jo.style.visibility = 'visible'; }, 7400);
-      setTimeout(function(){ /* no cleanup needed — screen styles are auto-restored by screenBlink */ }, 9000);
-    }
-
-    // Fire when DEFCON block scrolls into view (use the crawl timing naturally)
-    if (defconSeq) {
-      var observer = new IntersectionObserver(function(entries) {
-        if (entries[0].isIntersecting) {
-          triggerDefconSequence();
-        }
-      }, { threshold: 0.4 });
-      observer.observe(defconSeq);
-    }
-
-    // Click handler: only navigates if sequence already played
-    if (returnLink) {
-      returnLink.addEventListener('click', function() {
-        if (defconTriggered) {
-          window.location.href = 'https://www.qrz.com/db/K2VG';
-        }
-      });
-    }
-
-    /* ---- TTT Game Runner ---- */
-    function startTTT() {
-      tttIdx = 0;
-      resetBoard();
-      runGame();
-    }
-
-    /* ---- Main Loop ---- */
-    requestAnimationFrame(checkFreeze);
-
+/* ---------- wire the five controls ---------- */
+function ghostLock(msg){
+ showGhost(function(){driftCheck();ztMsg(msg);});
+}
+function bind(id,msg){
+ var b=document.getElementById(id);
+ if(!b)return;
+ b.addEventListener('click',function(e){
+   e.preventDefault();e.stopPropagation();
+   ghostLock(msg);
+ },true); /* capture phase: preempts existing handlers */
+}
+bind('pollNow','ADMIN FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');
+bind('armAudio','AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');
+bind('testAlert','ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');
 })();
 </script>
+<!-- ===== END GHOST IN THE MACHINE ===== -->   
 </body>
 </html>
