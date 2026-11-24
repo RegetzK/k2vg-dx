@@ -396,56 +396,57 @@ scheduleRefresh();
   <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">[   <span style="color:#ffff00 !important;font-size:12px;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span>   ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 <script src="../audio.js"></script>
-<!-- ===== GHOST IN THE MACHINE v2 — self-contained Easter Egg module ===== -->
-<!-- Paste ONCE into desktop.html before </body>. Remove this whole block to revert. -->
+<!-- ===== GHOST IN THE MACHINE v3 — H:M:S. three-digit anomaly ===== -->
+<!-- Paste into desktop.html before </body>. Remove to revert. -->
 <div id="ghostHost"></div>
 <script>
 (function(){
 'use strict';
-/* ---------- state ---------- */
-var ghostCount = 0;            // session trigger count (gates matrix rain)
-var hoverTimer = null;         // proximity micro-egg
-var permanentDrift = false;    // after 3rd flash, clock runs ~5% slow forever
-var SLOW_FACTOR = 1.05;
 
-/* ---------- styles (injected, scoped) ---------- */
+/* ---------- state ---------- */
+var ghostCount = 0;
+var permanentDrift = false;
+var rainTriggered = false;
+var rainActivated = false;
+
+/* ---------- styles ---------- */
 var css = [
 '#ghOv{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;',
 ' z-index:99998;display:flex;align-items:center;justify-content:center;',
-' gap:22px;cursor:none;overflow:hidden}',
-'.ghD{position:relative;width:64px;height:112px;z-index:2}',
+' gap:18px;cursor:default;overflow:hidden;user-select:none}',
+'.ghD{position:relative;width:120px;height:200px}',
 '.ghD i{position:absolute;background:#c1121f;opacity:.12;',
-' transition:opacity .09s linear}',
+' transition:opacity .08s linear}',
 '.ghD i.on{background:#ff2a2a;opacity:1;',
-' box-shadow:0 0 10px #ff2a2a,0 0 22px rgba(255,42,42,.55)}',
+' box-shadow:0 0 14px #ff2a2a,0 0 30px rgba(255,42,42,.65)}',
 '.ghD i.ember{background:#5a0d12;opacity:.5;box-shadow:none}',
-'.ghD i.a{top:0;left:10px;width:44px;height:9px}',
-'.ghD i.g{top:51px;left:10px;width:44px;height:9px}',
-'.ghD i.d{bottom:0;left:10px;width:44px;height:9px}',
-'.ghD i.f{top:8px;left:0;width:9px;height:44px}',
-'.ghD i.b{top:8px;right:0;width:9px;height:44px}',
-'.ghD i.e{bottom:8px;left:0;width:9px;height:44px}',
-'.ghD i.c{bottom:8px;right:0;width:9px;height:44px}',
+'.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
+'.ghD i.garble{animation:ghGarble .1s steps(2) infinite}',
+'.ghD i.a{top:0;left:18px;width:84px;height:16px}',
+'.ghD i.g{top:92px;left:18px;width:84px;height:16px}',
+'.ghD i.d{bottom:0;left:18px;width:84px;height:16px}',
+'.ghD i.f{top:12px;left:0;width:16px;height:84px}',
+'.ghD i.b{top:12px;right:0;width:16px;height:84px}',
+'.ghD i.e{bottom:12px;left:0;width:16px;height:84px}',
+'.ghD i.c{bottom:12px;right:0;width:16px;height:16px}',
 '.ghD i.a,.ghD i.g,.ghD i.d{clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%)}',
 '.ghD i.f,.ghD i.b,.ghD i.e,.ghD i.c{clip-path:polygon(50% 0,100% 8%,100% 92%,50% 100%,0 92%,0 8%)}',
-'.ghColon{display:flex;flex-direction:column;gap:26px;z-index:2}',
-'.ghColon span{width:10px;height:10px;background:#ff2a2a;border-radius:2px;',
-' box-shadow:0 0 8px rgba(255,42,42,.6);transition:opacity .1s}',
-'.ghColon.dim span{background:#c1121f;box-shadow:none;opacity:.25}',
-'.ghSec{margin-left:14px;opacity:0;transition:opacity .25s}',
-'.ghSec.vis{opacity:1}',
-'.ghGarble{animation:ghGarble .12s steps(2) infinite}',
-'@keyframes ghGarble{0%{transform:translateX(0)}50%{transform:translateX(2px)}100%{transform:translateX(-1px)}}',
+'.ghDot{width:16px;height:16px;background:#c1121f;border-radius:50%;',
+' box-shadow:0 0 8px rgba(193,18,31,.5);transition:opacity .08s;margin-top:140px;align-self:flex-end}',
+'.ghDot.on{background:#ff2a2a;box-shadow:0 0 14px rgba(255,42,42,.65)}',
+'.ghDot.ember{background:#5a0d12;opacity:.5;box-shadow:none}',
 '#ghRain{position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;opacity:0;',
-' font-family:monospace;font-size:14px;color:rgba(0,255,70,.14);',
+' font-family:monospace;font-size:16px;color:rgba(0,255,70,.16);',
 ' white-space:pre;line-height:1.1;pointer-events:none}',
 '#ghRain.vis{opacity:1}'].join('\n');
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
-/* ---------- segment helpers ---------- */
-var SEG={'0':'abcdef','1':'bc','2':'abdeg','3':'abcdg','4':'bcfg',
- '5':'acdfg','6':'acdefg','7':'abc','8':'abcdefg','9':'abcdfg',
- '-':'g','?':'ab','X':'abcdefg',' ':''};
+/* ---------- segment map ---------- */
+var SEG={
+  '0':'abcdef','1':'bc','2':'abdeg','3':'abcdg','4':'bcfg',
+  '5':'acdfg','6':'acdefg','7':'abc','8':'abcdefg','9':'abcdfg',
+  '-':'g','?':'ab','X':'abcdefg',' ':''
+};
 function mkDigit(){
  var d=document.createElement('div');d.className='ghD';
  'abcdefg'.split('').forEach(function(k){
@@ -456,130 +457,162 @@ function mkDigit(){
 function setDig(d,ch,ember){
  var lit=SEG[ch]!==undefined?SEG[ch]:'';
  Array.prototype.forEach.call(d.children,function(i){
-   i.className=i.getAttribute('data-s')+(lit.indexOf(i.getAttribute('data-s'))>-1?(ember?' ember':' on'):'');
+   var s=i.getAttribute('data-s');
+   i.className=s;
+   if(lit.indexOf(s)>-1) i.className+=' on';
+   if(ember) i.className+=' ember';
  });
 }
 function randSeg(d,p,ember){
  Array.prototype.forEach.call(d.children,function(i){
-   i.className=i.getAttribute('data-s')+((Math.random()<p)?(ember?' ember':' on'):'');
+   var s=i.getAttribute('data-s');
+   i.className=s;
+   if(Math.random()<p) i.className+=' on';
+   if(ember) i.className+=' ember';
  });
 }
-
-/* ---------- audio: power sag (55Hz) ---------- */
-function powerSag(){
- try{
-   var ctx=new (window.AudioContext||window.webkitAudioContext)();
-   var o=ctx.createOscillator(),g=ctx.createGain();
-   o.type='sine';o.frequency.setValueAtTime(55,ctx.currentTime);
-   o.frequency.exponentialRampToValueAtTime(38,ctx.currentTime+1.4);
-   g.gain.setValueAtTime(0.0001,ctx.currentTime);
-   g.gain.exponentialRampToValueAtTime(0.18,ctx.currentTime+0.15);
-   g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+1.6);
-   o.connect(g);g.connect(ctx.destination);
-   o.start();o.stop(ctx.currentTime+1.7);
- }catch(e){/* silence is also acceptable lore */}
+function garbleDigit(d){
+ var shapes=['?','X','-'];
+ setDig(d,shapes[Math.floor(Math.random()*shapes.length)],false);
+ d.classList.add('garble');
 }
 
-/* ---------- matrix rain (L5, gated) ---------- */
+/* ---------- audio: power sag ---------- */
+function powerSag(){
+ try{
+   var c=new (window.AudioContext||window.webkitAudioContext)(),
+       o=c.createOscillator(),g=c.createGain();
+   o.type='sine';
+   o.frequency.setValueAtTime(55,c.currentTime);
+   o.frequency.exponentialRampToValueAtTime(28,c.currentTime+2.5);
+   g.gain.setValueAtTime(0.0001,c.currentTime);
+   g.gain.exponentialRampToValueAtTime(0.22,c.currentTime+0.12);
+   g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+2.8);
+   o.connect(g);g.connect(c.destination);
+   o.start();o.stop(c.currentTime+2.9);
+ }catch(e){}
+}
+
+/* ---------- matrix rain ---------- */
 function glyphRain(){
- var cols=4,out=[];
+ var cols=5,out=[];
  var glyphs='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789';
  for(var c=0;c<cols;c++){
    var col='';
-   for(var r=0;r<26;r++)col+=(Math.random()<.3?glyphs[Math.floor(Math.random()*glyphs.length)]:' ')+'\n';
+   for(var r=0;r<32;r++) col+=(Math.random()<.25?glyphs[Math.floor(Math.random()*glyphs.length)]:' ')+'\n';
    out.push(col);
  }
  return out.join('     ');
 }
 
-/* ---------- the anomaly ---------- */
+/* ---------- the ghost — 10s hostage ---------- */
 function showGhost(done){
  ghostCount++;
  var ov=document.createElement('div');ov.id='ghOv';
- var h1=mkDigit(),h2=mkDigit(),m1=mkDigit(),m2=mkDigit(),s1=mkDigit(),s2=mkDigit();
- s1.classList.add('ghSec');s2.classList.add('ghSec');
- var colon1=document.createElement('div');colon1.className='ghColon';
- colon1.innerHTML='<span></span><span></span>';
- var colon2=document.createElement('div');colon2.className='ghColon';
- colon2.innerHTML='<span></span><span></span>';
+ var d1=mkDigit(),d2=mkDigit(),d3=mkDigit();
+ var dot=document.createElement('div');dot.className='ghDot';
  var rain=document.createElement('div');rain.id='ghRain';
  ov.appendChild(rain);
- [h1,colon1,h2,m1,colon2,m2,s1,s2].forEach(function(el){ov.appendChild(el);});
+ ov.appendChild(d1);ov.appendChild(d2);ov.appendChild(d3);ov.appendChild(dot);
  document.body.appendChild(ov);
 
- var now=new Date();
- function tStr(){
+ /* tap/click to escape -> triggers rain */
+ var onEscape=function(){
+   if(rainActivated)return;
+   rainActivated=true;
+   rain.textContent=glyphRain();
+   rain.classList.add('vis');
+   ov.style.background='rgba(0,0,0,.85)';
+   /* rain persists, clock frozen in garble */
+   setTimeout(function(){
+     rain.classList.remove('vis');
+     ov.remove();
+     if(done)done();
+   },2500);
+   ov.removeEventListener('click',onEscape);
+   ov.removeEventListener('touchstart',onEscape);
+ };
+ ov.addEventListener('click',onEscape);
+ ov.addEventListener('touchstart',onEscape,{passive:true});
+
+ var T=function(){
    var n=new Date();
-   if(permanentDrift)n=new Date(n.getTime()-90000); /* the machine lies by 90s now */
-   return [String(n.getHours()).padStart(2,'0'),
-           String(n.getMinutes()).padStart(2,'0'),
-           String(n.getSeconds()).padStart(2,'0')];
- }
- var T=tStr();
- function paintAll(ember){
-   setDig(h1,T[0][0],ember);setDig(h2,T[0][1],ember);
-   setDig(m1,T[1][0],ember);setDig(m2,T[1][1],ember);
- }
- function tickColon(on){
-   [colon1,colon2].forEach(function(c){c.className='ghColon'+(on?'':' dim');});
- }
- function paintSec(ember){
-   setDig(s1,T[2][0],ember);setDig(s2,T[2][1],ember);
+   if(permanentDrift)n=new Date(n.getTime()-90000);
+   return [String(n.getHours()).toString(),
+           String(n.getMinutes()).toString(),
+           String(n.getSeconds()).toString()];
+ };
+ function paint(){
+   var t=T();
+   setDig(d1,t[0].charAt(0),false);
+   setDig(d2,t[1].charAt(0),false);
+   setDig(d3,t[2].charAt(0),false);
+   dot.className='ghDot on';
  }
 
- /* beat engine with dilation: delay grows per step index */
+ /* 10-second choreography — dramatic, cover-art style */
  var beats=[
-  {ms:250,f:function(){paintAll(false);tickColon(true);}},
-  {ms:250,f:function(){tickColon(false);}},                       /* alive: heartbeat */
-  {ms:250,f:function(){T=tStr();paintAll(false);tickColon(true);paintSec(false);
-      s1.classList.add('vis');s2.classList.add('vis');}},          /* seconds column bleeds in */
-  {ms:320,f:function(){tickColon(false);}},
-  {ms:420,f:function(){T=tStr();paintAll(false);paintSec(true);tickColon(true);}}, /* dilation begins */
-  {ms:560,f:function(){randSeg(s2,.5,true);}},                     /* segments migrating/fading */
-  {ms:700,f:function(){m2.classList.add('ghGarble');randSeg(m1,.4,true);}}, /* Joshua garble */
-  {ms:900,f:function(){h2.classList.add('ghGarble');randSeg(h2,.35,true);
-      setDig(s1,'X');setDig(s2,'?');}},                            /* invalid glyphs */
-  {ms:1100,f:function(){[h1,h2,m1,m2,s1,s2].forEach(function(d){randSeg(d,.3,true);});
-      tickColon(false);}},                                          /* dying */
-  {ms:1400,f:function(){[h1,h2,m1,m2,s1,s2].forEach(function(d){randSeg(d,.12,true);});
-      if(ghostCount>=3){rain.textContent=glyphRain();rain.classList.add('vis');}}}, /* freeze + L5 rain */
-  {ms:1400,f:function(){rain.classList.remove('vis');
-      [h1,h2,m1,m2,s1,s2].forEach(function(d){randSeg(d,0,false);});}}, /* blackout */
-  {ms:300,f:function(){[h1,h2,m1,m2].forEach(function(d){d.classList.remove('ghGarble');});
-      s1.classList.remove('vis');s2.classList.remove('vis');
-      T=tStr();paintAll(false);tickColon(true);}},                  /* snap back */
-  {ms:450,f:function(){}}                                           /* hold */
+  {ms:100,f:function(){paint();}},           /* t=0   : alive, ticking */
+  {ms:1000,f:function(){paint();}},          /* t=1   : seconds rolled */
+  {ms:1800,f:function(){paint();}},          /* t=1.8 : slight drag */
+  {ms:2800,f:function(){setDig(d3,T()[2].charAt(0),true);
+      d3.classList.add('flicker');}},        /* t=2.8 : ember + flicker begins */
+  {ms:3800,f:function(){setDig(d2,T()[1].charAt(0),true);
+      d2.classList.add('flicker');}},        /* t=3.8 : second digit dying */
+  {ms:4800,f:function(){setDig(d1,T()[0].charAt(0),true);
+      d1.classList.add('flicker');
+      dot.className='ghDot ember';}},        /* t=4.8 : first digit dying */
+  {ms:5800,f:function(){garbleDigit(d3);
+      randSeg(d2,.6,true);}},                /* t=5.8 : corruption starts */
+  {ms:6400,f:function(){garbleDigit(d2);
+      randSeg(d1,.5,true);}},                /* t=6.4 : second digit garbled */
+  {ms:6900,f:function(){garbleDigit(d1);
+      randSeg(d3,.4,true);}},                /* t=6.9 : first digit garbled */
+  {ms:7400,f:function(){d1.classList.remove('flicker');
+      d2.classList.remove('flicker');
+      d3.classList.remove('flicker');
+      randSeg(d1,.3,false);randSeg(d2,.3,false);
+      randSeg(d3,.3,false);
+      dot.className='ghDot';}},              /* t=7.4 : flickers stop, all raw */
+  {ms:7800,f:function(){randSeg(d1,.5,false);
+      randSeg(d2,.5,false);randSeg(d3,.5,false);
+      setDig(d1,'X');setDig(d2,'?');
+      setDig(d3,'X');}},                     /* t=7.8 : invalid glyphs peak */
+  {ms:8200,f:function(){randSeg(d1,.7,false);
+      randSeg(d2,.65,false);randSeg(d3,.6,false);}}, /* t=8.2 : pure chaos */
+  {ms:8600,f:function(){randSeg(d1,.2,false);
+      randSeg(d2,.15,false);randSeg(d3,.1,false);}},/* t=8.6 : dying to ember */
+  {ms:9200,f:function(){randSeg(d1,0,false);
+      randSeg(d2,0,false);randSeg(d3,0,false);
+      dot.className='ghDot ember';}},       /* t=9.2 : near blackout */
+  {ms:9800,f:function(){/* hold darkness */}}, /* t=9.8 : total darkness */
+  {ms:10000,f:function(){/* 10s complete */}}
  ];
+
  var i=0;
  function step(){
-   if(i>=beats.length){ov.remove();if(done)done();return;}
+   if(i>=beats.length){
+     /* timeout — machine holds them 10s */
+     ov.remove();
+     if(ghostCount>=3)permanentDrift=true;
+     if(!rainActivated){
+       /* no escape attempt — fire redout normally */
+       if(done)done();
+     }
+     return;
+   }
    beats[i].f();
-   var d=beats[i].ms;
-   setTimeout(step,d);
+   setTimeout(step,beats[i].ms);
    i++;
  }
+
  powerSag();
  step();
 }
 
-/* ---------- counter-egg: after 3rd flash, time never fully recovers ---------- */
-function driftCheck(){ if(ghostCount>=3)permanentDrift=true; }
-
-/* ---------- proximity micro-egg (deepest layer) ---------- */
-document.addEventListener('mousemove',function(e){
- clearTimeout(hoverTimer);
- hoverTimer=setTimeout(function(){
-   var el=document.elementFromPoint(e.clientX,e.clientY);
-   if(!el)return;
-   var host=el.closest?el.closest('#ghostHost'):null;
-   /* idle 2s anywhere over console area -> one impossible glyph flicker on next ghost only */
-   window.__ghWatched=true;
- },2000);
-});
-
 /* ---------- wire the five controls ---------- */
 function ghostLock(msg){
- showGhost(function(){driftCheck();ztMsg(msg);});
+ showGhost(function(){ztMsg(msg);});
 }
 function bind(id,msg){
  var b=document.getElementById(id);
@@ -587,13 +620,13 @@ function bind(id,msg){
  b.addEventListener('click',function(e){
    e.preventDefault();e.stopPropagation();
    ghostLock(msg);
- },true); /* capture phase: preempts existing handlers */
+ },true);
 }
 bind('pollNow','ADMIN FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');
 bind('armAudio','AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');
 bind('testAlert','ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');
 })();
 </script>
-<!-- ===== END GHOST IN THE MACHINE ===== -->   
+<!-- ===== END GHOST IN THE MACHINE v3 ===== -->   
 </body>
 </html>
