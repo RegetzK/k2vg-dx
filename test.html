@@ -396,66 +396,78 @@ scheduleRefresh();
   <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">[   <span style="color:#ffff00 !important;font-size:12px;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span>   ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 <script src="../audio.js"></script>
-<!-- ===== GHOST IN THE MACHINE v4 — chaos paint, locked hostage, feedback rain ===== -->
+<!-- ===== GHOST IN THE MACHINE v5 — fragmented capsule display, locked hostage, feedback rain ===== -->
 <div id="ghostHost"></div>
 <script>
 (function(){
 'use strict';
 var ghostCount=0, permanentDrift=false;
 
+/* ---------- GEOMETRY: 8 / 10 / 10 elongated capsules, italic, broken strokes ---------- */
+/* Each seg: [x,y,w,h] in local space, optional rot (deg) + skewX. Pointed hex ends via clip-path. */
+var DIGITS=[
+ /* ELEMENT 1 — 8 sparse floating shards */
+ {skew:-16,segs:[
+   [18,  6,44,11],[ 4, 16,11,46,30],[50, 14,11,46,-22],
+   [16, 64,42,11],[ 6, 82,11,44,26],[48, 80,11,46,-20],
+   [14,128,46,11],[64,126,10,10]]},
+ /* ELEMENT 2 — 10 with radial burst crown at top */
+ {skew:-16,segs:[
+   [26,  2,10,26,-30],[42,  0,10,28,  0],[58,  2,10,26, 30],
+   [16, 38,44,11],[ 4, 46,11,44,28],[50, 44,11,44,-20],
+   [16, 90,42,11],[ 6, 98,11,42,26],[48, 96,11,44,-18],
+   [14,130,46,11]]},
+ /* ELEMENT 3 — 10 with diagonal slash, far-right dot, top-left stay-dash */
+ {skew:-16,segs:[
+   [ 2,  4,10,20,  0],[20,  8,11,46,-34],
+   [18, 38,44,11],[ 6, 46,11,44,28],[52, 44,11,44,-20],
+   [18, 90,42,11],[ 8, 98,11,42,26],[50, 96,11,44,-18],
+   [16,130,46,11],[70,128,12,12]]}
+];
+
 var css=[
 '#ghOv{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;',
 ' z-index:99998;display:flex;align-items:center;justify-content:center;',
-' gap:16px;cursor:default;overflow:hidden;user-select:none}',
-'.ghD{position:relative;width:90px;height:150px}',
-'.ghD i{position:absolute;background:#c1121f;opacity:.10;transition:opacity .07s linear}',
+' gap:22px;cursor:default;overflow:hidden;user-select:none}',
+'.ghD{position:relative;width:80px;height:150px;flex:0 0 auto}',
+'.ghD i{position:absolute;background:#c1121f;opacity:.10;transition:opacity .07s linear;',
+' transform-origin:center center;',
+' -webkit-clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%);',
+'         clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%)}',
 '.ghD i.on{background:#ff2a2a;opacity:1;box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6)}',
 '.ghD i.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
 '.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
-'.ghD i.a{top:0;left:14px;width:62px;height:12px}',
-'.ghD i.g{top:69px;left:14px;width:62px;height:12px}',
-'.ghD i.d{bottom:0;left:14px;width:62px;height:12px}',
-'.ghD i.f{top:9px;left:0;width:12px;height:62px}',
-'.ghD i.b{top:9px;right:0;width:12px;height:62px}',
-'.ghD i.e{bottom:9px;left:0;width:12px;height:62px}',
-'.ghD i.c{bottom:9px;right:0;width:12px;height:62px}',
-'.ghD i.a,.ghD i.g,.ghD i.d{clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%)}',
-'.ghD i.f,.ghD i.b,.ghD i.e,.ghD i.c{clip-path:polygon(50% 0,100% 8%,100% 92%,50% 100%,0 92%,0 8%)}',
-'.ghPeriod{position:absolute;bottom:0;right:-22px;width:12px;height:12px;',
-' background:#ff2a2a;border-radius:50%;box-shadow:0 0 10px rgba(255,42,42,.6);',
-' transition:opacity .07s}',
-'.ghPeriod.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
-'.ghPeriod.off{opacity:.10;background:#c1121f;box-shadow:none}',
+'@keyframes ghFlick{0%,100%{opacity:1}50%{opacity:.2}}',
 '#ghRain{position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;opacity:0;',
 ' font-family:monospace;font-size:15px;color:rgba(0,255,70,.18);white-space:pre;',
 ' line-height:1.1;pointer-events:none;transition:opacity .15s}',
 '#ghRain.vis{opacity:1}'].join('\n');
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
-var SEG={'0':'abcdef','1':'bc','2':'abdeg','3':'abcdg','4':'bcfg',
- '5':'acdfg','6':'acdefg','7':'abc','8':'abcdefg','9':'abcdfg',' ':'','X':'abcdefg','?':'ab'};
-function mkDigit(){
+function mkDigit(def){
  var d=document.createElement('div');d.className='ghD';
- 'abcdefg'.split('').forEach(function(k){
-   var i=document.createElement('i');i.setAttribute('data-s',k);d.appendChild(i);});
+ def.segs.forEach(function(s,idx){
+   var i=document.createElement('i');i.setAttribute('data-s','s'+idx);
+   var t='translateX('+(-def.skew*(s[1]+s[3]/2)/150)+'px) rotate('+(s[4]||0)+'deg) skewX('+def.skew+'deg)';
+   i.style.left=s[0]+'px';i.style.top=s[1]+'px';i.style.width=s[2]+'px';i.style.height=s[3]+'px';
+   i.style.transform=t;i._t=t;d.appendChild(i);});
  return d;
 }
-function setDig(d,ch,mode){
- var lit=SEG[ch]!==undefined?SEG[ch]:'';
+function setDig(d,litIdx,mode){
  Array.prototype.forEach.call(d.children,function(i){
-   var s=i.getAttribute('data-s'),cls=s;
-   if(lit.indexOf(s)>-1)cls+=(mode==='ember'?' ember':' on');
+   var cls=i.getAttribute('data-s');
+   if(litIdx.indexOf(i._idx)>-1)cls+=(mode==='ember'?' ember':' on');
    i.className=cls;});
 }
-/* CHAOS PAINT — random partial illumination, all three digits */
 function chaosPaint(digits,p,mode){
- digits.forEach(function(d){
-   Array.prototype.forEach.call(d.children,function(i){
-     var s=i.getAttribute('data-s'),cls=s;
-     if(Math.random()<p)cls+=(mode==='ember'?' ember':' on');
-     i.className=cls;});});
-}
-function garbleDigit(d){setDig(d,Math.random()<.5?'X':'?',false);}
+ digits.forEach(function(d){Array.prototype.forEach.call(d.children,function(i){
+   var cls=i.getAttribute('data-s');
+   if(Math.random()<p)cls+=(mode==='ember'?' ember':' on');
+   i.className=cls;});});}
+function garbleDigit(d){
+ Array.prototype.forEach.call(d.children,function(i){
+   var cls=i.getAttribute('data-s');
+   if(Math.random()<.5)cls+=' on';i.className=cls;});}
 
 function powerSag(){
  try{
@@ -471,7 +483,6 @@ function powerSag(){
    o.start();o.stop(c.currentTime+2.9);
  }catch(e){}
 }
-
 function glyphRain(){
  var cols=5,out=[],gl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789';
  for(var c=0;c<cols;c++){var col='';
@@ -483,14 +494,13 @@ function glyphRain(){
 function showGhost(done){
  ghostCount++;
  var ov=document.createElement('div');ov.id='ghOv';
- var d1=mkDigit(),d2=mkDigit(),d3=mkDigit();
- var period=document.createElement('div');period.className='ghPeriod';
- d3.style.position='relative';d3.appendChild(period); /* ONE dot, lower right */
+ var d1=mkDigit(DIGITS[0]),d2=mkDigit(DIGITS[1]),d3=mkDigit(DIGITS[2]);
+ var digits=[d1,d2,d3];
+ digits.forEach(function(d){Array.prototype.forEach.call(d.children,function(i,idx){i._idx=idx;});});
  var rain=document.createElement('div');rain.id='ghRain';
  ov.appendChild(rain);ov.appendChild(d1);ov.appendChild(d2);ov.appendChild(d3);
  document.body.appendChild(ov);
 
- /* FEEDBACK RAIN — they cannot escape; tapping only provokes the machine */
  var busy=false;
  function feedback(){
    if(busy)return;busy=true;
@@ -508,34 +518,29 @@ function showGhost(done){
  }
  function paint(mode){
    var t=T();
-   setDig(d1,t[0].slice(-1),mode);
-   setDig(d2,t[1].slice(-1),mode);
-   setDig(d3,t[2].slice(-1),mode);
-   period.className='ghPeriod'+(mode==='ember'?' ember':'');
+   setDig(d1,[+t[0]%DIGITS[0].segs.length],mode);
+   setDig(d2,[+t[1]%DIGITS[1].segs.length],mode);
+   setDig(d3,[+t[2]%DIGITS[2].segs.length],mode);
  }
 
- /* dilating ticks: fast -> slow across 10s */
  var beats=[
   {ms:200,f:function(){paint();}},
   {ms:200,f:function(){paint();}},
   {ms:250,f:function(){paint();}},
   {ms:300,f:function(){paint();}},
-  {ms:400,f:function(){paint();chaosPaint([d3],.35);}},      /* first chaos flicker on S */
-  {ms:500,f:function(){paint();chaosPaint([d2,d3],.4);}},    /* chaos spreads */
+  {ms:400,f:function(){paint();chaosPaint([d3],.35);}},
+  {ms:500,f:function(){paint();chaosPaint([d2,d3],.4);}},
   {ms:650,f:function(){paint('ember');d3.classList.add('flicker');}},
-  {ms:800,f:function(){paint('ember');d2.classList.add('flicker');
-      chaosPaint([d1,d2,d3],.45,'ember');}},                 /* ALL THREE chaotic */
+  {ms:800,f:function(){paint('ember');d2.classList.add('flicker');chaosPaint([d1,d2,d3],.45,'ember');}},
   {ms:1000,f:function(){garbleDigit(d3);chaosPaint([d1,d2],.5,'ember');}},
-  {ms:1200,f:function(){garbleDigit(d2);chaosPaint([d1],.55,'ember');
-      period.className='ghPeriod ember';}},
-  {ms:1400,f:function(){garbleDigit(d1);chaosPaint([d1,d2,d3],.6);}}, /* peak cover-art chaos */
+  {ms:1200,f:function(){garbleDigit(d2);chaosPaint([d1],.55,'ember');}},
+  {ms:1400,f:function(){garbleDigit(d1);chaosPaint([d1,d2,d3],.6);}},
   {ms:1600,f:function(){chaosPaint([d1,d2,d3],.45);}},
   {ms:1800,f:function(){chaosPaint([d1,d2,d3],.3);}},
-  {ms:2000,f:function(){chaosPaint([d1,d2,d3],.15,'ember');
-      period.className='ghPeriod off';}},
-  {ms:2200,f:function(){chaosPaint([d1,d2,d3],0);}},          /* blackout hold */
+  {ms:2000,f:function(){chaosPaint([d1,d2,d3],.15,'ember');}},
+  {ms:2200,f:function(){chaosPaint([d1,d2,d3],0);}},
   {ms:2400,f:function(){}},
-  {ms:2600,f:function(){}}                                    /* ~10s reached */
+  {ms:2600,f:function(){}}
  ];
  var i=0;
  function step(){
@@ -562,6 +567,6 @@ bind('armAudio','AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOG
 bind('testAlert','ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');
 })();
 </script>
-<!-- ===== END GHOST IN THE MACHINE v4 ===== -->
+<!-- ===== END GHOST IN THE MACHINE v5 ===== -->
 </body>
 </html>
