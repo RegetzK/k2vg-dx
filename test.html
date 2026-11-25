@@ -333,7 +333,7 @@ async function load(){
       const zl=isZL(t.grid)?' zl':'';
       const tr=document.createElement('tr');
       tr.className='telemetry'+zl;
-      [t.call,t.grid,(t.band||bandFromFreq,t.db+'dB',(t.dxcc||t.call.substring(0,2)),reg].forEach((v,i)=>{
+      [t.call,t.grid,(t.band||bandFromFreq(t.freq)),t.db+'dB',(t.dxcc||t.call.substring(0,2)),reg].forEach((v,i)=>{
         const td=document.createElement('td');
         if(i===3)td.className='snr';
         td.textContent=v;
@@ -632,8 +632,8 @@ function showGhost(done){
   {ms:1458,f:function(){chaosPaint([d1,d2,d3],.25,'ember');}},
   {ms:1720,f:function(){chaosPaint([d1,d2,d3],.08);period.className='ghDot off';}},
   {ms:2000,f:function(){chaosPaint([d1,d2,d3],0);}},
-  {ms:2000,f:function()},
-  {ms:2000,f:function()},
+  {ms:2000,f:function(){}},
+  {ms:2000,f:function(){}},
 ];
 var i=0;
 function step(){
