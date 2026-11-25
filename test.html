@@ -403,21 +403,20 @@ scheduleRefresh();
 'use strict';
 var ghostCount=0, permanentDrift=false;
 
-/* ---------- GEOMETRY: 8 / 10 / 10 capsules. Scale BAKED into coords (S=1.65). No CSS scale(). ---------- */
-/* Container widened to 165px. Pip sits clear of all strokes. Burst crown spread wide + raised. */
+/* ---------- GEOMETRY v8: softened tips, tightened E1, de-collided E3 ---------- */
 var DIGITS=[
- /* ELEMENT 1 — 8 sparse floating shards */
+ /* ELEMENT 1 — 8 sparse floating shards (tightened horizontally) */
  {segs:[
-   ['top',   26,  3, 73,18,  0],
-   ['ul',     3, 26, 18,76, 16],
-   ['ur',    92, 23, 18,76,-16],
-   ['mid',   26,109, 69,18,  0],
-   ['ll',     7,139, 18,73, 18],
-   ['lr',    89,135, 18,76,-18],
-   ['bot',   23,215, 76,18,  0],
-   ['shard',109,211, 18,18,  0]
+   ['top',   28,  3, 70,18,  0],
+   ['ul',     8, 26, 18,74, 15],
+   ['ur',    88, 23, 18,74,-15],
+   ['mid',   28,109, 66,18,  0],
+   ['ll',    11,139, 18,71, 17],
+   ['lr',    85,135, 18,74,-17],
+   ['bot',   25,215, 72,18,  0],
+   ['shard',104,211, 17,17,  0]
  ]},
- /* ELEMENT 2 — 10 with radial burst crown (spread + raised clear of body) */
+ /* ELEMENT 2 — 10 with radial burst crown (unchanged) */
  {segs:[
    ['bL',     3, 10, 18,36,-30],
    ['bC',    74,  0, 18,36,  0],
@@ -430,16 +429,16 @@ var DIGITS=[
    ['lr',    92,168, 18,76,-20],
    ['bot',   23,218, 76,18,  0]
  ]},
- /* ELEMENT 3 — 10 with diagonal slash, top-left dash, far-right RECT pip (clear of all) */
+ /* ELEMENT 3 — diag shortened clear of upper bar; lr lifted off bot */
  {segs:[
    ['dash',   2,  3, 15,30,  0],
-   ['diag',  46, 13, 18,50,-30],
+   ['diag',  52, 22, 16,42,-28],
    ['upper', 30, 83, 73,18,  0],
    ['ul',     7, 89, 18,76, 18],
    ['ur',    99, 86, 18,76,-18],
    ['mid',   30,158, 69,18,  0],
    ['ll',    10,172, 18,73, 20],
-   ['lr',    79,158, 18,50,-20],
+   ['lr',    82,152, 17,44,-18],
    ['bot',   26,218, 76,18,  0],
    ['pip',  132,215, 18,33,  0]
  ]}
@@ -452,8 +451,8 @@ var css=[
 '.ghD{position:relative;width:165px;height:248px;flex:0 0 auto}',
 '.ghD i{position:absolute;background:#c1121f;opacity:.10;transition:opacity .07s linear;',
 ' transform-origin:center center;',
-' -webkit-clip-path:polygon(50% 6%,100% 26%,100% 74%,50% 94%,0 74%,0 26%);',
-'         clip-path:polygon(50% 6%,100% 26%,100% 74%,50% 94%,0 74%,0 26%)}',
+' -webkit-clip-path:polygon(50% 14%,92% 28%,92% 72%,50% 86%,8% 72%,8% 28%);',
+'         clip-path:polygon(50% 14%,92% 28%,92% 72%,50% 86%,8% 72%,8% 28%)}',
 '.ghD i.on{background:#ff2a2a;opacity:1;box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6)}',
 '.ghD i.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
 '.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
