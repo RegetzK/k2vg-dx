@@ -396,18 +396,15 @@ scheduleRefresh();
   <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">[   <span style="color:#ffff00 !important;font-size:12px;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span>   ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 <script src="../audio.js"></script>
-<!-- ===== GHOST IN THE MACHINE v5.2 — fragmented capsule display, locked hostage, feedback rain ===== -->
+<!-- ===== GHOST IN THE MACHINE v6 FINAL — fragmented capsule display, locked hostage, feedback rain ===== -->
 <div id="ghostHost"></div>
 <script>
 (function(){
 'use strict';
 var ghostCount=0, permanentDrift=false;
 
-/* ---------- GEOMETRY: 8 / 10 / 10 elongated capsules — RIGHT-lean, thicker, isolated specials ========== */
-/* Each digit: [def].segs = [[label, x, y, w, h, rotDeg], ...]
- * Scaled x1.375 on the GPU via matrix transform. Capsule clip-path.
- * "Special" segments (burst crown, dash, diag, rect) spaced to float clear.
- */
+/* ---------- GEOMETRY: 8 / 10 / 10 capsules — S=1.65 thickness, right-lean, specials isolated ---------- */
+/* Burst crown ticks spread wide + raised; pip moved outside digit strokes; lr shortened to free pip. */
 var DIGITS=[
  /* ELEMENT 1 — 8 sparse floating shards */
  {segs:[
@@ -420,43 +417,43 @@ var DIGITS=[
    ['bot',   14,130, 46,11,  0],
    ['shard', 66,128, 11,11,  0]
  ]},
- /* ELEMENT 2 — 10 with radial burst crown (3 detached ticks) */
+ /* ELEMENT 2 — 10 with radial burst crown (spread + raised clear of body) */
  {segs:[
-   ['bL',   10,  6, 11,22,-30],
-   ['bC',   40,  0, 11,24,  0],
-   ['bR',   72,  4, 11,22, 30],
-   ['upper',16, 40, 44,11,  0],
-   ['ul',    2, 48, 11,46, 18],
-   ['ur',   58, 46, 11,46,-18],
-   ['mid',  16, 92, 42,11,  0],
-   ['ll',    4,100, 11,44, 20],
-   ['lr',   56, 98, 11,46,-20],
-   ['bot',  14,130, 46,11,  0]
+   ['bL',    4,  6, 11,22,-30],
+   ['bC',   45,  0, 11,24,  0],
+   ['bR',   86,  6, 11,22, 30],
+   ['upper',16, 46, 44,11,  0],
+   ['ul',    2, 54, 11,46, 18],
+   ['ur',   58, 52, 11,46,-18],
+   ['mid',  16, 96, 42,11,  0],
+   ['ll',    4,104, 11,44, 20],
+   ['lr',   56,102, 11,46,-20],
+   ['bot',  14,132, 46,11,  0]
  ]},
- /* ELEMENT 3 — 10 with diagonal slash, top-left dash, far-right RECT on short edge */
+ /* ELEMENT 3 — 10 with diagonal slash, top-left dash, far-right RECT pip (clear of all) */
  {segs:[
    ['dash',  1,  2,  9,18,  0],
    ['diag', 30, 10, 11,36,-30],
-   ['upper',18, 40, 44,11,  0],
-   ['ul',    4, 48, 11,46, 18],
-   ['ur',   60, 46, 11,46,-18],
-   ['mid',  18, 92, 42,11,  0],
-   ['ll',    6,100, 11,44, 20],
-   ['lr',   58, 98, 11,46,-20],
-   ['bot',  16,130, 46,11,  0],
-   ['rect', 72,124, 11,20,  0]
+   ['upper',18, 46, 44,11,  0],
+   ['ul',    4, 54, 11,46, 18],
+   ['ur',   60, 52, 11,46,-18],
+   ['mid',  18, 96, 42,11,  0],
+   ['ll',    6,104, 11,44, 20],
+   ['lr',   50, 96, 11,36,-20],
+   ['bot',  16,132, 46,11,  0],
+   ['pip',  86,136, 11,20,  0]
  ]}
 ];
 
 var css=[
 '#ghOv{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;',
 ' z-index:99998;display:flex;align-items:center;justify-content:center;',
-' gap:26px;cursor:default;overflow:hidden;user-select:none}',
-'.ghD{position:relative;width:80px;height:150px;flex:0 0 auto}',
+' gap:30px;cursor:default;overflow:hidden;user-select:none}',
+'.ghD{position:relative;width:100px;height:150px;flex:0 0 auto}',
 '.ghD i{position:absolute;background:#c1121f;opacity:.10;transition:opacity .07s linear;',
 ' transform-origin:center center;',
-' -webkit-clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%);',
-'         clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%)}',
+' -webkit-clip-path:polygon(50% 6%,100% 26%,100% 74%,50% 94%,0 74%,0 26%);',
+'         clip-path:polygon(50% 6%,100% 26%,100% 74%,50% 94%,0 74%,0 26%)}',
 '.ghD i.on{background:#ff2a2a;opacity:1;box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6)}',
 '.ghD i.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
 '.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
@@ -472,7 +469,7 @@ function mkDigit(def){
  def.segs.forEach(function(s,idx){
    var i=document.createElement('i');
    i.setAttribute('data-s','s'+idx);
-   var t='translateX('+(16*(s[2]+s[4]/2)/150)+'px) rotate('+(s[5]||0)+'deg) skewX(16deg)';
+   var t='translateX('+(16*(s[2]+s[4]/2)/150)+'px) rotate('+(s[5]||0)+'deg) skewX(16deg) scale(1.65)';
    i.style.left=s[1]+'px';i.style.top=s[2]+'px';i.style.width=s[3]+'px';i.style.height=s[4]+'px';
    i.style.transform=t;i._t=t;d.appendChild(i);});
  return d;
@@ -547,24 +544,25 @@ function showGhost(done){
    setDig(d3,[+t[2]%DIGITS[2].segs.length],mode);
  }
 
+ /* Speeded up ~20% at startup; later beats keep original slow-down cadence */
  var beats=[
-  {ms:133,f:function(){paint();}},
-  {ms:133,f:function(){paint();}},
-  {ms:250,f:function(){paint();}},
-  {ms:300,f:function(){paint();}},
-  {ms:400,f:function(){paint();chaosPaint([d3],.35);}},
-  {ms:500,f:function(){paint();chaosPaint([d2,d3],.4);}},
-  {ms:650,f:function(){paint('ember');d3.classList.add('flicker');}},
-  {ms:800,f:function(){paint('ember');d2.classList.add('flicker');chaosPaint([d1,d2,d3],.45,'ember');}},
-  {ms:1000,f:function(){garbleDigit(d3);chaosPaint([d1,d2],.5,'ember');}},
-  {ms:1200,f:function(){garbleDigit(d2);chaosPaint([d1],.55,'ember');}},
-  {ms:1400,f:function(){garbleDigit(d1);chaosPaint([d1,d2,d3],.6);}},
-  {ms:1600,f:function(){chaosPaint([d1,d2,d3],.45);}},
-  {ms:1800,f:function(){chaosPaint([d1,d2,d3],.3);}},
-  {ms:2000,f:function(){chaosPaint([d1,d2,d3],.15,'ember');}},
-  {ms:2200,f:function(){chaosPaint([d1,d2,d3],0);}},
-  {ms:2400,f:function(){}},
-  {ms:2600,f:function(){}}
+  {ms:106,f:function(){paint();}},
+  {ms:106,f:function(){paint();}},
+  {ms:200,f:function(){paint();chaosPaint([d1],.2);}},      /* earlier chaos onset */
+  {ms:240,f:function(){paint();chaosPaint([d2],.25);}},
+  {ms:320,f:function(){paint();chaosPaint([d3],.35);}},
+  {ms:400,f:function(){paint();chaosPaint([d2,d3],.4);}},
+  {ms:520,f:function(){paint('ember');d3.classList.add('flicker');}},
+  {ms:640,f:function(){paint('ember');d2.classList.add('flicker');chaosPaint([d1,d2,d3],.45,'ember');}},
+  {ms:800,f:function(){garbleDigit(d3);chaosPaint([d1,d2],.5,'ember');}},
+  {ms:960,f:function(){garbleDigit(d2);chaosPaint([d1],.55,'ember');}},
+  {ms:1120,f:function(){garbleDigit(d1);chaosPaint([d1,d2,d3],.6);}},
+  {ms:1280,f:function(){chaosPaint([d1,d2,d3],.45);}},
+  {ms:1440,f:function(){chaosPaint([d1,d2,d3],.3);}},
+  {ms:1600,f:function(){chaosPaint([d1,d2,d3],.15,'ember');}},
+  {ms:1760,f:function(){chaosPaint([d1,d2,d3],0);}},
+  {ms:1920,f:function(){}},
+  {ms:2080,f:function(){}}
  ];
  var i=0;
  function step(){
@@ -591,6 +589,6 @@ bind('armAudio','AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOG
 bind('testAlert','ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');
 })();
 </script>
-<!-- ===== END GHOST IN THE MACHINE v5.2 ===== -->
+<!-- ===== END GHOST IN THE MACHINE v6 FINAL ===== -->
 </body>
 </html>
