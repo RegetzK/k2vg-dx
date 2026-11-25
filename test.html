@@ -477,6 +477,120 @@ function mkDigit(def){
    i.style.transform=t;i._t=t;d.appendChild(i);});
  return d;
 }
-function setDig
+function setDig(d,litIdx,mode){
+ Array.prototype.forEach.call(d.children,function(i){
+   var cls=i.getAttribute('data-s');
+   if(litIdx.indexOf(i._idx)>-1)cls+=(mode==='ember'?' ember':' on');
+   i.className=cls;});
+}
+function chaosPaint(digits,p,mode){
+ digits.forEach(function(d){Array.prototype.forEach.call(d.children,function(i){
+   var cls=i.getAttribute('data-s');
+   if(Math.random()<p)cls+=(mode==='ember'?' ember':' on');
+   i.className=cls;});});}
+function garbleDigit(d){
+ Array.prototype.forEach.call(d.children,function(i){
+   var cls=i.getAttribute('data-s');
+   if(Math.random()<.5)cls+=' on';i.className=cls;});}
+
+function powerSag(){
+ try{
+   var c=new (window.AudioContext||window.webkitAudioContext)(),
+       o=c.createOscillator(),g=c.createGain();
+   o.type='sine';
+   o.frequency.setValueAtTime(55,c.currentTime);
+   o.frequency.exponentialRampToValueAtTime(28,c.currentTime+2.5);
+   g.gain.setValueAtTime(0.0001,c.currentTime);
+   g.gain.exponentialRampToValueAtTime(0.22,c.currentTime+0.12);
+   g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+2.8);
+   o.connect(g);g.connect(c.destination);
+   o.start();o.stop(c.currentTime+2.9);
+ }catch(e){}
+}
+function glyphRain(){
+ var cols=5,out=[],gl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789';
+ for(var c=0;c<cols;c++){var col='';
+   for(var r=0;r<32;r++)col+=(Math.random()<.25?gl[Math.floor(Math.random()*gl.length)]:' ')+'\n';
+   out.push(col);}
+ return out.join('     ');
+}
+
+function showGhost(done){
+ ghostCount++;
+ var ov=document.createElement('div');ov.id='ghOv';
+ var d1=mkDigit(DIGITS[0]),d2=mkDigit(DIGITS[1]),d3=mkDigit(DIGITS[2]);
+ var digits=[d1,d2,d3];
+ digits.forEach(function(d){Array.prototype.forEach.call(d.children,function(i,idx){i._idx=idx;});});
+ var rain=document.createElement('div');rain.id='ghRain';
+ ov.appendChild(rain);ov.appendChild(d1);ov.appendChild(d2);ov.appendChild(d3);
+ document.body.appendChild(ov);
+
+ var busy=false;
+ function feedback(){
+   if(busy)return;busy=true;
+   rain.textContent=glyphRain();
+   rain.classList.add('vis');
+   setTimeout(function(){rain.classList.remove('vis');busy=false;},800);
+ }
+ ov.addEventListener('click',feedback);
+ ov.addEventListener('touchstart',feedback,{passive:true});
+
+ function T(){
+   var n=new Date();
+   if(permanentDrift)n=new Date(n.getTime()-90000);
+   return [String(n.getHours()%12||12),String(n.getMinutes()),String(n.getSeconds())];
+ }
+ function paint(mode){
+   var t=T();
+   setDig(d1,[+t[0]%DIGITS[0].segs.length],mode);
+   setDig(d2,[+t[1]%DIGITS[1].segs.length],mode);
+   setDig(d3,[+t[2]%DIGITS[2].segs.length],mode);
+ }
+
+ var beats=[
+  {ms:133,f:function(){paint();}},
+  {ms:133,f:function(){paint();}},
+  {ms:250,f:function(){paint();}},
+  {ms:300,f:function(){paint();}},
+  {ms:400,f:function(){paint();chaosPaint([d3],.35);}},
+  {ms:500,f:function(){paint();chaosPaint([d2,d3],.4);}},
+  {ms:650,f:function(){paint('ember');d3.classList.add('flicker');}},
+  {ms:800,f:function(){paint('ember');d2.classList.add('flicker');chaosPaint([d1,d2,d3],.45,'ember');}},
+  {ms:1000,f:function(){garbleDigit(d3);chaosPaint([d1,d2],.5,'ember');}},
+  {ms:1200,f:function(){garbleDigit(d2);chaosPaint([d1],.55,'ember');}},
+  {ms:1400,f:function(){garbleDigit(d1);chaosPaint([d1,d2,d3],.6);}},
+  {ms:1600,f:function(){chaosPaint([d1,d2,d3],.45);}},
+  {ms:1800,f:function(){chaosPaint([d1,d2,d3],.3);}},
+  {ms:2000,f:function(){chaosPaint([d1,d2,d3],.15,'ember');}},
+  {ms:2200,f:function(){chaosPaint([d1,d2,d3],0);}},
+  {ms:2400,f:function(){}},
+  {ms:2600,f:function(){}}
+ ];
+ var i=0;
+ function step(){
+   if(i>=beats.length){
+     ov.remove();
+     if(ghostCount>=3)permanentDrift=true;
+     if(done)done();
+     return;}
+   beats[i].f();
+   setTimeout(step,beats[i].ms);
+   i++;
+ }
+ powerSag();
+ step();
+}
+
+function ghostLock(msg){showGhost(function(){ztMsg(msg);});}
+function bind(id,msg){
+ var b=document.getElementById(id);if(!b)return;
+ b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();ghostLock(msg);},true);
+}
+bind('pollNow','ADMIN FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');
+bind('armAudio','AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');
+bind('testAlert','ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');
+})();
+</script>
+<!-- ===== END GHOST IN THE MACHINE v5.2 ===== -->
 </body>
 </html>
