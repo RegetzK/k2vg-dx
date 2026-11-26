@@ -458,8 +458,9 @@ var css=[
 '.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
 '@keyframes ghFlick{0%,100%{opacity:1}50%{opacity:.2}}',
 '#ghRain{position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;opacity:0;',
-' font-family:monospace;font-size:15px;color:rgba(0,255,70,.18);white-space:pre;',
-' line-height:1.1;pointer-events:none;transition:opacity .15s}',
+' font-family:monospace;font-size:15px;color:rgba(0,255,70,.55);white-space:pre;',
+' line-height:1.1;pointer-events:none;transition:opacity .15s;display:flex;',
+' align-items:center;justify-content:center;text-shadow:0 0 6px rgba(0,255,70,.6)}',
 '#ghRain.vis{opacity:1}'].join('\n');
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
@@ -502,13 +503,13 @@ function powerSag(){
    o.connect(g);g.connect(c.destination);
    o.start();o.stop(c.currentTime+2.9);
  }catch(e){}
-}
 function glyphRain(){
- var cols=5,out=[],gl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789';
- for(var c=0;c<cols;c++){var col='';
-   for(var r=0;r<32;r++)col+=(Math.random()<.25?gl[Math.floor(Math.random()*gl.length)]:' ')+'\n';
-   out.push(col);}
- return out.join('     ');
+ var cols=40,rows=40,gl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789',
+     grid=[];
+ for(var r=0;r<rows;r++){grid.push([]);
+   for(var c=0;c<cols;c++)
+     grid[r].push(Math.random()<.3?gl[Math.floor(Math.random()*gl.length)]:' ');}
+ return grid.map(function(row){return row.join(' ');}).join('\n');
 }
 
 function showGhost(done){
@@ -526,7 +527,7 @@ function showGhost(done){
    if(busy)return;busy=true;
    rain.textContent=glyphRain();
    rain.classList.add('vis');
-   setTimeout(function(){rain.classList.remove('vis');busy=false;},800);
+   setTimeout(function(){rain.classList.remove('vis');busy=false;},1400);
  }
  ov.addEventListener('click',feedback);
  ov.addEventListener('touchstart',feedback,{passive:true});
