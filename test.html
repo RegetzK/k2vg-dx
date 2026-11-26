@@ -504,14 +504,27 @@ function powerSag(){
    o.start();o.stop(c.currentTime+2.9);
  }catch(e){}
 }
-function glyphRain(){
- var cols=40,rows=40,gl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789',grid=[];
- for(var r=0;r<rows;r++){grid.push([]);
-   for(var c=0;c<cols;c++)
-     grid[r].push(Math.random()<.3?gl[Math.floor(Math.random()*gl.length)]:' ');}
- return grid.map(function(row){return row.join(' ');}).join('\n');
+var _rainGrid=null,_rainCols=40,_rainRows=40;
+var _rainGl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789';
+function initRain(){
+  _rainGrid=[];
+  for(var r=0;r<_rainRows;r++){_rainGrid.push([]);
+    for(var c=0;c<_rainCols;c++)
+      _rainGrid[r].push(Math.random()<.3?_rainGl[Math.floor(Math.random()*_rainGl.length)]:' ');}
 }
-
+function stepRain(){
+  // shift everything down one row
+  _rainGrid.pop();
+  var top=[];
+  for(var c=0;c<_rainCols;c++)
+    top.push(Math.random()<.3?_rainGl[Math.floor(Math.random()*_rainGl.length)]:' ');
+  _rainGrid.unshift(top);
+  return _rainGrid.map(function(row){return row.join(' ');}).join('\n');
+}
+function glyphRain(){
+  if(!_rainGrid)initRain();
+  return stepRain();
+}
 function showGhost(done){
  ghostCount++;
  var ov=document.createElement('div');ov.id='ghOv';
@@ -522,12 +535,20 @@ function showGhost(done){
  ov.appendChild(rain);ov.appendChild(d1);ov.appendChild(d2);ov.appendChild(d3);
  document.body.appendChild(ov);
 
- var busy=false;
+ var busy=false,rainTimer=null;
+ function startRain(){
+   if(rainTimer)return;
+   rain.classList.add('vis');
+   rainTimer=setInterval(function(){rain.textContent=glyphRain();},90);
+ }
+ function stopRain(){
+   if(rainTimer){clearInterval(rainTimer);rainTimer=null;}
+   rain.classList.remove('vis');
+ }
  function feedback(){
    if(busy)return;busy=true;
-   rain.textContent=glyphRain();
-   rain.classList.add('vis');
-   setTimeout(function(){rain.classList.remove('vis');busy=false;},1400);
+   startRain();
+   setTimeout(function(){stopRain();busy=false;},1400);
  }
  ov.addEventListener('click',feedback);
  ov.addEventListener('touchstart',feedback,{passive:true});
