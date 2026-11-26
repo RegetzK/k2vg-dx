@@ -397,229 +397,342 @@ scheduleRefresh();
 </div>
 <script src="../audio.js"></script>
 
-<!-- ===== GHOST IN THE MACHINE v19 — corrected geometry, scoped italic lean ===== -->
+<!-- ===== GHOST IN THE MACHINE — refined geometry + responsive scaling ===== -->
 <div id="ghostHost"></div>
 <script>
 (function(){
 'use strict';
+
 var ghostCount=0, permanentDrift=false;
+var BASE_W=531, BASE_H=248;
 
-/* ---------- GEOMETRY v8: 8+11+10 segments, no per-segment skew ---------- */
 var DIGITS=[
- /* ELEMENT 1 — LEFT: 8 segments, all unique, broken "3" */
- {segs:[
-   ['top',    22,  4, 52,16,  0],   // S2: top chamfered bar
-   ['ul',      6, 22, 14,56, 16],   // S1: upper-left short vertical
-   ['ur',     84, 20, 14,56,-16],   // S3: upper-right full vertical
-   ['mid',    22, 90, 58,16,  0],   // S4: middle bar (widest)
-   ['ll',     10,114, 14,52, 16],   // S5: lower-left medium
-   ['lr',     80,110, 14,56,-16],   // S7: lower-right full vertical
-   ['bot',    18,172, 64,16,  0],   // bottom bar (longest)
-   ['shard', 100, 28, 14,14,  0]    // S8: floating isolated bar, far-left upper
- ]},
+  /* ELEMENT 1 — LEFT: 8 individually defined pieces */
+  {segs:[
+    ['top',    22,  4, 58,16,  0],
+    ['ul',      6, 22, 14,54, 16],
+    ['ur',     84, 20, 14,56,-16],
+    ['mid',    22, 90, 58,16,  0],
+    ['ll',     10,114, 14,52, 16],
+    ['lr',     80,110, 14,56,-16],
+    ['bot',    18,172, 64,16,  0],
+    ['shard', 100, 28, 12,26,  0]
+  ]},
 
- /* ELEMENT 2 — CENTER: 11 segments, crown "3" */
- {segs:[
-   ['cL',      4,  6, 14,32,-28],   // C1: crown-left fanned
-   ['cC',     70,  0, 14,38,  0],   // C2: crown-center vertical (tallest)
-   ['cR',    136,  6, 14,32, 28],   // C3: crown-right fanned
-   ['ul',      8, 52, 14,52, 16],   // C4: below-crown-left vertical
-   ['ur',     94, 50, 14,52,-16],   // C6: below-crown-right vertical
-   ['mid',     8,110, 60,16,  0],   // L1: middle bar (wide)
-   ['ll',     10,130, 14,40, 16],   // L2: lower-left short stub
-   ['lr',     90,126, 14,48,-16],   // C7: lower-right (extends below mid)
-   ['bot',    14,178, 68,16,  0],   // L4: bottom base bar
-   ['stub',   50,152, 16,14,  0],   // L3: indented lower stub (unique)
-   ['dot',   138,174, 14,14,  0]    // E2-11: isolated bottom-center dot (unique)
- ]},
+  /* ELEMENT 2 — CENTER: 11 pieces
+     7 repeated bars: 3 crown, 3 below, 1 lower.
+     4 distinct lower-half pieces. */
+  {segs:[
+    ['crownL', 16,  8, 18,40,-28],
+    ['crownC', 73,  0, 18,42,  0],
+    ['crownR',130,  8, 18,40, 28],
 
- /* ELEMENT 3 — RIGHT: 9 main + 1 detached dot = "9" */
- {segs:[
-   ['top',    22,  4, 54,16,  0],   // T1: top bar
-   ['ul',      6, 22, 14,52, 16],   // V1: upper-left vertical
-   ['ur',     86, 20, 14,52,-16],   // V2 upper: upper-right cap
-   ['mid',    22, 90, 58,16,  0],   // T2: middle bar
-   ['lr',     80,110, 14,56,-16],   // V3: lower-right vertical
-   ['bot',    18,172, 64,16,  0],   // T3: bottom bar
-   ['ll',     10,130, 14,40, 16],   // V4: lower-left short stub
-   ['capL',    8,  4, 14,18, 16],   // V5: top-left corner tick (unique)
-   ['capR',   88,  2, 14,18,-16],   // V6: top-right corner tick (unique)
-   ['pip',   136,170, 14,14,  0]    // D1: detached decimal dot, stands on short edge
- ]}
+    ['barL',   20, 48, 16,38,-12],
+    ['barC',   74, 48, 16,38,  0],
+    ['barR',  128, 48, 16,38, 12],
+    ['barLow', 74,132, 16,38,  0],
+
+    ['mid',    28,100, 78,16,  0],
+    ['ll',     20,125, 15,40, 16],
+    ['lr',     99,125, 15,40,-16],
+    ['bot',    32,178, 74,16,  0]
+  ]},
+
+  /* ELEMENT 3 — RIGHT: 9 main pieces + detached upright rectangle */
+  {segs:[
+    ['top',    22,  4, 54,16,  0],
+    ['ul',      6, 22, 14,52, 16],
+    ['ur',     86, 20, 14,52,-16],
+    ['mid',    22, 90, 58,16,  0],
+    ['lr',     80,110, 14,56,-16],
+    ['bot',    18,172, 64,16,  0],
+    ['ll',     10,130, 14,40, 16],
+    ['capL',    8,  4, 14,18, 16],
+    ['capR',   88,  2, 14,18,-16],
+    ['pip',   138,170, 10,20,  0]
+  ]}
 ];
 
 var css=[
-'#ghOv{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;',
-' z-index:99998;display:flex;align-items:center;justify-content:center;',
-' gap:18px;cursor:default;overflow:hidden;user-select:none}',
-'.ghD{position:relative;width:165px;height:248px;flex:0 0 auto;',
-' transform:skewX(-10deg);',
-' transform-origin:center center}',
-'.ghD i{position:absolute;background:#c1121f;opacity:.10;transition:opacity .07s linear;',
-' transform-origin:center center;',
-' -webkit-clip-path:polygon(50% 14%,92% 28%,92% 72%,50% 86%,8% 72%,8% 28%);',
-'         clip-path:polygon(50% 14%,92% 28%,92% 72%,50% 86%,8% 72%,8% 28%)}',
-'.ghD i.on{background:#ff2a2a;opacity:1;box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6),0 0 50px rgba(255,42,42,.25)}',
-'.ghD i.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
-'.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
-'@keyframes ghFlick{0%,100%{opacity:1}50%{opacity:.2}}',
-'#ghRain{position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;opacity:0;',
-' font-family:monospace;font-size:15px;color:rgba(0,255,70,.55);white-space:pre;',
-' line-height:1.1;pointer-events:none;transition:opacity .15s;display:flex;',
-' align-items:center;justify-content:center;text-shadow:0 0 6px rgba(0,255,70,.6)}',
-'#ghRain.vis{opacity:1}'].join('\n');
-var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+  '#ghOv{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;',
+  ' z-index:99998;display:flex;align-items:center;justify-content:center;',
+  ' overflow:hidden;box-sizing:border-box;',
+  ' padding:env(safe-area-inset-top) env(safe-area-inset-right)',
+  ' env(safe-area-inset-bottom) env(safe-area-inset-left);',
+  ' background:#000;user-select:none;-webkit-tap-highlight-color:transparent}',
+
+  '#ghGroup{position:relative;display:flex;flex:0 0 auto;gap:18px;',
+  ' width:531px;height:248px;transform:scale(var(--ghScale,1));',
+  ' transform-origin:center center;z-index:2}',
+
+  '.ghD{position:relative;flex:0 0 165px;width:165px;height:248px;',
+  ' transform:skewX(-10deg);transform-origin:center center}',
+
+  '.ghD i{position:absolute;display:block;background:#c1121f;opacity:.10;',
+  ' transition:opacity .07s linear;transform-origin:center center}',
+
+  '.ghD i.h{clip-path:polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%)}',
+  '.ghD i.v{clip-path:polygon(50% 0,100% 14%,100% 86%,50% 100%,0 86%,0 14%)}',
+
+  '.ghD i.on{background:#ff2a2a;opacity:1;',
+  ' box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6),',
+  ' 0 0 50px rgba(255,42,42,.25)}',
+  '.ghD i.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
+  '.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
+  '@keyframes ghFlick{0%,100%{opacity:1}50%{opacity:.2}}',
+
+  '#ghRain{position:absolute;inset:0;z-index:1;opacity:0;',
+  ' font:15px/1.1 monospace;color:rgba(0,255,70,.55);white-space:pre;',
+  ' pointer-events:none;transition:opacity .15s;text-shadow:0 0 6px rgba(0,255,70,.6);',
+  ' display:flex;align-items:center;justify-content:center}',
+  '#ghRain.vis{opacity:1}'
+].join('\n');
+
+var st=document.createElement('style');
+st.textContent=css;
+document.head.appendChild(st);
+
+function fitOverlay(ov){
+  var vv=window.visualViewport;
+  var w=vv?vv.width:document.documentElement.clientWidth;
+  var h=vv?vv.height:document.documentElement.clientHeight;
+  var scale=Math.min(1,(w-32)/BASE_W,(h-32)/BASE_H);
+  ov.style.setProperty('--ghScale',String(Math.max(.1,scale)));
+}
 
 function mkDigit(def){
- var d=document.createElement('div');d.className='ghD';
- def.segs.forEach(function(s,idx){
-   var i=document.createElement('i');
-   i.setAttribute('data-s','s'+idx);
-   // NO skewX here — container handles the italic lean
-   var t='translateX('+(16*(s[2]+s[4]/2)/248)+'px) rotate('+(s[5]||0)+'deg)';
-   i.style.left=s[1]+'px';i.style.top=s[2]+'px';i.style.width=s[3]+'px';i.style.height=s[4]+'px';
-   i.style.transform=t;i._t=t;d.appendChild(i);});
- return d;
+  var d=document.createElement('div');
+  d.className='ghD';
+
+  def.segs.forEach(function(s,idx){
+    var i=document.createElement('i');
+    var orientation=s[3]>=s[4]?'h':'v';
+
+    i.className=orientation;
+    i.setAttribute('data-s','s'+idx);
+    i.style.left=s[1]+'px';
+    i.style.top=s[2]+'px';
+    i.style.width=s[3]+'px';
+    i.style.height=s[4]+'px';
+
+    /* The container supplies the overall italic lean; no extra drift. */
+    i.style.transform='rotate('+(s[5]||0)+'deg)';
+    i._idx=idx;
+    d.appendChild(i);
+  });
+  return d;
 }
+
 function setDig(d,litIdx,mode){
- Array.prototype.forEach.call(d.children,function(i){
-   var cls=i.getAttribute('data-s');
-   if(litIdx.indexOf(i._idx)>-1)cls+=(mode==='ember'?' ember':' on');
-   i.className=cls;});
+  Array.prototype.forEach.call(d.children,function(i){
+    i.className=i.className.replace(/\s?(on|ember|flicker)/g,'');
+    if(litIdx.indexOf(i._idx)>-1){
+      i.classList.add(mode==='ember'?'ember':'on');
+    }
+  });
 }
+
 function chaosPaint(digits,p,mode){
- digits.forEach(function(d){Array.prototype.forEach.call(d.children,function(i){
-   var cls=i.getAttribute('data-s');
-   if(Math.random()<p)cls+=(mode==='ember'?' ember':' on');
-   i.className=cls;});});}
+  digits.forEach(function(d){
+    Array.prototype.forEach.call(d.children,function(i){
+      i.className=i.className.replace(/\s?(on|ember|flicker)/g,'');
+      if(Math.random()<p)i.classList.add(mode==='ember'?'ember':'on');
+    });
+  });
+}
+
 function garbleDigit(d){
- Array.prototype.forEach.call(d.children,function(i){
-   var cls=i.getAttribute('data-s');
-   if(Math.random()<.5)cls+=' on';i.className=cls;});}
+  Array.prototype.forEach.call(d.children,function(i){
+    i.className=i.className.replace(/\s?(on|ember|flicker)/g,'');
+    if(Math.random()<.5)i.classList.add('on');
+  });
+}
+
+function flickerDigit(d){
+  Array.prototype.forEach.call(d.children,function(i){
+    i.classList.add('flicker');
+  });
+}
 
 function powerSag(){
- try{
-   var c=new (window.AudioContext||window.webkitAudioContext)(),
-       o=c.createOscillator(),g=c.createGain();
-   o.type='sine';
-   o.frequency.setValueAtTime(55,c.currentTime);
-   o.frequency.exponentialRampToValueAtTime(28,c.currentTime+2.5);
-   g.gain.setValueAtTime(0.0001,c.currentTime);
-   g.gain.exponentialRampToValueAtTime(0.22,c.currentTime+0.12);
-   g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+2.8);
-   o.connect(g);g.connect(c.destination);
-   o.start();o.stop(c.currentTime+2.9);
- }catch(e){}
+  try{
+    var c=new (window.AudioContext||window.webkitAudioContext)();
+    var o=c.createOscillator(),g=c.createGain();
+    o.type='sine';
+    o.frequency.setValueAtTime(55,c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(28,c.currentTime+2.5);
+    g.gain.setValueAtTime(.0001,c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.22,c.currentTime+.12);
+    g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+2.8);
+    o.connect(g);g.connect(c.destination);
+    o.start();o.stop(c.currentTime+2.9);
+  }catch(e){}
 }
+
 var _rainGrid=null,_rainCols=40,_rainRows=40;
 var _rainGl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789';
+
 function initRain(){
   _rainGrid=[];
-  for(var r=0;r<_rainRows;r++){_rainGrid.push([]);
-    for(var c=0;c<_rainCols;c++)
-      _rainGrid[r].push(Math.random()<.3?_rainGl[Math.floor(Math.random()*_rainGl.length)]:' ');}
+  for(var r=0;r<_rainRows;r++){
+    _rainGrid.push([]);
+    for(var c=0;c<_rainCols;c++){
+      _rainGrid[r].push(Math.random()<.3
+        ?_rainGl[Math.floor(Math.random()*_rainGl.length)]
+        :' ');
+    }
+  }
 }
+
 function stepRain(){
   _rainGrid.pop();
   var top=[];
-  for(var c=0;c<_rainCols;c++)
-    top.push(Math.random()<.3?_rainGl[Math.floor(Math.random()*_rainGl.length)]:' ');
+  for(var c=0;c<_rainCols;c++){
+    top.push(Math.random()<.3
+      ?_rainGl[Math.floor(Math.random()*_rainGl.length)]
+      :' ');
+  }
   _rainGrid.unshift(top);
   return _rainGrid.map(function(row){return row.join(' ');}).join('\n');
 }
+
 function glyphRain(){
   if(!_rainGrid)initRain();
   return stepRain();
 }
+
 function showGhost(done){
- ghostCount++;
- var ov=document.createElement('div');ov.id='ghOv';
- var d1=mkDigit(DIGITS[0]),d2=mkDigit(DIGITS[1]),d3=mkDigit(DIGITS[2]);
- var digits=[d1,d2,d3];
- digits.forEach(function(d){Array.prototype.forEach.call(d.children,function(i,idx){i._idx=idx;});});
- var rain=document.createElement('div');rain.id='ghRain';
- ov.appendChild(rain);ov.appendChild(d1);ov.appendChild(d2);ov.appendChild(d3);
- document.body.appendChild(ov);
+  ghostCount++;
 
- var busy=false,rainTimer=null;
- function startRain(){
-   if(rainTimer)return;
-   rain.classList.add('vis');
-   rainTimer=setInterval(function(){rain.textContent=glyphRain();},90);
- }
- function stopRain(){
-   if(rainTimer){clearInterval(rainTimer);rainTimer=null;}
-   rain.classList.remove('vis');
- }
- function feedback(){
-   if(busy)return;busy=true;
-   startRain();
-   setTimeout(function(){stopRain();busy=false;},1400);
- }
- ov.addEventListener('click',feedback);
- ov.addEventListener('touchstart',feedback,{passive:true});
+  var ov=document.createElement('div');
+  ov.id='ghOv';
 
- function T(){
-   var n=new Date();
-   if(permanentDrift)n=new Date(n.getTime()-90000);
-   return [
-     String(n.getHours()%12||12),
-     String(n.getMinutes()),
-     String(n.getSeconds())
-   ];
- }
- function paint(mode){
-   var t=T();
-   var h = String(+t[0]%10);
-   setDig(d1,[+h%DIGITS[0].segs.length],mode);
-   setDig(d2,[+t[1]%DIGITS[1].segs.length],mode);
-   setDig(d3,[+t[2]%DIGITS[2].segs.length],mode);
- }
+  var group=document.createElement('div');
+  group.id='ghGroup';
 
- var beats=[
-  {ms:106,f:function(){paint();}},
-  {ms:106,f:function(){paint();}},
-  {ms:200,f:function(){paint();chaosPaint([d1],.2);}},
-  {ms:240,f:function(){paint();chaosPaint([d2],.25);}},
-  {ms:320,f:function(){paint();chaosPaint([d3],.35);}},
-  {ms:400,f:function(){paint();chaosPaint([d2,d3],.4);}},
-  {ms:520,f:function(){paint('ember');d3.classList.add('flicker');}},
-  {ms:640,f:function(){paint('ember');d2.classList.add('flicker');chaosPaint([d1,d2,d3],.45,'ember');}},
-  {ms:800,f:function(){garbleDigit(d3);chaosPaint([d1,d2],.5,'ember');}},
-  {ms:960,f:function(){garbleDigit(d2);chaosPaint([d1],.55,'ember');}},
-  {ms:1120,f:function(){garbleDigit(d1);chaosPaint([d1,d2,d3],.6);}},
-  {ms:1280,f:function(){chaosPaint([d1,d2,d3],.45);}},
-  {ms:1440,f:function(){chaosPaint([d1,d2,d3],.3);}},
-  {ms:1600,f:function(){chaosPaint([d1,d2,d3],.15,'ember');}},
-  {ms:1760,f:function(){chaosPaint([d1,d2,d3],0);}},
-  {ms:1920,f:function(){}},
-  {ms:2080,f:function(){}}
- ];
- var i=0;
- function step(){
-   if(i>=beats.length){
-     ov.remove();
-     if(ghostCount>=3)permanentDrift=true;
-     if(done)done();
-     return;}
-   beats[i].f();
-   setTimeout(step,beats[i].ms);
-   i++;
- }
- powerSag();
- step();
+  var d1=mkDigit(DIGITS[0]);
+  var d2=mkDigit(DIGITS[1]);
+  var d3=mkDigit(DIGITS[2]);
+  var digits=[d1,d2,d3];
+
+  digits.forEach(function(d){group.appendChild(d);});
+
+  var rain=document.createElement('div');
+  rain.id='ghRain';
+  ov.appendChild(rain);
+  ov.appendChild(group);
+  document.body.appendChild(ov);
+
+  fitOverlay(ov);
+  var resizeHandler=function(){fitOverlay(ov);};
+  window.addEventListener('resize',resizeHandler);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',resizeHandler);
+  }
+
+  var busy=false,rainTimer=null;
+
+  function startRain(){
+    if(rainTimer)return;
+    rain.classList.add('vis');
+    rainTimer=setInterval(function(){rain.textContent=glyphRain();},90);
+  }
+
+  function stopRain(){
+    if(rainTimer){clearInterval(rainTimer);rainTimer=null;}
+    rain.classList.remove('vis');
+  }
+
+  function feedback(){
+    if(busy)return;
+    busy=true;
+    startRain();
+    setTimeout(function(){stopRain();busy=false;},1400);
+  }
+
+  ov.addEventListener('click',feedback);
+  ov.addEventListener('touchstart',feedback,{passive:true});
+
+  function T(){
+    var n=new Date();
+    if(permanentDrift)n=new Date(n.getTime()-90000);
+    return [
+      String(n.getHours()%12||12),
+      String(n.getMinutes()),
+      String(n.getSeconds())
+    ];
+  }
+
+  function paint(mode){
+    var t=T();
+    var h=String(+t[0]%10);
+    setDig(d1,[+h%DIGITS[0].segs.length],mode);
+    setDig(d2,[+t[1]%DIGITS[1].segs.length],mode);
+    setDig(d3,[+t[2]%DIGITS[2].segs.length],mode);
+  }
+
+  var beats=[
+    {ms:106,f:function(){paint();}},
+    {ms:106,f:function(){paint();}},
+    {ms:200,f:function(){paint();chaosPaint([d1],.2);}},
+    {ms:240,f:function(){paint();chaosPaint([d2],.25);}},
+    {ms:320,f:function(){paint();chaosPaint([d3],.35);}},
+    {ms:400,f:function(){paint();chaosPaint([d2,d3],.4);}},
+    {ms:520,f:function(){paint('ember');flickerDigit(d3);}},
+    {ms:640,f:function(){paint('ember');flickerDigit(d2);chaosPaint([d1,d2,d3],.45,'ember');}},
+    {ms:800,f:function(){garbleDigit(d3);chaosPaint([d1,d2],.5,'ember');}},
+    {ms:960,f:function(){garbleDigit(d2);chaosPaint([d1],.55,'ember');}},
+    {ms:1120,f:function(){garbleDigit(d1);chaosPaint([d1,d2,d3],.6);}},
+    {ms:1280,f:function(){chaosPaint([d1,d2,d3],.45);}},
+    {ms:1440,f:function(){chaosPaint([d1,d2,d3],.3);}},
+    {ms:1600,f:function(){chaosPaint([d1,d2,d3],.15,'ember');}},
+    {ms:1760,f:function(){chaosPaint([d1,d2,d3],0);}},
+    {ms:1920,f:function(){}},
+    {ms:2080,f:function(){}}
+  ];
+
+  var i=0;
+  function step(){
+    if(i>=beats.length){
+      stopRain();
+      window.removeEventListener('resize',resizeHandler);
+      if(window.visualViewport){
+        window.visualViewport.removeEventListener('resize',resizeHandler);
+      }
+      ov.remove();
+      if(ghostCount>=3)permanentDrift=true;
+      if(done)done();
+      return;
+    }
+    beats[i].f();
+    setTimeout(step,beats[i].ms);
+    i++;
+  }
+
+  powerSag();
+  step();
 }
 
-function ghostLock(msg){showGhost(function(){ztMsg(msg);});}
+function ghostLock(msg){
+  showGhost(function(){ztMsg(msg);});
+}
+
 function bind(id,msg){
- var b=document.getElementById(id);if(!b)return;
- b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();ghostLock(msg);},true);
+  var b=document.getElementById(id);
+  if(!b)return;
+  b.addEventListener('click',function(e){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    ghostLock(msg);
+  },true);
 }
+
 bind('pollNow','ADMIN FUNCTION ONLY // INCIDENT LOGGED // GARY SEVEN NOTIFIED');
 bind('armAudio','AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOGGED');
 bind('testAlert','ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');
 })();
 </script>
-<!-- ===== END GHOST IN THE MACHINE v19 ===== -->
+<!-- ===== END GHOST IN THE MACHINE ===== -->
+
 </body>
 </html>
