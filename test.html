@@ -396,51 +396,55 @@ scheduleRefresh();
   <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">[   <span style="color:#ffff00 !important;font-size:12px;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span>   ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 <script src="../audio.js"></script>
-<!-- ===== GHOST IN THE MACHINE v7 FINAL — fragmented capsule display, locked hostage, feedback rain ===== -->
+
+<!-- ===== GHOST IN THE MACHINE v19 — corrected geometry, scoped italic lean ===== -->
 <div id="ghostHost"></div>
 <script>
 (function(){
 'use strict';
 var ghostCount=0, permanentDrift=false;
 
-/* ---------- GEOMETRY v8: softened tips, tightened E1, de-collided E3 ---------- */
+/* ---------- GEOMETRY v8: 8+11+10 segments, no per-segment skew ---------- */
 var DIGITS=[
- /* ELEMENT 1 — 8 sparse floating shards (tightened horizontally) */
+ /* ELEMENT 1 — LEFT: 8 segments, all unique, broken "3" */
  {segs:[
-   ['top',   28,  3, 70,18,  0],
-   ['ul',     8, 26, 18,74, 15],
-   ['ur',    88, 23, 18,74,-15],
-   ['mid',   28,109, 66,18,  0],
-   ['ll',    11,139, 18,71, 17],
-   ['lr',    85,135, 18,74,-17],
-   ['bot',   25,215, 72,18,  0],
-   ['shard',104,211, 17,17,  0]
+   ['top',    22,  4, 52,16,  0],   // S2: top chamfered bar
+   ['ul',      6, 22, 14,56, 16],   // S1: upper-left short vertical
+   ['ur',     84, 20, 14,56,-16],   // S3: upper-right full vertical
+   ['mid',    22, 90, 58,16,  0],   // S4: middle bar (widest)
+   ['ll',     10,114, 14,52, 16],   // S5: lower-left medium
+   ['lr',     80,110, 14,56,-16],   // S7: lower-right full vertical
+   ['bot',    18,172, 64,16,  0],   // bottom bar (longest)
+   ['shard', 100, 28, 14,14,  0]    // S8: floating isolated bar, far-left upper
  ]},
- /* ELEMENT 2 — 10 with radial burst crown (unchanged) */
+
+ /* ELEMENT 2 — CENTER: 11 segments, crown "3" */
  {segs:[
-   ['bL',     3, 10, 18,36,-30],
-   ['bC',    74,  0, 18,36,  0],
-   ['bR',   145, 10, 18,36, 30],
-   ['upper', 26, 76, 73,18,  0],
-   ['ul',     3, 89, 18,76, 18],
-   ['ur',    96, 86, 18,76,-18],
-   ['mid',   26,158, 69,18,  0],
-   ['ll',     7,172, 18,73, 20],
-   ['lr',    92,168, 18,76,-20],
-   ['bot',   23,218, 76,18,  0]
+   ['cL',      4,  6, 14,32,-28],   // C1: crown-left fanned
+   ['cC',     70,  0, 14,38,  0],   // C2: crown-center vertical (tallest)
+   ['cR',    136,  6, 14,32, 28],   // C3: crown-right fanned
+   ['ul',      8, 52, 14,52, 16],   // C4: below-crown-left vertical
+   ['ur',     94, 50, 14,52,-16],   // C6: below-crown-right vertical
+   ['mid',     8,110, 60,16,  0],   // L1: middle bar (wide)
+   ['ll',     10,130, 14,40, 16],   // L2: lower-left short stub
+   ['lr',     90,126, 14,48,-16],   // C7: lower-right (extends below mid)
+   ['bot',    14,178, 68,16,  0],   // L4: bottom base bar
+   ['stub',   50,152, 16,14,  0],   // L3: indented lower stub (unique)
+   ['dot',   138,174, 14,14,  0]    // E2-11: isolated bottom-center dot (unique)
  ]},
- /* ELEMENT 3 — diag shortened clear of upper bar; lr lifted off bot */
+
+ /* ELEMENT 3 — RIGHT: 9 main + 1 detached dot = "9" */
  {segs:[
-   ['dash',   2,  3, 15,30,  0],
-   ['diag',  52, 22, 16,42,-28],
-   ['upper', 30, 83, 73,18,  0],
-   ['ul',     7, 89, 18,76, 18],
-   ['ur',    99, 86, 18,76,-18],
-   ['mid',   30,158, 69,18,  0],
-   ['ll',    10,172, 18,73, 20],
-   ['lr',    82,152, 17,44,-18],
-   ['bot',   26,218, 76,18,  0],
-   ['pip',  132,215, 18,33,  0]
+   ['top',    22,  4, 54,16,  0],   // T1: top bar
+   ['ul',      6, 22, 14,52, 16],   // V1: upper-left vertical
+   ['ur',     86, 20, 14,52,-16],   // V2 upper: upper-right cap
+   ['mid',    22, 90, 58,16,  0],   // T2: middle bar
+   ['lr',     80,110, 14,56,-16],   // V3: lower-right vertical
+   ['bot',    18,172, 64,16,  0],   // T3: bottom bar
+   ['ll',     10,130, 14,40, 16],   // V4: lower-left short stub
+   ['capL',    8,  4, 14,18, 16],   // V5: top-left corner tick (unique)
+   ['capR',   88,  2, 14,18,-16],   // V6: top-right corner tick (unique)
+   ['pip',   136,170, 14,14,  0]    // D1: detached decimal dot, stands on short edge
  ]}
 ];
 
@@ -448,12 +452,14 @@ var css=[
 '#ghOv{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;',
 ' z-index:99998;display:flex;align-items:center;justify-content:center;',
 ' gap:18px;cursor:default;overflow:hidden;user-select:none}',
-'.ghD{position:relative;width:165px;height:248px;flex:0 0 auto}',
+'.ghD{position:relative;width:165px;height:248px;flex:0 0 auto;',
+' transform:skewX(-10deg);',
+' transform-origin:center center}',
 '.ghD i{position:absolute;background:#c1121f;opacity:.10;transition:opacity .07s linear;',
 ' transform-origin:center center;',
 ' -webkit-clip-path:polygon(50% 14%,92% 28%,92% 72%,50% 86%,8% 72%,8% 28%);',
 '         clip-path:polygon(50% 14%,92% 28%,92% 72%,50% 86%,8% 72%,8% 28%)}',
-'.ghD i.on{background:#ff2a2a;opacity:1;box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6)}',
+'.ghD i.on{background:#ff2a2a;opacity:1;box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6),0 0 50px rgba(255,42,42,.25)}',
 '.ghD i.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
 '.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
 '@keyframes ghFlick{0%,100%{opacity:1}50%{opacity:.2}}',
@@ -469,7 +475,8 @@ function mkDigit(def){
  def.segs.forEach(function(s,idx){
    var i=document.createElement('i');
    i.setAttribute('data-s','s'+idx);
-   var t='translateX('+(16*(s[2]+s[4]/2)/248)+'px) rotate('+(s[5]||0)+'deg) skewX(16deg)';
+   // NO skewX here — container handles the italic lean
+   var t='translateX('+(16*(s[2]+s[4]/2)/248)+'px) rotate('+(s[5]||0)+'deg)';
    i.style.left=s[1]+'px';i.style.top=s[2]+'px';i.style.width=s[3]+'px';i.style.height=s[4]+'px';
    i.style.transform=t;i._t=t;d.appendChild(i);});
  return d;
@@ -513,7 +520,6 @@ function initRain(){
       _rainGrid[r].push(Math.random()<.3?_rainGl[Math.floor(Math.random()*_rainGl.length)]:' ');}
 }
 function stepRain(){
-  // shift everything down one row
   _rainGrid.pop();
   var top=[];
   for(var c=0;c<_rainCols;c++)
@@ -556,11 +562,16 @@ function showGhost(done){
  function T(){
    var n=new Date();
    if(permanentDrift)n=new Date(n.getTime()-90000);
-   return [String(n.getHours()%12||12),String(n.getMinutes()),String(n.getSeconds())];
+   return [
+     String(n.getHours()%12||12),
+     String(n.getMinutes()),
+     String(n.getSeconds())
+   ];
  }
  function paint(mode){
    var t=T();
-   setDig(d1,[+t[0]%DIGITS[0].segs.length],mode);
+   var h = String(+t[0]%10);
+   setDig(d1,[+h%DIGITS[0].segs.length],mode);
    setDig(d2,[+t[1]%DIGITS[1].segs.length],mode);
    setDig(d3,[+t[2]%DIGITS[2].segs.length],mode);
  }
@@ -609,6 +620,6 @@ bind('armAudio','AUDIO SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // INCIDENT LOG
 bind('testAlert','ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET SECURITY NOTIFIED');
 })();
 </script>
-<!-- ===== END GHOST IN THE MACHINE v7 FINAL ===== -->
+<!-- ===== END GHOST IN THE MACHINE v19 ===== -->
 </body>
 </html>
