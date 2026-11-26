@@ -406,7 +406,7 @@ scheduleRefresh();
 var ghostCount=0, permanentDrift=false;
 
 var DIGITS=[
-  /* E1 — compact body; isolated slash at upper-left */
+  /* E1 — compact body, isolated slash at upper-left */
   {segs:[
     ['top',    24,  4, 52,16,  0],
     ['ul',     13, 22, 14,52, 16],
@@ -418,24 +418,25 @@ var DIGITS=[
     ['shard',   0, 24, 12,22, 16]
   ]},
 
-  /* E2 — narrower crown; tighter lower cluster */
+  /* E2 — 3 crown bars, 3 bars beneath, 1 lower bar,
+     and 4 distinct lower-half pieces */
   {segs:[
-    ['crownL', 47,  9, 13,26,-34],
-    ['crownC', 74,  2, 13,30,  0],
-    ['crownR',101,  9, 13,26, 34],
+    ['crownL', 38, 10, 14,28,-28],
+    ['crownC', 74,  2, 14,34,  0],
+    ['crownR',110, 10, 14,28, 28],
 
-    ['barL',   39, 43, 13,28,-16],
-    ['barC',   74, 43, 13,28,  0],
-    ['barR',  109, 43, 13,28, 16],
-    ['barLow', 74,123, 13,30,  0],
+    ['barL',   31, 45, 14,30,-16],
+    ['barC',   74, 45, 14,30,  0],
+    ['barR',  117, 45, 14,30, 16],
+    ['barLow', 74,124, 14,32,  0],
 
-    ['mid',    40, 88, 70,14,  0],
-    ['ll',     38,116, 13,36, 16],
-    ['lr',     99,116, 13,36,-16],
-    ['bot',    40,169, 70,14,  0]
+    ['mid',    38, 88, 74,15,  0],
+    ['ll',     36,116, 14,38, 16],
+    ['lr',    100,116, 14,38,-16],
+    ['bot',    38,170, 74,15,  0]
   ]},
 
-  /* E3 — upper corner pieces sit closer to the top bar */
+  /* E3 — tighter upper bowl; detached upright pip at lower-right */
   {segs:[
     ['top',    24,  4, 54,16,  0],
     ['ul',     12, 22, 14,50, 16],
@@ -444,12 +445,11 @@ var DIGITS=[
     ['lr',     73,101, 14,52,-16],
     ['bot',    20,164, 60,16,  0],
     ['ll',     16,121, 14,38, 16],
-    ['capL',   15,  6, 14,18, 16],
-    ['capR',   76,  4, 14,18,-16],
+    ['capL',   10,  4, 14,18, 16],
+    ['capR',   82,  2, 14,18,-16],
     ['pip',   120,168, 10,20,  0]
   ]}
 ];
-
 
 var css=[
   '#ghOv{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;',
