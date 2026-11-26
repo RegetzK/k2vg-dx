@@ -403,44 +403,44 @@ scheduleRefresh();
 'use strict';
 var ghostCount=0, permanentDrift=false;
 
-/* ---------- GEOMETRY v12: RIGHT lean, thick segments, aligned grid, no collisions ---------- */
+/* ---------- GEOMETRY v8: softened tips, tightened E1, de-collided E3 ---------- */
 var DIGITS=[
- /* ELEMENT 1 — E shape, tight shards, right lean */
+ /* ELEMENT 1 — 8 sparse floating shards (tightened horizontally) */
  {segs:[
-   ['top',    46, 15, 73, 22, -6],
-   ['ul',     28, 40, 22, 74,  18],
-   ['ur',    115, 40, 22, 74, -14],
-   ['mid',    46,115, 73, 22, -6],
-   ['ll',     28,168, 22, 74,  18],
-   ['lr',    115,168, 22, 74, -14],
-   ['bot',    46,222, 73, 22, -6],
-   ['shard', 128,220, 18, 18,-10]
+   ['top',   28,  3, 70,18,  0],
+   ['ul',     8, 26, 18,74, 15],
+   ['ur',    88, 23, 18,74,-15],
+   ['mid',   28,109, 66,18,  0],
+   ['ll',    11,139, 18,71, 17],
+   ['lr',    85,135, 18,74,-17],
+   ['bot',   25,215, 72,18,  0],
+   ['shard',104,211, 17,17,  0]
  ]},
- /* ELEMENT 2 — 3 shape, crown flush above body (2px gap) */
+ /* ELEMENT 2 — 10 with radial burst crown (unchanged) */
  {segs:[
-   ['bL',     42,  0, 22, 36,-24],
-   ['bC',     70,  0, 22, 28,-10],
-   ['bR',    100,  0, 22, 36,  4],
-   ['top',    46, 38, 73, 22, -6],
-   ['ul',     28, 63, 22, 74,  18],
-   ['ur',    115, 63, 22, 74, -14],
-   ['mid',    46,138, 73, 22, -6],
-   ['ll',     28,191, 22, 74,  18],
-   ['lr',    115,191, 22, 74, -14],
-   ['bot',    46,245, 73, 22, -6]
+   ['bL',     3, 10, 18,36,-30],
+   ['bC',    74,  0, 18,36,  0],
+   ['bR',   145, 10, 18,36, 30],
+   ['upper', 26, 76, 73,18,  0],
+   ['ul',     3, 89, 18,76, 18],
+   ['ur',    96, 86, 18,76,-18],
+   ['mid',   26,158, 69,18,  0],
+   ['ll',     7,172, 18,73, 20],
+   ['lr',    92,168, 18,76,-20],
+   ['bot',   23,218, 76,18,  0]
  ]},
- /* ELEMENT 3 — 7 shape, diag clear of upper, lr lifted off bot, pip aligned */
+ /* ELEMENT 3 — diag shortened clear of upper bar; lr lifted off bot */
  {segs:[
-   ['dash',    8,  8, 16, 28,  16],
-   ['diag',   55, 40, 20, 44, -22],
-   ['upper',  30, 88, 73, 22,  -6],
-   ['ul',     12, 96, 22, 74,  18],
-   ['ur',    103, 96, 22, 74, -14],
-   ['mid',    30,170, 73, 22,  -6],
-   ['ll',     12,194, 22, 74,  18],
-   ['lr',    103,180, 20, 40, -14],
-   ['bot',    30,222, 73, 22,  -6],
-   ['pip',   130,220, 18, 18, -10]
+   ['dash',   2,  3, 15,30,  0],
+   ['diag',  52, 22, 16,42,-28],
+   ['upper', 30, 83, 73,18,  0],
+   ['ul',     7, 89, 18,76, 18],
+   ['ur',    99, 86, 18,76,-18],
+   ['mid',   30,158, 69,18,  0],
+   ['ll',    10,172, 18,73, 20],
+   ['lr',    82,152, 17,44,-18],
+   ['bot',   26,218, 76,18,  0],
+   ['pip',  132,215, 18,33,  0]
  ]}
 ];
 
@@ -450,9 +450,9 @@ var css=[
 ' gap:18px;cursor:default;overflow:hidden;user-select:none}',
 '.ghD{position:relative;width:165px;height:248px;flex:0 0 auto}',
 '.ghD i{position:absolute;background:#c1121f;opacity:.10;transition:opacity .07s linear;',
-' transform-origin:center center;transform:skewX(14deg);',
-' -webkit-clip-path:polygon(50% 12%,86% 24%,86% 76%,50% 88%,14% 76%,14% 24%);',
-'         clip-path:polygon(50% 12%,86% 24%,86% 76%,50% 88%,14% 76%,14% 24%)}',
+' transform-origin:center center;',
+' -webkit-clip-path:polygon(50% 14%,92% 28%,92% 72%,50% 86%,8% 72%,8% 28%);',
+'         clip-path:polygon(50% 14%,92% 28%,92% 72%,50% 86%,8% 72%,8% 28%)}',
 '.ghD i.on{background:#ff2a2a;opacity:1;box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6)}',
 '.ghD i.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
 '.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
@@ -462,7 +462,6 @@ var css=[
 ' line-height:1.1;pointer-events:none;transition:opacity .15s;display:flex;',
 ' align-items:center;justify-content:center;text-shadow:0 0 6px rgba(0,255,70,.6)}',
 '#ghRain.vis{opacity:1}'].join('\n');
-
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
 function mkDigit(def){
@@ -470,7 +469,7 @@ function mkDigit(def){
  def.segs.forEach(function(s,idx){
    var i=document.createElement('i');
    i.setAttribute('data-s','s'+idx);
-   var t='translateX('+(16*(s[2]+s[4]/2)/248)+'px) rotate('+(s[5]||0)+'deg)';
+   var t='translateX('+(16*(s[2]+s[4]/2)/248)+'px) rotate('+(s[5]||0)+'deg) skewX(16deg)';
    i.style.left=s[1]+'px';i.style.top=s[2]+'px';i.style.width=s[3]+'px';i.style.height=s[4]+'px';
    i.style.transform=t;i._t=t;d.appendChild(i);});
  return d;
@@ -561,9 +560,9 @@ function showGhost(done){
  }
  function paint(mode){
    var t=T();
-   setDig(d1,litFor(0,(+t[0])%10),mode);
-   setDig(d2,litFor(1,(+t[1]/10|0)),mode);
-   setDig(d3,litFor(2,(+t[1]%10)),mode);
+   setDig(d1,[+t[0]%DIGITS[0].segs.length],mode);
+   setDig(d2,[+t[1]%DIGITS[1].segs.length],mode);
+   setDig(d3,[+t[2]%DIGITS[2].segs.length],mode);
  }
 
  var beats=[
