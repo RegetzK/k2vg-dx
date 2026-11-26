@@ -403,36 +403,46 @@ scheduleRefresh();
 'use strict';
 var ghostCount=0, permanentDrift=false;
 
-/* ---------- GEOMETRY v11: thicker, tighter, right-leaning, unified frame ---------- */
-/* Indices: 0=top 1=ul 2=ur 3=mid 4=ll 5=lr 6=bot 7=bL 8=bC 9=bR 10=pip */
-var FRAME=[
-  ['top',    46, 15,  73, 24, -10],
-  ['ul',     28, 40,  24, 84, -20],
-  ['ur',    118, 40,  24, 84,  -8],
-  ['mid',    46,121,  73, 24, -10],
-  ['ll',     28,168,  24, 84, -20],
-  ['lr',    118,168,  24, 84,  -8],
-  ['bot',    46,226,  73, 24, -10],
-  ['bL',     42,  0,  24, 34, -18],
-  ['bC',     70,  0,  24, 26, -10],
-  ['bR',    100,  0,  24, 34,  -2],
-  ['pip',   130,226,  18, 18, -10]
+/* ---------- GEOMETRY v12: RIGHT lean, thick segments, aligned grid, no collisions ---------- */
+var DIGITS=[
+ /* ELEMENT 1 — E shape, tight shards, right lean */
+ {segs:[
+   ['top',    46, 15, 73, 22, -6],
+   ['ul',     28, 40, 22, 74,  18],
+   ['ur',    115, 40, 22, 74, -14],
+   ['mid',    46,115, 73, 22, -6],
+   ['ll',     28,168, 22, 74,  18],
+   ['lr',    115,168, 22, 74, -14],
+   ['bot',    46,222, 73, 22, -6],
+   ['shard', 128,220, 18, 18,-10]
+ ]},
+ /* ELEMENT 2 — 3 shape, crown flush above body (2px gap) */
+ {segs:[
+   ['bL',     42,  0, 22, 36,-24],
+   ['bC',     70,  0, 22, 28,-10],
+   ['bR',    100,  0, 22, 36,  4],
+   ['top',    46, 38, 73, 22, -6],
+   ['ul',     28, 63, 22, 74,  18],
+   ['ur',    115, 63, 22, 74, -14],
+   ['mid',    46,138, 73, 22, -6],
+   ['ll',     28,191, 22, 74,  18],
+   ['lr',    115,191, 22, 74, -14],
+   ['bot',    46,245, 73, 22, -6]
+ ]},
+ /* ELEMENT 3 — 7 shape, diag clear of upper, lr lifted off bot, pip aligned */
+ {segs:[
+   ['dash',    8,  8, 16, 28,  16],
+   ['diag',   55, 40, 20, 44, -22],
+   ['upper',  30, 88, 73, 22,  -6],
+   ['ul',     12, 96, 22, 74,  18],
+   ['ur',    103, 96, 22, 74, -14],
+   ['mid',    30,170, 73, 22,  -6],
+   ['ll',     12,194, 22, 74,  18],
+   ['lr',    103,180, 20, 40, -14],
+   ['bot',    30,222, 73, 22,  -6],
+   ['pip',   130,220, 18, 18, -10]
+ ]}
 ];
-var DIGITS=[{segs:FRAME},{segs:FRAME},{segs:FRAME}];
-
-/* Digit -> lit segment indices (classic 7-seg) */
-var PATTERN={
-  0:[0,1,2,4,5,6], 1:[2,5],       2:[0,2,3,4,6], 3:[0,2,3,5,6],
-  4:[1,2,3,5],     5:[0,1,3,5,6], 6:[0,1,3,4,5,6],7:[0,2,5],
-  8:[0,1,2,3,4,5,6],9:[0,1,2,3,5,6]
-};
-var CROWN=[7,8,9], PIP=[10];
-function litFor(el,d){
-  var p=PATTERN[d].slice();
-  if(el===1)p=p.concat(CROWN);
-  if(el===2)p=p.concat(PIP);
-  return p;
-}
 
 var css=[
 '#ghOv{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;',
@@ -440,9 +450,9 @@ var css=[
 ' gap:18px;cursor:default;overflow:hidden;user-select:none}',
 '.ghD{position:relative;width:165px;height:248px;flex:0 0 auto}',
 '.ghD i{position:absolute;background:#c1121f;opacity:.10;transition:opacity .07s linear;',
-' transform-origin:center center;transform:skewX(-12deg);',
-' -webkit-clip-path:polygon(50% 10%,88% 22%,88% 78%,50% 90%,12% 78%,12% 22%);',
-'         clip-path:polygon(50% 10%,88% 22%,88% 78%,50% 90%,12% 78%,12% 22%)}',
+' transform-origin:center center;transform:skewX(14deg);',
+' -webkit-clip-path:polygon(50% 12%,86% 24%,86% 76%,50% 88%,14% 76%,14% 24%);',
+'         clip-path:polygon(50% 12%,86% 24%,86% 76%,50% 88%,14% 76%,14% 24%)}',
 '.ghD i.on{background:#ff2a2a;opacity:1;box-shadow:0 0 12px #ff2a2a,0 0 26px rgba(255,42,42,.6)}',
 '.ghD i.ember{background:#5a0d12;opacity:.45;box-shadow:none}',
 '.ghD i.flicker{animation:ghFlick .12s steps(1) infinite}',
@@ -452,6 +462,7 @@ var css=[
 ' line-height:1.1;pointer-events:none;transition:opacity .15s;display:flex;',
 ' align-items:center;justify-content:center;text-shadow:0 0 6px rgba(0,255,70,.6)}',
 '#ghRain.vis{opacity:1}'].join('\n');
+
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
 function mkDigit(def){
@@ -459,7 +470,7 @@ function mkDigit(def){
  def.segs.forEach(function(s,idx){
    var i=document.createElement('i');
    i.setAttribute('data-s','s'+idx);
-   var t='translateX('+(16*(s[2]+s[4]/2)/248)+'px) rotate('+(s[5]||0)+'deg) skewX(-12deg)';
+   var t='translateX('+(16*(s[2]+s[4]/2)/248)+'px) rotate('+(s[5]||0)+'deg)';
    i.style.left=s[1]+'px';i.style.top=s[2]+'px';i.style.width=s[3]+'px';i.style.height=s[4]+'px';
    i.style.transform=t;i._t=t;d.appendChild(i);});
  return d;
