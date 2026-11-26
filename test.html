@@ -404,52 +404,50 @@ scheduleRefresh();
 'use strict';
 
 var ghostCount=0, permanentDrift=false;
-var BASE_W=531, BASE_H=248;
 
 var DIGITS=[
-  /* ELEMENT 1 — LEFT: 8 individually defined pieces */
+  /* E1 — compact body, isolated slash at upper-left */
   {segs:[
-    ['top',    22,  4, 58,16,  0],
-    ['ul',      6, 22, 14,54, 16],
-    ['ur',     84, 20, 14,56,-16],
-    ['mid',    22, 90, 58,16,  0],
-    ['ll',     10,114, 14,52, 16],
-    ['lr',     80,110, 14,56,-16],
-    ['bot',    18,172, 64,16,  0],
-    ['shard', 100, 28, 12,26,  0]
+    ['top',    24,  4, 52,16,  0],
+    ['ul',     13, 22, 14,52, 16],
+    ['ur',     76, 20, 14,54,-16],
+    ['mid',    24, 84, 56,16,  0],
+    ['ll',     16,108, 14,48, 16],
+    ['lr',     72,106, 14,52,-16],
+    ['bot',    20,164, 60,16,  0],
+    ['shard',   0, 24, 12,22, 16]
   ]},
 
-  /* ELEMENT 2 — CENTER: 11 pieces
-     7 repeated bars: 3 crown, 3 below, 1 lower.
-     4 distinct lower-half pieces. */
+  /* E2 — 3 crown bars, 3 bars beneath, 1 lower bar,
+     and 4 distinct lower-half pieces */
   {segs:[
-    ['crownL', 16,  8, 18,40,-28],
-    ['crownC', 73,  0, 18,42,  0],
-    ['crownR',130,  8, 18,40, 28],
+    ['crownL', 38, 10, 14,28,-28],
+    ['crownC', 74,  2, 14,34,  0],
+    ['crownR',110, 10, 14,28, 28],
 
-    ['barL',   20, 48, 16,38,-12],
-    ['barC',   74, 48, 16,38,  0],
-    ['barR',  128, 48, 16,38, 12],
-    ['barLow', 74,132, 16,38,  0],
+    ['barL',   31, 45, 14,30,-16],
+    ['barC',   74, 45, 14,30,  0],
+    ['barR',  117, 45, 14,30, 16],
+    ['barLow', 74,124, 14,32,  0],
 
-    ['mid',    28,100, 78,16,  0],
-    ['ll',     20,125, 15,40, 16],
-    ['lr',     99,125, 15,40,-16],
-    ['bot',    32,178, 74,16,  0]
+    ['mid',    38, 88, 74,15,  0],
+    ['ll',     36,116, 14,38, 16],
+    ['lr',    100,116, 14,38,-16],
+    ['bot',    38,170, 74,15,  0]
   ]},
 
-  /* ELEMENT 3 — RIGHT: 9 main pieces + detached upright rectangle */
+  /* E3 — tighter upper bowl; detached upright pip at lower-right */
   {segs:[
-    ['top',    22,  4, 54,16,  0],
-    ['ul',      6, 22, 14,52, 16],
-    ['ur',     86, 20, 14,52,-16],
-    ['mid',    22, 90, 58,16,  0],
-    ['lr',     80,110, 14,56,-16],
-    ['bot',    18,172, 64,16,  0],
-    ['ll',     10,130, 14,40, 16],
-    ['capL',    8,  4, 14,18, 16],
-    ['capR',   88,  2, 14,18,-16],
-    ['pip',   138,170, 10,20,  0]
+    ['top',    24,  4, 54,16,  0],
+    ['ul',     12, 22, 14,50, 16],
+    ['ur',     78, 20, 14,52,-16],
+    ['mid',    24, 84, 56,16,  0],
+    ['lr',     73,101, 14,52,-16],
+    ['bot',    20,164, 60,16,  0],
+    ['ll',     16,121, 14,38, 16],
+    ['capL',   10,  4, 14,18, 16],
+    ['capR',   82,  2, 14,18,-16],
+    ['pip',   120,168, 10,20,  0]
   ]}
 ];
 
@@ -461,11 +459,11 @@ var css=[
   ' env(safe-area-inset-bottom) env(safe-area-inset-left);',
   ' background:#000;user-select:none;-webkit-tap-highlight-color:transparent}',
 
-  '#ghGroup{position:relative;display:flex;flex:0 0 auto;gap:18px;',
-  ' width:531px;height:248px;transform:scale(var(--ghScale,1));',
+  '#ghGroup{position:relative;display:flex;flex:0 0 auto;gap:10px;',
+  ' width:max-content;height:248px;transform:scale(var(--ghScale,1));',
   ' transform-origin:center center;z-index:2}',
 
-  '.ghD{position:relative;flex:0 0 165px;width:165px;height:248px;',
+  '.ghD{position:relative;flex:0 0 auto;height:248px;',
   ' transform:skewX(-10deg);transform-origin:center center}',
 
   '.ghD i{position:absolute;display:block;background:#c1121f;opacity:.10;',
@@ -492,11 +490,12 @@ var st=document.createElement('style');
 st.textContent=css;
 document.head.appendChild(st);
 
-function fitOverlay(ov){
+function fitOverlay(ov,group){
   var vv=window.visualViewport;
   var w=vv?vv.width:document.documentElement.clientWidth;
   var h=vv?vv.height:document.documentElement.clientHeight;
-  var scale=Math.min(1,(w-32)/BASE_W,(h-32)/BASE_H);
+  var baseW=group.offsetWidth;
+  var scale=Math.min(1,(w-32)/baseW,(h-32)/248);
   ov.style.setProperty('--ghScale',String(Math.max(.1,scale)));
 }
 
@@ -504,22 +503,33 @@ function mkDigit(def){
   var d=document.createElement('div');
   d.className='ghD';
 
+  var minX=Infinity,maxX=-Infinity;
+
+  def.segs.forEach(function(s){
+    var angle=(s[5]||0)*Math.PI/180;
+    var halfW=s[3]/2,halfH=s[4]/2;
+    var extentX=Math.abs(Math.cos(angle))*halfW+
+                Math.abs(Math.sin(angle))*halfH;
+    minX=Math.min(minX,s[1]+halfW-extentX);
+    maxX=Math.max(maxX,s[1]+halfW+extentX);
+  });
+
   def.segs.forEach(function(s,idx){
     var i=document.createElement('i');
     var orientation=s[3]>=s[4]?'h':'v';
 
     i.className=orientation;
     i.setAttribute('data-s','s'+idx);
-    i.style.left=s[1]+'px';
+    i.style.left=(s[1]-minX)+'px';
     i.style.top=s[2]+'px';
     i.style.width=s[3]+'px';
     i.style.height=s[4]+'px';
-
-    /* The container supplies the overall italic lean; no extra drift. */
     i.style.transform='rotate('+(s[5]||0)+'deg)';
     i._idx=idx;
     d.appendChild(i);
   });
+
+  d.style.width=(maxX-minX)+'px';
   return d;
 }
 
@@ -564,8 +574,10 @@ function powerSag(){
     g.gain.setValueAtTime(.0001,c.currentTime);
     g.gain.exponentialRampToValueAtTime(.22,c.currentTime+.12);
     g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+2.8);
-    o.connect(g);g.connect(c.destination);
-    o.start();o.stop(c.currentTime+2.9);
+    o.connect(g);
+    g.connect(c.destination);
+    o.start();
+    o.stop(c.currentTime+2.9);
   }catch(e){}
 }
 
@@ -623,8 +635,8 @@ function showGhost(done){
   ov.appendChild(group);
   document.body.appendChild(ov);
 
-  fitOverlay(ov);
-  var resizeHandler=function(){fitOverlay(ov);};
+  fitOverlay(ov,group);
+  var resizeHandler=function(){fitOverlay(ov,group);};
   window.addEventListener('resize',resizeHandler);
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize',resizeHandler);
@@ -741,6 +753,7 @@ bind('testAlert','ALERT SYSTEM LOCKED // ADMIN CLEARANCE REQUIRED // STARFLEET S
 })();
 </script>
 <!-- ===== END GHOST IN THE MACHINE ===== -->
+
 
 </body>
 </html>
