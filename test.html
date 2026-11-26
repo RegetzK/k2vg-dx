@@ -503,9 +503,9 @@ function powerSag(){
    o.connect(g);g.connect(c.destination);
    o.start();o.stop(c.currentTime+2.9);
  }catch(e){}
+}
 function glyphRain(){
- var cols=40,rows=40,gl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789',
-     grid=[];
+ var cols=40,rows=40,gl='ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉ0123456789',grid=[];
  for(var r=0;r<rows;r++){grid.push([]);
    for(var c=0;c<cols;c++)
      grid[r].push(Math.random()<.3?gl[Math.floor(Math.random()*gl.length)]:' ');}
