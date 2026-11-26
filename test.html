@@ -671,9 +671,17 @@ function showGhost(done){
     setDig(d3,[+t[2]%DIGITS[2].segs.length],mode);
   }
 
+  function paintAll(){
+    digits.forEach(function(d){
+      Array.prototype.forEach.call(d.children,function(i){
+        i.classList.remove('ember','flicker');
+        i.classList.add('on');
+      });
+    });
+  }
+
   var beats=[
-    {ms:106,f:function(){paint();}},
-    {ms:106,f:function(){paint();}},
+    {ms:3000,f:function(){paintAll();}},
     {ms:200,f:function(){paint();chaosPaint([d1],.2);}},
     {ms:240,f:function(){paint();chaosPaint([d2],.25);}},
     {ms:320,f:function(){paint();chaosPaint([d3],.35);}},
