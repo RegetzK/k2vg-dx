@@ -693,7 +693,7 @@ function showGhost(done){
   }
 
   var beats=[
-    {ms:3000,f:function(){paintAll();}},
+    {ms:1000,f:function(){paintAll();}},
     {ms:200,f:function(){paint();chaosPaint([d1],.2);}},
     {ms:240,f:function(){paint();chaosPaint([d2],.25);}},
     {ms:320,f:function(){paint();chaosPaint([d3],.35);}},
@@ -708,7 +708,7 @@ function showGhost(done){
     {ms:1600,f:function(){chaosPaint([d1,d2,d3],.15,'ember');}},
     {ms:1760,f:function(){chaosPaint([d1,d2,d3],0);}},
     {ms:1920,f:function(){}},
-    {ms:2080,f:function(){}}
+    {ms:1000,f:function(){}}
   ];
 
   var i=0;
