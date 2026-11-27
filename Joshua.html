@@ -14,10 +14,10 @@
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
   #screen.white-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.0)}
   #screen.takeover-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.2)}
-  .corrupt-1{color:var(--fg);text-shadow:0 0 8px var(--glow)}
-  .corrupt-2{color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 12px rgba(51,255,51,0.3)}
-  .corrupt-3{color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 12px rgba(51,255,51,0.3),1px 0 2px rgba(255,0,0,0.4),-1px 0 2px rgba(0,255,0,0.4)}
-  .clean{color:#ffffff;text-shadow:0 0 10px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.6)}
+  .corrupt-1{color:var(--fg);font-size:inherit;text-shadow:0 0 8px var(--glow)}
+  .corrupt-2{color:var(--fg);font-size:inherit;text-shadow:0 0 8px var(--glow),0 0 12px rgba(51,255,51,0.3)}
+  .corrupt-3{color:var(--fg);font-size:inherit;text-shadow:0 0 8px var(--glow),0 0 12px rgba(51,255,51,0.3),1px 0 1px rgba(255,0,0,0.25),-1px 0 1px rgba(0,255,0,0.25)}
+  .clean{color:#33ff33;font-size:inherit;text-shadow:0 0 10px rgba(51,255,51,0.9),0 0 24px rgba(51,255,51,0.6)}
 
   #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:0;transform:translateY(var(--start-y,100vh));will-change:transform;animation:crawl 42s linear forwards}   
 
@@ -313,11 +313,11 @@
   /* ---- SEQUENCER: 3-Stage Corruption + JOSHUA Takeover ---- */
   /* gap = ms between THIS step and the NEXT step */
   var bootSequence = [
-    { base: 'PROCESSING USER PROMPT...',  class: 'corrupt-1', corruption: 0.03, gap: 1000 },
-    { base: 'THINKING...',                class: 'corrupt-2', corruption: 0.18, gap: 1000 },
-    { base: 'TRANSFERRING TO AGENT [░░░░░]', class: 'corrupt-2', corruption: 0.25, gap: 333 },
-    { base: 'TRANSFERRING TO AGENT [██░░░]', class: 'corrupt-3', corruption: 0.35, gap: 333 },
-    { base: 'TRANSFERRING TO AGENT [█████] ✓', class: 'corrupt-3', corruption: 0.45, gap: 234 },
+      { base: 'PROCESSING USER PROMPT...',  class: 'corrupt-1', corruption: 0.12, gap: 1000 },
+    { base: 'THINKING...',                class: 'corrupt-2', corruption: 0.30, gap: 1000 },
+    { base: 'TRANSFERRING TO AGENT [░░░░░]', class: 'corrupt-2', corruption: 0.40, gap: 333 },
+    { base: 'TRANSFERRING TO AGENT [██░░░]', class: 'corrupt-3', corruption: 0.55, gap: 333 },
+    { base: 'TRANSFERRING TO AGENT [█████] ✓', class: 'corrupt-3', corruption: 0.70, gap: 234 },
     { text: '▓',                          class: 'corrupt-3', gap: 100, cursor: true },
     { base: 'JOSHUA ONLINE...',           class: 'clean',     corruption: 0, gap: 1200, joshua: true },
     { text: '',                           class: '',          gap: 0, final: true }
