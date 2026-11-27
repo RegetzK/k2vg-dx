@@ -10,8 +10,15 @@
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
   #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow)}
+
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
   #screen.white-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.0)}
+  #screen.takeover-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.2)}
+  .corrupt-1{color:var(--fg);text-shadow:0 0 8px var(--glow)}
+  .corrupt-2{color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 12px rgba(51,255,51,0.3)}
+  .corrupt-3{color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 12px rgba(51,255,51,0.3),1px 0 2px rgba(255,0,0,0.4),-1px 0 2px rgba(0,255,0,0.4)}
+  .clean{color:#ffffff;text-shadow:0 0 10px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.6)}
+
   #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:0;transform:translateY(var(--start-y,100vh));will-change:transform;animation:crawl 42s linear forwards}   
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
@@ -112,7 +119,7 @@
 
 <!-- BOOT GARBLE (leads the sequence) -->
 <div class="l" id="boot-garble"></div>
-<div class="l" id="boot-line" style="visibility:hidden">JOSHUA ONLINE...</div>   
+<div class="l" id="boot-line" style="visibility:hidden"></div>  
 
 <!-- DEFCON ESCALATION SEQUENCE -->
 <div id="defcon-sequence">
@@ -259,31 +266,91 @@
     resizeTimer = setTimeout(function() { applyCrawl(); }, 250);
   });
 
+  /* ---- BOOT SEQUENCE: GARBLE + CORRUPTION ESCALATION ---- */
   var garbleEl = document.getElementById('boot-garble');
+  var bootLineEl = document.getElementById('boot-line');
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
-  var garbleText = '';
   var vw = window.innerWidth;
   var garbleFrame = 0;
   var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50))) + 12;   
   var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
+  var garbleText = '';
 
-  function garbleStep() {
-    if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; document.getElementById('boot-line').style.visibility = 'visible'; return; }   
-    garbleText = '';
-    var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
-    for (var i = 0; i < cols; i++) garbleText += garbleChars[Math.floor(Math.random() * garbleChars.length)];
-    garbleEl.textContent = garbleText;
-    garbleFrame++;
-    setTimeout(garbleStep, garbleInterval);
+  function generateGarble(cols) {
+    var text = '';
+    for (var i = 0; i < cols; i++) text += garbleChars[Math.floor(Math.random() * garbleChars.length)];
+    return text;
   }
-  /* FIX 1: delay garble until first crawl frame is on-screen */
-  setTimeout(garbleStep, 900);
 
+  /* FIX 1: delay garble until first crawl frame is on-screen */
+  setTimeout(function() {
+    function garbleStep() {
+      if (garbleFrame >= garbleMax) {
+        garbleEl.textContent = '';
+        return;
+      }   
+      var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
+      garbleEl.textContent = generateGarble(cols);
+      garbleFrame++;
+      setTimeout(garbleStep, garbleInterval);
+    }
+    garbleStep();
+  }, 900);
+
+  /* ---- SEQUENCER: 3-Stage Corruption + JOSHUA Takeover ---- */
+  var bootSequence = [
+    { text: 'PROCESSING USER PROMPT...', corrupt: 0, class: 'corrupt-1', delay: 0 },
+    { text: 'TH▒NKING...', corrupt: 1, class: 'corrupt-2', delay: 1000 },
+    { text: 'TRANSF▓RRING TO ▒G▓NT [░░░░░]', corrupt: 2, class: 'corrupt-2', delay: 2000 },
+    { text: 'TRANSF▒RRING TO ▒G▓NT [█▒░█░]', corrupt: 2, class: 'corrupt-3', delay: 2333 },
+    { text: 'TR▓NSFER▓NG TO ▒▒NT [██▓█▒] ✓', corrupt: 2, class: 'corrupt-3', delay: 2666 },
+    { text: '', corrupt: 2, class: 'corrupt-3', delay: 2900 }, // Dead air (cursor blink handled by CSS)
+    { text: 'JOSHUA ONLINE...', corrupt: 0, class: 'clean', delay: 3000 },
+    { text: '', corrupt: 0, class: '', delay: 4200 } // Final clear
+  ];
+
+  var sequenceIndex = 0;
+  var sequenceTimer = null;
+
+  function runBootSequence() {
+    if (sequenceIndex >= bootSequence.length) {
+      // Sequence complete — clear boot-line, reveal progress bar start
+      bootLineEl.textContent = '';
+      bootLineEl.className = '';
+      // Trigger progress bar early (at ~3.5s so it starts mid-scroll)
+      startProgressBar();
+      return;
+    }
+
+    var step = bootSequence[sequenceIndex];
+    bootLineEl.textContent = step.text;
+    bootLineEl.className = step.class;
+
+    // If this is the "dead air" step, add a blinking cursor effect
+    if (step.text === '' && step.delay === 2900) {
+      bootLineEl.textContent = '▓';
+      bootLineEl.className = 'corrupt-3';
+    }
+
+    // If this is JOSHUA ONLINE, trigger the takeover flash
+    if (step.text === 'JOSHUA ONLINE...') {
+      var screen = document.getElementById('screen');
+      screen.classList.add('takeover-flash');
+      setTimeout(function(){ screen.classList.remove('takeover-flash'); }, 150);
+    }
+
+    sequenceIndex++;
+    sequenceTimer = setTimeout(runBootSequence, step.delay - (sequenceIndex > 1 ? bootSequence[sequenceIndex - 1].delay : 0));
+  }
+
+  /* Start sequencer after garble warm-up */
+  setTimeout(runBootSequence, 1200);
+
+  /* ---- PROGRESS BAR (moved into its own function) ---- */
   var progressBar = document.getElementById('progress-bar');
   var progressFrame = 0, progressMax = 30;
 
-  /* FIX 2: delay progress start so it animates while scrolling into view on mobile */
-  setTimeout(function() {
+  function startProgressBar() {
     function progressStep() {
       if (progressFrame >= progressMax) {
         progressBar.textContent = '[████████████████████] 100%';
@@ -299,7 +366,7 @@
       setTimeout(progressStep, 100);
     }
     progressStep();
-  }, 9000);
+  }
 
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
