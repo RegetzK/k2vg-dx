@@ -9,7 +9,7 @@
   :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
-  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow)}
+  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg)}   
 
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
   #screen.white-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.0)}
@@ -24,29 +24,27 @@
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
   #progress-bar{white-space:pre;overflow:hidden}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
-  .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
-  .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
-  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3)}
-  .scorch{color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)}
-  .hot{color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)}
+  .warn{color:#ffff33}
+  .tie{color:#ff6633;font-weight:bold}
+  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px)}
+  .scorch{color:#fff}
+  .hot{color:#fff}   
   .connor-name {
     color: #ffffff;
     font-weight: 900;
-    text-shadow: 0 0 8px #fff, 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.4);
     animation: connor-flash 1s steps(2, start) infinite;
   }
   @keyframes connor-flash {
-    0%, 40%  { opacity: 1;   text-shadow: 0 0 8px #fff, 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.4); }
-    45%, 100% { opacity: 0.06; text-shadow: none; }
+    0%, 40%  { opacity: 1; }
+    45%, 100% { opacity: 0.06; }
   }
   @media (prefers-reduced-motion: reduce) {
     .connor-name {
       animation: none;
       color: #ffffff;
       font-weight: 900;
-      text-shadow: 0 0 10px rgba(255,255,255,0.7);
     }
-  }
+  }   
 
   #iter-marker{height:0;line-height:0;overflow:hidden}
 
@@ -197,7 +195,7 @@
 <div class="l">&nbsp;</div>
 <div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">15,235D</span> AFTER BIRTH // STATUS: MONITOR FOR TEMPORAL DISTURBANCES // SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL</div>
 <div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE/MS. LINCOLN/JOHN SIX IMMEDIATELY</div>
+<div class="l">UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE/MS. LINCOLN/JOHN SIX IMMEDIATELY</div>   
 <div class="l">&nbsp;</div>
 </div></div>
 <div id="return">
@@ -325,11 +323,7 @@
     if (step.cursor) {
       bootLineEl.textContent = '▓';
       bootLineEl.style.animation = 'cursor-blink 0.1s steps(1) 3';
-    } else if (step.final) {
-      bootLineEl.textContent = '';
-      bootLineEl.className = '';
-      bootLineEl.style.visibility = 'hidden';
-      bootLineEl.style.animation = '';
+        } else if (step.final) {
       setTimeout(startProgressBar, 4000);
       return;
     } else {
@@ -507,7 +501,7 @@
   function updateConnor() {
     if (!connorEl) return;
     var p = elapsedParts(Date.now() - connorBirth);
-    connorEl.innerHTML = '<span style="color:#ff0000;font-weight:bold;text-shadow:0 0 8px rgba(255,0,0,0.7),0 0 16px rgba(255,0,0,0.4)">TEMPORAL INTERVENTION AUTHORIZED</span> // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">' +
+    connorEl.innerHTML = '<span style="color:#ff0000;font-weight:bold">TEMPORAL INTERVENTION AUTHORIZED</span> // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">' +
       p.d.toLocaleString() + 'D</span> ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // ORDERS: MONITOR SITUATION AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL';
   }
 
