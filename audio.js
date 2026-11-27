@@ -195,7 +195,7 @@
 <div class="l">&nbsp;</div>
 <div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">15,235D</span> AFTER BIRTH // STATUS: MONITOR FOR TEMPORAL DISTURBANCES // SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL</div>
 <div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE/MS. LINCOLN/JOHN SIX IMMEDIATELY</div>
+<div class="l">UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE/MS. LINCOLN/JOHN SIX IMMEDIATELY</div>   
 <div class="l">&nbsp;</div>
 </div></div>
 <div id="return">
@@ -325,7 +325,7 @@
       bootLineEl.style.animation = 'cursor-blink 0.1s steps(1) 3';
     } else if (step.final) {
       bootLineEl.textContent = '';
-      bootLineEl.className = '';
+      bootLineEl.className = 'l';
       bootLineEl.style.visibility = 'hidden';
       bootLineEl.style.animation = '';
       setTimeout(startProgressBar, 4000);
@@ -505,7 +505,7 @@
   function updateConnor() {
     if (!connorEl) return;
     var p = elapsedParts(Date.now() - connorBirth);
-    connorEl.innerHTML = '<span style="color:#ff0000;font-weight:bold">TEMPORAL INTERVENTION AUTHORIZED</span> // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">' +   ' +
+    connorEl.innerHTML = '<span style="color:#ff0000;font-weight:bold">TEMPORAL INTERVENTION AUTHORIZED</span> // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">' +
       p.d.toLocaleString() + 'D</span> ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // ORDERS: MONITOR SITUATION AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL';
   }
 
