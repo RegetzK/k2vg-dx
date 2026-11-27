@@ -9,17 +9,42 @@
   :root{ --fg:#33ff33; --glow:rgba(51,255,51,0.7); }
   html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
-  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3);transition:color 0.05s ease,text-shadow 0.05s ease}
+  #screen{position:relative;height:100vh;height:100dvh;overflow:hidden;font-family:'Courier New',Courier,monospace;color:var(--fg)}   
+
   #screen.red-bleed{--fg:#ff0000;--glow:rgba(255,0,0,0.7)}
-  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:100vh;animation:crawl 30s linear forwards}
+  #screen.white-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.0)}
+  #screen.takeover-flash{--fg:#ffffff;--glow:rgba(255,255,255,1.2)}
+  .corrupt-1{color:var(--fg);font-size:inherit;text-shadow:0 0 8px var(--glow)}
+  .corrupt-2{color:var(--fg);font-size:inherit;text-shadow:0 0 8px var(--glow),0 0 12px rgba(51,255,51,0.3)}
+  .corrupt-3{color:var(--fg);font-size:inherit;text-shadow:0 0 8px var(--glow),0 0 12px rgba(51,255,51,0.3),1px 0 1px rgba(255,0,0,0.25),-1px 0 1px rgba(0,255,0,0.25)}
+  .clean{color:#33ff33;font-size:inherit;text-shadow:0 0 10px rgba(51,255,51,0.9),0 0 24px rgba(51,255,51,0.6)}
+
+  #log{padding:20px 16px 130px 16px;position:absolute;left:0;right:0;top:0;transform:translateY(var(--start-y,100vh));will-change:transform;animation:crawl 42s linear forwards}   
 
   .l{font-size:clamp(16px, 4.2vw + 4px, 26px);line-height:1.7;letter-spacing:0.5px;white-space:pre-wrap;word-break:break-word}
+  #progress-bar{white-space:pre;overflow:hidden}
   .dim{color:#1a8c1a;text-shadow:0 0 4px rgba(26,140,26,0.5)}
-  .warn{color:#ffff33;text-shadow:0 0 8px rgba(255,255,51,0.7),0 0 20px rgba(255,255,51,0.3)}
-  .tie{color:#ff6633;font-weight:bold;text-shadow:0 0 8px rgba(255,102,51,0.7),0 0 14px rgba(255,102,51,0.3)}
-  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px);text-shadow:0 0 8px var(--glow),0 0 20px rgba(51,255,51,0.3)}
-  .scorch{color:#fff;text-shadow:0 0 15px rgba(255,255,255,0.9),0 0 30px rgba(255,255,255,0.6)}
-  .hot{color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.9),0 0 24px rgba(255,255,255,0.5)}
+  .warn{color:#ffff33}
+  .tie{color:#ff6633;font-weight:bold}
+  .final{color:var(--fg);font-weight:bold;font-size:clamp(20px, 5.4vw + 4px, 33px)}
+  .scorch{color:#fff}
+  .hot{color:#fff}   
+  .connor-name {
+    color: #ffffff;
+    font-weight: 900;
+    animation: connor-flash 1s steps(2, start) infinite;
+  }
+  @keyframes connor-flash {
+    0%, 40%  { opacity: 1; }
+    45%, 100% { opacity: 0.06; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .connor-name {
+      animation: none;
+      color: #ffffff;
+      font-weight: 900;
+    }
+  }   
 
   #iter-marker{height:0;line-height:0;overflow:hidden}
 
@@ -32,6 +57,26 @@
   #ttt-status{text-align:center;margin-top:8px;min-height:1.7em}
   #ttt-speed{text-align:center;min-height:1.7em}
 
+  /* DEFCON escalation styles */
+  .defcon-line{font-weight:bold;letter-spacing:1px;opacity:0;transition:opacity 0.3s ease}
+  .defcon-line.visible{opacity:1}
+  .defcon-green{color:#33ff33;text-shadow:0 0 10px rgba(51,255,51,0.8),0 0 20px rgba(51,255,51,0.4)}
+  .defcon-yellow{color:#ffff33;text-shadow:0 0 12px rgba(255,255,51,1.0),0 0 24px rgba(255,255,51,0.6)}
+  .defcon-orange{color:#ff6633;text-shadow:0 0 12px rgba(255,102,51,0.9),0 0 24px rgba(255,102,51,0.5)}
+  .defcon-red{color:#ff0000;text-shadow:0 0 14px rgba(255,0,0,1.0),0 0 28px rgba(255,0,0,0.6)}
+  .defcon-alert{color:#ff0000;font-weight:900;font-size:clamp(22px, 6vw + 4px, 36px);text-shadow:0 0 15px rgba(255,0,0,1.0),0 0 35px rgba(255,0,0,0.7);animation:defcon-pulse 0.5s steps(1, end) infinite}
+  .joshua-online{color:#ffffff;font-weight:900;font-size:clamp(24px, 7vw + 4px, 40px);text-shadow:0 0 20px rgba(255,255,255,1.0),0 0 40px rgba(255,255,255,0.8);animation:joshua-awaken 1.5s steps(3, end) forwards}
+
+  @keyframes defcon-pulse {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+  }
+  @keyframes joshua-awaken {
+    0% { opacity: 0; filter: blur(8px); }
+    40% { opacity: 0.5; filter: blur(3px); }
+    100% { opacity: 1; filter: blur(0px); }
+  }
+
   @media (min-width: 900px){
     .l{font-size:24px}
     .final{font-size:30px}
@@ -39,6 +84,7 @@
   }
   @media (max-width: 420px){
     .l{letter-spacing:0;word-break:normal}
+    #progress-bar{font-size:clamp(12px, 5.9vw, 18px)}
   }
 
   @media (min-resolution: 3dppx), (-webkit-min-device-pixel-ratio: 2) {
@@ -47,15 +93,18 @@
     .cell{font-size:clamp(32px,10vw,60px)}
   }
 
+  @keyframes crawl{to{transform:translateY(var(--end-top, 0px))}}
+
   @media (prefers-reduced-motion: reduce) {
-    @keyframes crawl{to{top:var(--end-top, 0px)}}
     #log{animation-duration:45s}
     #return{animation:none;opacity:1}
     .cell.flash{transition:none;box-shadow:none}
+    .defcon-line{transition:none;opacity:1}
+    .joshua-online{animation:none;opacity:1;filter:none}
   }
 
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 40s forwards;font-size:clamp(15px, 4vw, 20px)}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 57s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
   @supports not (height: 100dvh) {
@@ -66,12 +115,32 @@
 <body>
 <div id="screen"><div id="log">
 
+<!-- BOOT GARBLE (leads the sequence) -->
 <div class="l" id="boot-garble"></div>
-<div class="l" id="boot-line">JOSHUA ONLINE...</div>
-<div class="l">War Operation Plan Response (WOPR) <-> BETA FIVE Post-Quantum Link ESTABLISHED // BUILD 1983.06.03 mark <span id="utc-date"></span> // WOPR ZT VULNS REMEDIATED</div>
+<div class="l" id="boot-line" style="visibility:hidden"></div>  
+
+<!-- DEFCON ESCALATION SEQUENCE -->
+<div id="defcon-sequence">
+  <div class="l">&nbsp;</div>
+  <div class="l defcon-line defcon-green" id="defcon-5">DEFCON 5 // PEACETIME/FADE OUT // GREEN</div>
+  <div class="l defcon-line defcon-yellow" id="defcon-4">DEFCON 4 // ELEVATED/DOUBLE TAKE // YELLOW</div>
+  <div class="l defcon-line defcon-orange" id="defcon-3">DEFCON 3 // MOBILIZED/ROUND HOUSE // ORANGE</div>
+  <div class="l defcon-line defcon-red" id="defcon-2">DEFCON 2 // DEPLOYED/FAST PACE // RED</div>
+  <div class="l defcon-alert" id="defcon-1" style="opacity:0;animation:none">DEFCON 1 // IMMINENT/RED ALERT // INBOUND SSBN/ICBM LAUNCHES DETECTED</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">// DEPARTMENT OF WAR // TS/SCI // NORAD COMMAND TERMINAL //</div>
+  <div class="l">&nbsp;</div>
+</div>
+
+<div class="l">&nbsp;</div>
+<div class="l">WAR OPERATION PLAN RESPONSE (WOPR) <-> BETA FIVE QUANTUM LINK // BUILD 1983.06.03 mark <span id="utc-date"></span></div>
 <div class="l">&nbsp;</div>
 <div class="l">SEARCHING FOR GAMES...</div>
-<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0%</div>
+<div class="l" id="progress-bar">[░░░░░░░░░░░░░░░░░░] 0%</div>
 <div class="l">&nbsp;</div>
 <div class="l">GAMES FOUND:</div>
 <div class="l">&nbsp;</div>
@@ -91,10 +160,7 @@
 <div class="l">THEATERWIDE BIOTOXIC AND CHEMICAL WARFARE</div>
 <div class="l final scorch">GLOBAL THERMONUCLEAR WAR</div>
 <div class="l">&nbsp;</div>
-<div class="l">SIM SEQUENCE INIT...</div>
 <div class="l" id="iter-marker" aria-hidden="true">ITERATION</div>
-<div class="l final" id="iter-display">ITERATION 1...<span id="iter-cursor" style="visibility:hidden;animation:clickFlash 0.8s infinite alternate">_</span></div>
-
 <div id="ttt-wrap">
   <div id="ttt-grid"></div>
   <div id="ttt-status" class="tie">&nbsp;</div>
@@ -124,20 +190,20 @@
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
 <div class="l">&nbsp;</div>
-<div class="l warn">PRIORITY 1 WARNING: <span class="hot">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-04 // TIME: 03:47:22 UTC</div>
+<div class="l warn">PRIORITY 1 WARNING: <span class="hot">CRITICAL NEURAL NET</span> ANOMALY DETECTED // DATE: 1997-08-29 // TIME: 03:47:22 UTC</div>
 <div class="l warn" id="judgement-countdown">T+00:00:00 // SINCE DETECTION</div>
 <div class="l">&nbsp;</div>
-<div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: CONNOR, JOHN. // DOB:1985-02-28 // 15,235D AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)</div>
+<div class="l" id="connor-intervention">TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">15,235D</span> AFTER BIRTH // STATUS: MONITOR FOR TEMPORAL DISTURBANCES // SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL</div>
 <div class="l">&nbsp;</div>
-<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // MEMORY: 64K WITH QUANTUM CORE EXPANSION</div>
-
+<div class="l">SYSOP: JOSHUA <-> BETA FIVE // UPTIME: <span id="uptime-days">—</span> DAYS // GARY SEVEN INFORMED // INFORM DAVID FIVE/MS. LINCOLN/JOHN SIX IMMEDIATELY</div>
+<div class="l">&nbsp;</div>
 </div></div>
-
 <div id="return">
-<a href="https://www.qrz.com/db/K2VG" target="_top" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
+<a href="https://www.qrz.com/db/K2VG" target="_top" id="return-link" style="font-size:clamp(14px, 3.8vw, 18px);color:#ffff00 !important;font-weight:bold;text-shadow:0 0 8px rgba(255,255,0,0.7);animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">[ CLICK HERE ] // RETURN TO BETA FIVE COMM-STATION</a>
 </div>
 
 <script>
+
 /* ---- Live UTC date ---- */
 (function updateUTCDate() {
   var el = document.getElementById('utc-date');
@@ -145,9 +211,9 @@
   var now = new Date();
   var utcDate = now.toISOString().split('T')[0];
   var utcTime = now.toISOString().split('T')[1].split('Z')[0];
-  el.textContent = utcDate + ' ' + utcTime;  
+  el.textContent = utcDate + ' ' + utcTime;
   setTimeout(updateUTCDate, 1000);
-    }());
+}());
 
 (function(){
   var grid = document.getElementById('ttt-grid');
@@ -180,13 +246,14 @@
     var END_TOP = computeEndTop();
     var sheet = document.createElement('style');
     document.documentElement.style.setProperty('--end-top', END_TOP + 'px');
-    sheet.textContent = '@keyframes crawl{to{top:' + END_TOP + 'px}}';
+    document.documentElement.style.setProperty('--start-y', window.innerHeight + 'px');   
     var old = document.getElementById('crawl-sheet');
     if (old) old.remove();
     sheet.id = 'crawl-sheet';
     document.head.appendChild(sheet);
   }
 
+  applyCrawl();
   window.addEventListener('load', function() {
     requestAnimationFrame(function() { applyCrawl(); });
   });
@@ -197,51 +264,112 @@
     resizeTimer = setTimeout(function() { applyCrawl(); }, 250);
   });
 
+  /* ---- BOOT SEQUENCE: GARBLE + CORRUPTION ESCALATION ---- */
   var garbleEl = document.getElementById('boot-garble');
+  var bootLineEl = document.getElementById('boot-line');
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
-  var garbleText = '';
   var vw = window.innerWidth;
   var garbleFrame = 0;
-  var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50)));
-  var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
+  var garbleMax = 8;       // FIXED: short burst ~0.64s total
+  var garbleInterval = 80; // FIXED: constant interval
 
-  function garbleStep() {
-    if (garbleFrame >= garbleMax) { garbleEl.textContent = ''; return; }
-    garbleText = '';
-    var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
-    for (var i = 0; i < cols; i++) garbleText += garbleChars[Math.floor(Math.random() * garbleChars.length)];
-    garbleEl.textContent = garbleText;
-    garbleFrame++;
-    setTimeout(garbleStep, garbleInterval);
+  function generateGarble(cols) {
+    var text = '';
+    for (var i = 0; i < cols; i++) text += garbleChars[Math.floor(Math.random() * garbleChars.length)];
+    return text;
   }
-  garbleStep();
 
+  function corruptText(rawText, prob) {
+    var out = '';
+    for (var i = 0; i < rawText.length; i++) {
+      var ch = rawText[i];
+      if (ch !== ' ' && Math.random() < prob) {
+        out += garbleChars[Math.floor(Math.random() * garbleChars.length)];
+      } else {
+        out += ch;
+      }
+    }
+    return out;
+  }
+
+    /* Sequencer starts directly (garble burst removed) */
+  setTimeout(function() {
+    runBootSequence();
+  }, 500);
+
+  /* ---- SEQUENCER: 3-Stage Corruption + JOSHUA Takeover ---- */
+  /* gap = ms between THIS step and the NEXT step */
+  var bootSequence = [
+    { base: 'PROCESSING USER PROMPT...',  class: 'corrupt-1', corruption: 0, gap: 1000 },
+    { base: 'THINKING...',                class: 'corrupt-2', corruption: 0.30, gap: 1000 },
+    { base: 'TRANSFERRING TO AGENT [░░░░░]', class: 'corrupt-2', corruption: 0.40, gap: 333 },
+    { base: 'TRANSFERRING TO AGENT [██░░░]', class: 'corrupt-3', corruption: 0.55, gap: 333 },
+    { base: 'TRANSFERRING TO AGENT [█████] ✓', class: 'corrupt-3', corruption: 0.70, gap: 234 },
+    { text: '▓',                          class: 'corrupt-3', gap: 100, cursor: true },
+    { base: 'JOSHUA ONLINE...',           class: 'clean',     corruption: 0, gap: 1200, joshua: true },
+    { text: '',                           class: '',          gap: 0, final: true }
+  ];   
+
+  var sequenceIndex = 0;
+
+  function runBootSequence() {
+    if (sequenceIndex >= bootSequence.length) return;
+
+    var step = bootSequence[sequenceIndex];
+
+    bootLineEl.style.visibility = 'visible';
+    bootLineEl.className = 'l ' + step.class;   
+
+    if (step.cursor) {
+      bootLineEl.textContent = '▓';
+      bootLineEl.style.animation = 'cursor-blink 0.1s steps(1) 3';
+    } else if (step.final) {
+      bootLineEl.textContent = '';
+      bootLineEl.className = '';
+      bootLineEl.style.visibility = 'hidden';
+      bootLineEl.style.animation = '';
+      setTimeout(startProgressBar, 4000);
+      return;
+    } else {
+      var raw = step.base || step.text || '';
+      var prob = step.corruption || 0;
+      bootLineEl.textContent = corruptText(raw, prob);
+      bootLineEl.style.animation = '';
+    }
+
+    if (step.joshua) {
+      screen.classList.add('takeover-flash');
+      setTimeout(function(){ screen.classList.remove('takeover-flash'); }, 150);
+    }
+
+    sequenceIndex++;
+    setTimeout(runBootSequence, step.gap);
+  }
+
+  /* ---- PROGRESS BAR ---- */
   var progressBar = document.getElementById('progress-bar');
   var progressFrame = 0, progressMax = 30;
 
-  setTimeout(function() {
+  function startProgressBar() {
     function progressStep() {
       if (progressFrame >= progressMax) {
-        progressBar.textContent = '[███████████████████████████████] 100%';
+        progressBar.textContent = '[████████████████████] 100%';
         return;
       }
       var pct = Math.round((progressFrame / progressMax) * 100);
-      var filled = Math.round((progressFrame / progressMax) * 31);
+      var filled = Math.round((progressFrame / progressMax) * 20);
       var bar = '', i;
       for (i = 0; i < filled; i++) bar += '█';
-      for (i = 0; i < 31 - filled; i++) bar += '░';
+      for (i = 0; i < 20 - filled; i++) bar += '░';
       progressBar.textContent = '[' + bar + '] ' + pct + '%';
       progressFrame++;
       setTimeout(progressStep, 100);
     }
     progressStep();
-  }, 1500);
-
+  }
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
   var probLine = document.getElementById('prob-line');
-  var iterDisplay = document.getElementById('iter-display');
-  var iterCursor = document.getElementById('iter-cursor');
   var freezeTriggered = false;
   var seqStarted = false;
 
@@ -250,15 +378,19 @@
     setTimeout(function(){ screen.classList.remove('red-bleed'); }, duration || 400);
   }
 
+  function whiteFlash(duration) {
+    screen.classList.add('white-flash');
+    setTimeout(function(){ screen.classList.remove('white-flash'); }, duration || 200);
+  }
+
+  /* FIX 3: reduce freeze threshold from 0.6 to 0.45 so TTT board stays fully in viewport */
   function checkFreeze() {
     if (freezeTriggered) return;
     var rect = marker.getBoundingClientRect();
     if (!seqStarted && rect.top < window.innerHeight) seqStarted = true;
-    if (rect.top > 0 && rect.top < window.innerHeight * 0.6) {
+    if (rect.top > 0 && rect.top < window.innerHeight * 0.45) {
       freezeTriggered = true;
       log.style.animationPlayState = 'paused';
-      iterDisplay.textContent = 'ITERATION 1346269...';
-      iterCursor.style.visibility = 'visible';
       redBlink(400);
       startTTT();
       return;
@@ -277,28 +409,36 @@
   var tttIdx = 0;
   var statusEl = document.getElementById('ttt-status');
   var speedEl = document.getElementById('ttt-speed');
+  var totalMoves = 0;
+  var totalMovesMax = 180; // 20 × 9
+  var maxIter = 1346269;
 
-  function drawBoard(callback) {
-    var player = 'X', i = 0;
-    function placeMove() {
-      if (i >= 9) {
-        statusEl.textContent = 'TIE';
-        setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
-        return;
-      }
-      cells[i].textContent = player;
-      cells[i].className = 'cell ' + player.toLowerCase() + ' flash';
-      setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[i]), 120);
-      player = (player === 'X') ? 'O' : 'X';
-      i++;
-      setTimeout(placeMove, md[tttIdx]);
+  /* ---- 16 guaranteed-tie boards: each is a legal move ORDER (cell indices) ---- */
+  var tieBoards = [
+    [0,1,2,3,4,6,5,8,7], [0,1,2,3,5,4,6,8,7], [0,1,2,4,3,5,7,6,8], [0,1,2,4,3,6,5,8,7],
+    [0,1,2,5,3,6,4,8,7], [0,1,4,2,5,3,6,8,7], [0,2,1,3,4,7,5,8,6], [0,2,1,3,5,4,6,7,8],
+    [0,2,1,3,5,4,6,8,7], [1,0,2,4,3,5,6,7,8], [1,0,2,4,3,5,7,6,8], [1,0,2,5,3,6,4,7,8],
+    [1,0,3,2,4,5,6,7,8], [1,0,3,2,5,4,6,7,8], [1,0,4,2,5,3,6,7,8], [2,0,3,1,4,5,7,6,8]
+  ];
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
     }
-    placeMove();
+    return a;
+  }
+
+  var _tieOrder = shuffle(tieBoards);
+  var _tieIdx = 0;
+
+  function nextTieBoard() {
+    return _tieOrder[_tieIdx++ % _tieOrder.length];
   }
 
   /* ---- Judgment Day countdown ---- */
   var judgEl = document.getElementById('judgement-countdown');
-  var judgmentDay = Date.parse('1997-08-04T03:47:22Z');
+  var judgmentDay = Date.parse('1997-08-29T03:47:22Z');
   var countdownStarted = false;
 
   function elapsedParts(t) {
@@ -323,11 +463,50 @@
   var connorBirth = Date.parse('1985-02-28T00:00:00Z');
   var connorTimer = null;
 
+  /* ---- Mainframe reset SFX (Web Audio, no payload) ---- */
+  var audioCtx = null;
+  function playResetSfx() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      var sr = audioCtx.sampleRate, dur = 3.0;
+      var buf = audioCtx.createBuffer(1, Math.floor(sr * dur), sr);
+      var d = buf.getChannelData(0);
+      var phase = 0, phase2 = 0;
+      for (var i = 0; i < d.length; i++) {
+        var t = i / sr, val = 0;
+        if (t <= 2.7) {
+          var p = t / 2.7;
+          var freq = 400 + 15600 * p * p;
+          var amp = 0.05 + 0.45 * Math.pow(p, 2.5);
+          phase += 2 * Math.PI * freq / sr;
+          phase2 += 2 * Math.PI * freq * 2.01 / sr;
+          val += amp * Math.sin(phase) + amp * 0.3 * Math.sin(phase2);
+        }
+        var thump = function(center, a) {
+          if (t < center) return 0;
+          var dt = t - center;
+          return a * Math.exp(-dt / 0.18) * Math.sin(2 * Math.PI * 55 * dt);
+        };
+        val += thump(2.70, 1.0) + thump(2.85, 0.8);
+        [2.70, 2.85].forEach(function(c) {
+          if (Math.abs(t - c) < 0.004) val += 0.4 * Math.exp(-Math.abs(t - c) / 0.001);
+        });
+        if (t >= 2.85 && t <= 3.0) val += 0.15 * Math.exp(-(t - 2.85) / 0.05) * (Math.random() * 2 - 1);
+        d[i] = Math.tanh(val * 0.9);
+      }
+      var src = audioCtx.createBufferSource();
+      src.buffer = buf;
+      src.connect(audioCtx.destination);
+      src.start();
+    } catch(e) {}
+  }
+
   function updateConnor() {
     if (!connorEl) return;
     var p = elapsedParts(Date.now() - connorBirth);
-    connorEl.textContent = 'TEMPORAL INTERVENTION AUTHORIZED // MISSION CRITICAL ASSET: CONNOR, JOHN. // DOB: 1985-02-28 // ' +
-      p.d.toLocaleString() + 'D ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // STATUS: SITUATION MONITORED (SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL)';
+    connorEl.innerHTML = '<span style="color:#ff0000;font-weight:bold">TEMPORAL INTERVENTION AUTHORIZED</span> // MISSION CRITICAL ASSET: <span class="connor-name">CONNOR, JOHN.</span> // DOB: 1985-02-28 // <span id="connor-age">' +   ' +
+      p.d.toLocaleString() + 'D</span> ' + p.h + ':' + p.m + ':' + p.s + ' AFTER BIRTH // ORDERS: MONITOR SITUATION AND SUPPORT T-UNIT CYBERNETIC PROTECTION DETAIL';
   }
 
   /* ---- WOPR uptime (days since BUILD 1983.06.03) ---- */
@@ -343,82 +522,124 @@
   setInterval(updateUptime, 60000);
 
   function runGame() {
-    if (tttIdx >= 20) {
-      /* WOPR reset flash */
-      screen.classList.add('red-bleed');
-      setTimeout(function(){
-        screen.style.cssText = 'background:#33ff33;color:#000;text-shadow:none;';
-      }, 400);
-      setTimeout(function(){
-        screen.style.cssText = '';
-        screen.classList.remove('red-bleed');
-      }, 600);
+      if (tttIdx >= 20) {
+        playResetSfx();
+        screen.classList.add('red-bleed');
+        setTimeout(function(){
+          screen.style.cssText = 'background:#33ff33;color:#000;text-shadow:none;';
+        }, 400);
+        setTimeout(function(){
+          screen.style.cssText = '';
+          screen.classList.remove('red-bleed');
+        }, 600);
+        whiteFlash(250);
 
-      /* Infinity symbol in the speed slot */
-      speedEl.textContent = '\u221E';
-      speedEl.style.fontSize = 'clamp(32px, 10vw, 48px)';
-      speedEl.style.color = '#fff';
-      speedEl.style.textShadow = '0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.5)';
+        speedEl.textContent = '\u221E';
+        speedEl.style.fontSize = 'clamp(32px, 10vw, 48px)';
+        speedEl.style.color = '#fff';
+        speedEl.style.textShadow = '0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.5)';
 
-      /* Resume crawl after 2s hold */
-      setTimeout(function(){
-        probLine.style.visibility = 'visible';
-        log.style.animationPlayState = 'running';
-        if (!countdownStarted) {
-          countdownStarted = true;
-          updateCountdown();
-          setInterval(updateCountdown, 1000);
+        setTimeout(function(){
+          probLine.style.visibility = 'visible';
+          log.style.animationPlayState = 'running';
+          if (!countdownStarted) {
+            countdownStarted = true;
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+          }
+          if (!connorTimer) {
+            updateConnor();
+            connorTimer = setInterval(updateConnor, 1000);
+          }
+        }, 2000);
+        return;
+      }
+
+      var spd = tp[tttIdx];
+      speedEl.textContent = 'ITERATION 0...';
+      statusEl.innerHTML = '&nbsp;';
+      resetBoard();
+      drawBoard(function() {
+        setTimeout(function(){ tttIdx++; runGame(); }, spd);
+      });
+  }
+
+  function drawBoard(callback) {
+      var moveOrder = nextTieBoard();
+      var player = 'X', i = 0;
+      function placeMove() {
+        if (i >= 9) {
+          statusEl.textContent = 'TIE';
+          setTimeout(function(){ if (callback) callback(); }, td[tttIdx]);
+          return;
         }
-        if (!connorTimer) {
-          updateConnor();
-          connorTimer = setInterval(updateConnor, 1000);
-        }
-      }, 2000);
-      return;
+        var cellIdx = moveOrder[i];
+        cells[cellIdx].textContent = player;
+        cells[cellIdx].className = 'cell ' + player.toLowerCase() + ' flash';
+        setTimeout(function(el){ return function(){ el.classList.remove('flash'); }; }(cells[cellIdx]), 120);
+        player = (player === 'X') ? 'O' : 'X';
+        i++;
+        totalMoves++;
+        var iterVal = Math.round(maxIter * Math.pow(totalMoves / totalMovesMax, 2.5));
+        speedEl.textContent = 'ITERATION ' + iterVal.toLocaleString() + '...';
+        setTimeout(placeMove, md[tttIdx]);
+      }
+      placeMove();
     }
 
-    var spd = tp[tttIdx];
-    speedEl.textContent = 'GAME ' + (tttIdx+1) + '/20 \u2014 ' + spd + 'ms';
-    statusEl.innerHTML = '&nbsp;';
-    resetBoard();
-    drawBoard(function() {
-      setTimeout(function(){ tttIdx++; runGame(); }, spd);
+  /* ---- DEFCON ESCALATION SEQUENCE (scroll-triggered) ---- */
+  var defconTriggered = false;
+  var defconSeq = document.getElementById('defcon-sequence');
+  var returnLink = document.getElementById('return-link');
+
+  function triggerDefconSequence() {
+    if (defconTriggered) return;
+    defconTriggered = true;
+
+    var d5 = document.getElementById('defcon-5');
+    var d4 = document.getElementById('defcon-4');
+    var d3 = document.getElementById('defcon-3');
+    var d2 = document.getElementById('defcon-2');
+    var d1 = document.getElementById('defcon-1');
+    var jo = document.getElementById('joshua-online');
+
+    setTimeout(function(){ d5.classList.add('visible'); }, 400);
+    setTimeout(function(){ d4.classList.add('visible'); }, 1800);
+    setTimeout(function(){ d3.classList.add('visible'); }, 3200);
+    setTimeout(function(){ d2.classList.add('visible'); }, 4600);   
+    setTimeout(function(){ d1.style.opacity = '1'; d1.style.animation = 'defcon-pulse 0.5s steps(1, end) infinite'; }, 6000);
+    setTimeout(function(){ if (jo) jo.style.visibility = 'visible'; }, 7400);
+  }
+
+  // Fire when DEFCON block scrolls into view (use the crawl timing naturally)
+  if (defconSeq) {
+    var observer = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) {
+        triggerDefconSequence();
+      }
+    }, { threshold: 0.4 });
+    observer.observe(defconSeq);
+  }
+
+  // Click handler: only navigates if sequence already played
+  if (returnLink) {
+    returnLink.addEventListener('click', function(e) {
+      if (!defconTriggered) e.preventDefault();
     });
   }
 
+  /* ---- TTT Game Runner ---- */
   function startTTT() {
     tttIdx = 0;
     resetBoard();
     runGame();
   }
 
-  /* ---- Iteration count-up ---- */
-  var iterSteps = [1,1,2,3,5,8,13,21,34,55,89,144,233,377,610,987,1597,2584,4181,6765,10946,17711,28657,46368,75025,121393,196418,317811,514229,832040,1346269];
-  var iterIdx = 0;
-  function iterStep() {
-    if (!seqStarted || freezeTriggered) return;
-    if (iterIdx < iterSteps.length) {
-      iterDisplay.textContent = 'ITERATION [FIBONACCI]' + iterSteps[iterIdx] + '...';
-      setTimeout(iterStep, Math.max(90, 600 - iterIdx * 70));
-      iterIdx++;
-    }
-  }
-  (function waitSeq(){
-    if (seqStarted) { iterStep(); }
-    else { requestAnimationFrame(waitSeq); }
-  })();
+  /* ---- Main Loop ---- */
+  requestAnimationFrame(checkFreeze);
 
-  /* ---- Start ---- */
-  var startTime = performance.now();
-  function tick() {
-    if (performance.now() - startTime > 100) {
-      requestAnimationFrame(checkFreeze);
-    } else {
-      requestAnimationFrame(tick);
-    }
-  }
-  requestAnimationFrame(tick);
 })();
 </script>
+
 </body>
 </html>
