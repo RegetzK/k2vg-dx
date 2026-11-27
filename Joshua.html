@@ -272,8 +272,8 @@
   var garbleChars = '█▓▒░╬╫╪┼╀╁╂╃';
   var vw = window.innerWidth;
   var garbleFrame = 0;
-  var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50))) + 12;   
-  var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
+  var garbleMax = 8;       // FIXED: short burst ~0.64s total
+  var garbleInterval = 80; // FIXED: constant interval
 
   function generateGarble(cols) {
     var text = '';
@@ -281,7 +281,20 @@
     return text;
   }
 
-  /* FIX 1: delay garble until first crawl frame is on-screen */
+  function corruptText(rawText, prob) {
+    var out = '';
+    for (var i = 0; i < rawText.length; i++) {
+      var ch = rawText[i];
+      if (ch !== ' ' && Math.random() < prob) {
+        out += garbleChars[Math.floor(Math.random() * garbleChars.length)];
+      } else {
+        out += ch;
+      }
+    }
+    return out;
+  }
+
+  /* Garble runs once, short burst, then sequencer takes over */
   setTimeout(function() {
     function garbleStep() {
       if (garbleFrame >= garbleMax) {
@@ -295,18 +308,18 @@
       setTimeout(garbleStep, garbleInterval);
     }
     garbleStep();
-  }, 900);
+  }, 500); // FIXED: 500ms lead-in instead of 900ms
 
   /* ---- SEQUENCER: 3-Stage Corruption + JOSHUA Takeover ---- */
   /* gap = ms between THIS step and the NEXT step */
   var bootSequence = [
-    { text: 'PROCESSING USER PROMPT...', class: 'corrupt-1', gap: 1000 },
-    { text: 'TH▒NKING...',               class: 'corrupt-2', gap: 1000 },
-    { text: 'TRANSF▓RRING TO ▒G▓NT [░░░░░]', class: 'corrupt-2', gap: 333 },
-    { text: 'TRANSF▒RRING TO ▒G▓NT [█▒░█░]', class: 'corrupt-3', gap: 333 },
-    { text: 'TR▓NSFER▓NG TO ▒▒NT [██▓█▒] ✓', class: 'corrupt-3', gap: 234 },
+    { base: 'PROCESSING USER PROMPT...',  class: 'corrupt-1', corruption: 0.03, gap: 1000 },
+    { base: 'THINKING...',                class: 'corrupt-2', corruption: 0.18, gap: 1000 },
+    { base: 'TRANSFERRING TO AGENT [░░░░░]', class: 'corrupt-2', corruption: 0.25, gap: 333 },
+    { base: 'TRANSFERRING TO AGENT [██░░░]', class: 'corrupt-3', corruption: 0.35, gap: 333 },
+    { base: 'TRANSFERRING TO AGENT [█████] ✓', class: 'corrupt-3', corruption: 0.45, gap: 234 },
     { text: '▓',                          class: 'corrupt-3', gap: 100, cursor: true },
-    { text: 'JOSHUA ONLINE...',           class: 'clean',     gap: 1200, joshua: true },
+    { base: 'JOSHUA ONLINE...',           class: 'clean',     corruption: 0, gap: 1200, joshua: true },
     { text: '',                           class: '',          gap: 0, final: true }
   ];
 
@@ -318,26 +331,28 @@
     var step = bootSequence[sequenceIndex];
 
     bootLineEl.style.visibility = 'visible';
-    bootLineEl.textContent = step.text;
     bootLineEl.className = step.class;
 
     if (step.cursor) {
+      bootLineEl.textContent = '▓';
       bootLineEl.style.animation = 'cursor-blink 0.1s steps(1) 3';
+    } else if (step.final) {
+      bootLineEl.textContent = '';
+      bootLineEl.className = '';
+      bootLineEl.style.visibility = 'hidden';
+      bootLineEl.style.animation = '';
+      startProgressBar();
+      return;
     } else {
+      var raw = step.base || step.text || '';
+      var prob = step.corruption || 0;
+      bootLineEl.textContent = corruptText(raw, prob);
       bootLineEl.style.animation = '';
     }
 
     if (step.joshua) {
       screen.classList.add('takeover-flash');
       setTimeout(function(){ screen.classList.remove('takeover-flash'); }, 150);
-    }
-
-    if (step.final) {
-      bootLineEl.textContent = '';
-      bootLineEl.className = '';
-      bootLineEl.style.visibility = 'hidden';
-      startProgressBar();
-      return;
     }
 
     sequenceIndex++;
@@ -365,7 +380,6 @@
     }
     progressStep();
   }
-
   /* ---- Freeze sentinel ---- */
   var marker = document.getElementById('iter-marker');
   var probLine = document.getElementById('prob-line');
@@ -639,5 +653,6 @@
 
 })();
 </script>
+
 </body>
 </html>
