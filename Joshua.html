@@ -294,26 +294,15 @@
     return out;
   }
 
-  /* Garble runs once, short burst, then sequencer takes over */
+    /* Sequencer starts directly (garble burst removed) */
   setTimeout(function() {
-    function garbleStep() {
-      if (garbleFrame >= garbleMax) {
-        garbleEl.textContent = '';
-        runBootSequence();
-        return;
-      }   
-      var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
-      garbleEl.textContent = generateGarble(cols);
-      garbleFrame++;
-      setTimeout(garbleStep, garbleInterval);
-    }
-    garbleStep();
-  }, 500); // FIXED: 500ms lead-in instead of 900ms
+    runBootSequence();
+  }, 500);
 
   /* ---- SEQUENCER: 3-Stage Corruption + JOSHUA Takeover ---- */
   /* gap = ms between THIS step and the NEXT step */
   var bootSequence = [
-      { base: 'PROCESSING USER PROMPT...',  class: 'corrupt-1', corruption: 0.12, gap: 1000 },
+    { base: 'PROCESSING USER PROMPT...',  class: 'corrupt-1', corruption: 0, gap: 1000 },
     { base: 'THINKING...',                class: 'corrupt-2', corruption: 0.30, gap: 1000 },
     { base: 'TRANSFERRING TO AGENT [░░░░░]', class: 'corrupt-2', corruption: 0.40, gap: 333 },
     { base: 'TRANSFERRING TO AGENT [██░░░]', class: 'corrupt-3', corruption: 0.55, gap: 333 },
@@ -321,7 +310,7 @@
     { text: '▓',                          class: 'corrupt-3', gap: 100, cursor: true },
     { base: 'JOSHUA ONLINE...',           class: 'clean',     corruption: 0, gap: 1200, joshua: true },
     { text: '',                           class: '',          gap: 0, final: true }
-  ];
+  ];   
 
   var sequenceIndex = 0;
 
@@ -331,7 +320,7 @@
     var step = bootSequence[sequenceIndex];
 
     bootLineEl.style.visibility = 'visible';
-    bootLineEl.className = step.class;
+    bootLineEl.className = 'l ' + step.class;   
 
     if (step.cursor) {
       bootLineEl.textContent = '▓';
