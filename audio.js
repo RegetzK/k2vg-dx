@@ -104,7 +104,7 @@
   }
 
   @keyframes clickFlash{from{opacity:1}to{opacity:.35}}
-  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 57s forwards;font-size:clamp(15px, 4vw, 20px)}
+  #return{position:fixed;left:0;right:0;bottom:14px;text-align:center;z-index:10;padding:0 10px;opacity:0;animation:reveal 0.6s ease-out 58s forwards;font-size:clamp(15px, 4vw, 20px)}
   @keyframes reveal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
   @supports not (height: 100dvh) {
@@ -127,6 +127,11 @@
   <div class="l defcon-line defcon-orange" id="defcon-3">DEFCON 3 // MOBILIZED/ROUND HOUSE // ORANGE</div>
   <div class="l defcon-line defcon-red" id="defcon-2">DEFCON 2 // DEPLOYED/FAST PACE // RED</div>
   <div class="l defcon-alert" id="defcon-1" style="opacity:0;animation:none">DEFCON 1 // IMMINENT/RED ALERT // INBOUND SSBN/ICBM LAUNCHES DETECTED</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">&nbsp;</div>
+  <div class="l">&nbsp;</div>
   <div class="l">&nbsp;</div>
   <div class="l">&nbsp;</div>
   <div class="l">&nbsp;</div>
@@ -301,10 +306,10 @@
   /* gap = ms between THIS step and the NEXT step */
   var bootSequence = [
     { base: 'PROCESSING USER PROMPT...',  class: 'corrupt-1', corruption: 0, gap: 1000 },
-    { base: 'THINKING...',                class: 'corrupt-2', corruption: 0.30, gap: 1000 },
-    { base: 'TRANSFERRING TO AGENT [░░░░░]', class: 'corrupt-2', corruption: 0.40, gap: 333 },
-    { base: 'TRANSFERRING TO AGENT [██░░░]', class: 'corrupt-3', corruption: 0.55, gap: 333 },
-    { base: 'TRANSFERRING TO AGENT [█████] ✓', class: 'corrupt-3', corruption: 0.70, gap: 234 },
+    { base: 'THINKING...',                class: 'corrupt-2', corruption: 0.22, gap: 1000 },
+    { base: 'TRANSFERRING TO AGENT [░░░░░]', class: 'corrupt-2', corruption: 0.32, gap: 333 },
+    { base: 'TRANSFERRING TO AGENT [██░░░]', class: 'corrupt-3', corruption: 0.45, gap: 333 },
+    { base: 'TRANSFERRING TO AGENT [█████] ✓', class: 'corrupt-3', corruption: 0.60, gap: 234 },   
     { text: '▓',                          class: 'corrupt-3', gap: 100, cursor: true },
     { base: 'JOSHUA ONLINE...',           class: 'clean',     corruption: 0, gap: 1200, joshua: true },
     { text: '',                           class: '',          gap: 0, final: true }
@@ -323,12 +328,8 @@
     if (step.cursor) {
       bootLineEl.textContent = '▓';
       bootLineEl.style.animation = 'cursor-blink 0.1s steps(1) 3';
-    } else if (step.final) {
-      bootLineEl.textContent = '';
-      bootLineEl.className = 'l';
-      bootLineEl.style.visibility = 'hidden';
-      bootLineEl.style.animation = '';
-      setTimeout(startProgressBar, 4000);
+        } else if (step.final) {
+      setTimeout(startProgressBar, 5000);
       return;
     } else {
       var raw = step.base || step.text || '';
