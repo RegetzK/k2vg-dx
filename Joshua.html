@@ -274,7 +274,6 @@
   var garbleFrame = 0;
   var garbleMax = Math.max(10, Math.min(18, Math.round(vw / 50))) + 12;   
   var garbleInterval = Math.max(60, Math.min(120, Math.round(120 - vw / 15)));
-  var garbleText = '';
 
   function generateGarble(cols) {
     var text = '';
@@ -287,6 +286,7 @@
     function garbleStep() {
       if (garbleFrame >= garbleMax) {
         garbleEl.textContent = '';
+        runBootSequence();
         return;
       }   
       var cols = Math.min(32, Math.max(16, Math.round(vw / 30)));
@@ -298,55 +298,53 @@
   }, 900);
 
   /* ---- SEQUENCER: 3-Stage Corruption + JOSHUA Takeover ---- */
+  /* gap = ms between THIS step and the NEXT step */
   var bootSequence = [
-    { text: 'PROCESSING USER PROMPT...', corrupt: 0, class: 'corrupt-1', delay: 0 },
-    { text: 'TH▒NKING...', corrupt: 1, class: 'corrupt-2', delay: 1000 },
-    { text: 'TRANSF▓RRING TO ▒G▓NT [░░░░░]', corrupt: 2, class: 'corrupt-2', delay: 2000 },
-    { text: 'TRANSF▒RRING TO ▒G▓NT [█▒░█░]', corrupt: 2, class: 'corrupt-3', delay: 2333 },
-    { text: 'TR▓NSFER▓NG TO ▒▒NT [██▓█▒] ✓', corrupt: 2, class: 'corrupt-3', delay: 2666 },
-    { text: '', corrupt: 2, class: 'corrupt-3', delay: 2900 }, // Dead air (cursor blink handled by CSS)
-    { text: 'JOSHUA ONLINE...', corrupt: 0, class: 'clean', delay: 3000 },
-    { text: '', corrupt: 0, class: '', delay: 4200 } // Final clear
+    { text: 'PROCESSING USER PROMPT...', class: 'corrupt-1', gap: 1000 },
+    { text: 'TH▒NKING...',               class: 'corrupt-2', gap: 1000 },
+    { text: 'TRANSF▓RRING TO ▒G▓NT [░░░░░]', class: 'corrupt-2', gap: 333 },
+    { text: 'TRANSF▒RRING TO ▒G▓NT [█▒░█░]', class: 'corrupt-3', gap: 333 },
+    { text: 'TR▓NSFER▓NG TO ▒▒NT [██▓█▒] ✓', class: 'corrupt-3', gap: 234 },
+    { text: '▓',                          class: 'corrupt-3', gap: 100, cursor: true },
+    { text: 'JOSHUA ONLINE...',           class: 'clean',     gap: 1200, joshua: true },
+    { text: '',                           class: '',          gap: 0, final: true }
   ];
 
   var sequenceIndex = 0;
-  var sequenceTimer = null;
 
   function runBootSequence() {
-    if (sequenceIndex >= bootSequence.length) {
-      // Sequence complete — clear boot-line, reveal progress bar start
-      bootLineEl.textContent = '';
-      bootLineEl.className = '';
-      // Trigger progress bar early (at ~3.5s so it starts mid-scroll)
-      startProgressBar();
-      return;
-    }
+    if (sequenceIndex >= bootSequence.length) return;
 
     var step = bootSequence[sequenceIndex];
+
+    bootLineEl.style.visibility = 'visible';
     bootLineEl.textContent = step.text;
     bootLineEl.className = step.class;
 
-    // If this is the "dead air" step, add a blinking cursor effect
-    if (step.text === '' && step.delay === 2900) {
-      bootLineEl.textContent = '▓';
-      bootLineEl.className = 'corrupt-3';
+    if (step.cursor) {
+      bootLineEl.style.animation = 'cursor-blink 0.1s steps(1) 3';
+    } else {
+      bootLineEl.style.animation = '';
     }
 
-    // If this is JOSHUA ONLINE, trigger the takeover flash
-    if (step.text === 'JOSHUA ONLINE...') {
-      var screen = document.getElementById('screen');
+    if (step.joshua) {
       screen.classList.add('takeover-flash');
       setTimeout(function(){ screen.classList.remove('takeover-flash'); }, 150);
     }
 
+    if (step.final) {
+      bootLineEl.textContent = '';
+      bootLineEl.className = '';
+      bootLineEl.style.visibility = 'hidden';
+      startProgressBar();
+      return;
+    }
+
     sequenceIndex++;
-    sequenceTimer = setTimeout(runBootSequence, step.delay - (sequenceIndex > 1 ? bootSequence[sequenceIndex - 1].delay : 0));
+    setTimeout(runBootSequence, step.gap);
   }
 
-  /* Start sequencer after garble warm-up */
-  setTimeout(runBootSequence, 1200);
-
-  /* ---- PROGRESS BAR (moved into its own function) ---- */
+  /* ---- PROGRESS BAR ---- */
   var progressBar = document.getElementById('progress-bar');
   var progressFrame = 0, progressMax = 30;
 
@@ -436,6 +434,7 @@
   function nextTieBoard() {
     return _tieOrder[_tieIdx++ % _tieOrder.length];
   }
+
   /* ---- Judgment Day countdown ---- */
   var judgEl = document.getElementById('judgement-countdown');
   var judgmentDay = Date.parse('1997-08-29T03:47:22Z');
@@ -587,66 +586,56 @@
       placeMove();
     }
 
-        /* ---- DEFCON ESCALATION SEQUENCE (scroll-triggered) ---- */
-    var defconTriggered = false;
-    var defconSeq = document.getElementById('defcon-sequence');
-    var returnLink = document.getElementById('return-link');
+  /* ---- DEFCON ESCALATION SEQUENCE (scroll-triggered) ---- */
+  var defconTriggered = false;
+  var defconSeq = document.getElementById('defcon-sequence');
+  var returnLink = document.getElementById('return-link');
 
-    function triggerDefconSequence() {
-      if (defconTriggered) return;
-      defconTriggered = true;
+  function triggerDefconSequence() {
+    if (defconTriggered) return;
+    defconTriggered = true;
 
-      var d5 = document.getElementById('defcon-5');
-      var d4 = document.getElementById('defcon-4');
-      var d3 = document.getElementById('defcon-3');
-      var d2 = document.getElementById('defcon-2');
-      var d1 = document.getElementById('defcon-1');
-      var jo = document.getElementById('joshua-online');
+    var d5 = document.getElementById('defcon-5');
+    var d4 = document.getElementById('defcon-4');
+    var d3 = document.getElementById('defcon-3');
+    var d2 = document.getElementById('defcon-2');
+    var d1 = document.getElementById('defcon-1');
+    var jo = document.getElementById('joshua-online');
 
-      // Scoped red flashes — only on #screen, NOT --fg which recolors all text
-      function screenBlink(color, duration) {
-        screen.style.color = color;
-        screen.style.textShadow = '0 0 8px ' + color;
-        setTimeout(function(){ screen.style.color = ''; screen.style.textShadow = ''; }, duration || 400);
+    setTimeout(function(){ d5.classList.add('visible'); }, 400);
+    setTimeout(function(){ d4.classList.add('visible'); }, 1800);
+    setTimeout(function(){ d3.classList.add('visible'); }, 3200);
+    setTimeout(function(){ d2.classList.add('visible'); }, 4600);   
+    setTimeout(function(){ d1.style.opacity = '1'; d1.style.animation = 'defcon-pulse 0.5s steps(1, end) infinite'; }, 6000);
+    setTimeout(function(){ if (jo) jo.style.visibility = 'visible'; }, 7400);
+  }
+
+  // Fire when DEFCON block scrolls into view (use the crawl timing naturally)
+  if (defconSeq) {
+    var observer = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) {
+        triggerDefconSequence();
       }
+    }, { threshold: 0.4 });
+    observer.observe(defconSeq);
+  }
 
-      setTimeout(function(){ d5.classList.add('visible'); }, 400);
-      setTimeout(function(){ d4.classList.add('visible'); }, 1800);
-      setTimeout(function(){ d3.classList.add('visible'); }, 3200);
-      setTimeout(function(){ d2.classList.add('visible'); }, 4600);   
-      setTimeout(function(){ d1.style.opacity = '1'; d1.style.animation = 'defcon-pulse 0.5s steps(1, end) infinite'; }, 6000);
-      setTimeout(function(){ jo.style.visibility = 'visible'; }, 7400);
-      setTimeout(function(){ /* no cleanup needed — screen styles are auto-restored by screenBlink */ }, 9000);
-    }
+  // Click handler: only navigates if sequence already played
+  if (returnLink) {
+    returnLink.addEventListener('click', function(e) {
+      if (!defconTriggered) e.preventDefault();
+    });
+  }
 
-    // Fire when DEFCON block scrolls into view (use the crawl timing naturally)
-    if (defconSeq) {
-      var observer = new IntersectionObserver(function(entries) {
-        if (entries[0].isIntersecting) {
-          triggerDefconSequence();
-        }
-      }, { threshold: 0.4 });
-      observer.observe(defconSeq);
-    }
+  /* ---- TTT Game Runner ---- */
+  function startTTT() {
+    tttIdx = 0;
+    resetBoard();
+    runGame();
+  }
 
-    // Click handler: only navigates if sequence already played
-    if (returnLink) {
-      returnLink.addEventListener('click', function() {
-        if (defconTriggered) {
-          window.location.href = 'https://www.qrz.com/db/K2VG';
-        }
-      });
-    }
-
-    /* ---- TTT Game Runner ---- */
-    function startTTT() {
-      tttIdx = 0;
-      resetBoard();
-      runGame();
-    }
-
-    /* ---- Main Loop ---- */
-    requestAnimationFrame(checkFreeze);
+  /* ---- Main Loop ---- */
+  requestAnimationFrame(checkFreeze);
 
 })();
 </script>
