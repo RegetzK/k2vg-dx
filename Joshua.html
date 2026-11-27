@@ -330,7 +330,7 @@
       bootLineEl.className = '';
       bootLineEl.style.visibility = 'hidden';
       bootLineEl.style.animation = '';
-      startProgressBar();
+      setTimeout(startProgressBar, 3500);
       return;
     } else {
       var raw = step.base || step.text || '';
