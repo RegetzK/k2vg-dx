@@ -365,7 +365,76 @@ td.utc-red{color:#ff5252;font-weight:bold;}
   .band-chip{font-size:8px;padding:2px 4px}
   .dir-toggle button{font-size:8px;padding:3px 6px}
 }
-</style>
+
+/* === SUBSPACE SENSOR ARRAY (Theatrical) === */
+.subspace-array{
+  margin-top:12px;
+  border:1px solid #0066cc;
+  border-radius:6px;
+  background:#080a10;
+  padding:10px 14px;
+  font-family:monospace;
+  position:relative;
+  overflow:hidden;
+}
+.subspace-array::before{
+  content:'';
+  position:absolute;
+  top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(0,229,255,0.03),transparent);
+  animation:subspaceSweep 4s infinite linear;
+  pointer-events:none;
+}
+@keyframes subspaceSweep{0%{left:-60%}100%{left:160%}}
+.subspace-title{
+  color:#00e5ff;
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  text-align:center;
+  margin-bottom:8px;
+  opacity:0.7;
+}
+.sensor-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:6px;
+}
+.sensor-cell{
+  background:#0b0c10;
+  border:1px solid #1f2937;
+  border-radius:3px;
+  padding:5px 8px;
+  position:relative;
+  overflow:hidden;
+}
+.sensor-cell.scanning{border-color:#00ff66;}
+.sensor-cell.alert{border-color:#ff3333;animation:sensorAlertPulse 1.5s infinite ease-in-out;}
+@keyframes sensorAlertPulse{0%,100%{border-color:#ff3333}50%{border-color:#ff6b6b}}
+.sensor-label{font-size:8px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;}
+.sensor-value{font-size:13px;color:#00ff66;font-weight:bold;letter-spacing:0.5px;}
+.sensor-value.cyan{color:#00e5ff;}
+.sensor-value.amber{color:#ffab40;}
+.sensor-value.red{color:#ff5252;animation:degradedPulse 1s infinite;}
+.sensor-value.magenta{color:#ff00ff;}
+.sensor-bar{height:3px;background:#1f2937;border-radius:2px;margin-top:3px;overflow:hidden;}
+.sensor-bar-fill{height:100%;border-radius:2px;transition:width 0.8s ease,background 0.5s;background:#00ff66;}
+.sensor-bar-fill.high{background:#ffab40;}
+.sensor-bar-fill.critical{background:#ff5252;}
+.sensor-sub{font-size:7px;color:#444;margin-top:2px;letter-spacing:0.5px;}
+.event-log{margin-top:8px;border-top:1px solid #1f2937;padding-top:6px;max-height:48px;overflow-y:auto;scrollbar-width:none;}
+.event-log::-webkit-scrollbar{display:none;}
+.event-line{font-size:8px;color:#00ff66;opacity:0.6;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.event-line:first-child{opacity:1;color:#00e5ff;}
+.event-line.warn{color:#ffab40;}
+.event-line.crit{color:#ff5252;font-weight:bold;}
+@media(max-width:600px){
+  .sensor-grid{grid-template-columns:repeat(3,1fr);}
+  .sensor-value{font-size:11px;}
+  .sensor-label{font-size:7px;}
+}
+</style>   
 </head>
 <body>
 <div class="station-header">(SL9) BETA FIVE QUANTUM DECODING SUBSPACE &amp; TERRESTRIAL DXCC MONITORING &amp; REAL-TIME REPORTS</div>
@@ -408,9 +477,76 @@ td.utc-red{color:#ff5252;font-weight:bold;}
   </div>
 </div>
 
+<!-- === SUBSPACE SENSOR ARRAY (Theatrical) === -->
+<div class="subspace-array" id="subspaceArray">
+  <div class="subspace-title">◈ SUBSPACE SENSOR ARRAY // MULTI-SPECTRUM &amp; GRAVITATIONAL WAVE MONITORING ◈</div>
+  <div class="sensor-grid">
+    <div class="sensor-cell scanning" id="cellIR">
+      <div class="sensor-label">IR Spectral Scan</div>
+      <div class="sensor-value" id="valIR">0.00 μm</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barIR" style="width:45%"></div></div>
+      <div class="sensor-sub">BAND 0.7–1000μm // NOMINAL</div>
+    </div>
+    <div class="sensor-cell" id="cellUV">
+      <div class="sensor-label">UV Photon Flux</div>
+      <div class="sensor-value cyan" id="valUV">0.0 kR</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barUV" style="width:30%"></div></div>
+      <div class="sensor-sub">10–400 nm // LYMAN-ALPHA LOCK</div>
+    </div>
+    <div class="sensor-cell" id="cellXRAY">
+      <div class="sensor-label">X-Ray Class</div>
+      <div class="sensor-value amber" id="valXRAY">A0.0</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barXRAY" style="width:12%"></div></div>
+      <div class="sensor-sub">GOES-19 // 1–8 Å CHANNEL</div>
+    </div>
+    <div class="sensor-cell scanning" id="cellSUB">
+      <div class="sensor-label">Subspace Carrier</div>
+      <div class="sensor-value magenta" id="valSUB">TLY 0.0</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barSUB" style="width:60%;background:#ff00ff"></div></div>
+      <div class="sensor-sub">ANSI-TLY CALIBRATED // STABLE</div>
+    </div>
+    <div class="sensor-cell" id="cellORB">
+      <div class="sensor-label">Orbital Tracking</div>
+      <div class="sensor-value" id="valORB">0 TGT</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barORB" style="width:55%"></div></div>
+      <div class="sensor-sub">LEO/MEO/GEO // NORAD SYNC</div>
+    </div>
+    <div class="sensor-cell" id="cellREL">
+      <div class="sensor-label">Subspace Relays</div>
+      <div class="sensor-value" id="valREL">0/0 ONLINE</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barREL" style="width:70%"></div></div>
+      <div class="sensor-sub">DILITIUM-FED NODE MESH</div>
+    </div>
+    <div class="sensor-cell" id="cellINT">
+      <div class="sensor-label">Interferometry</div>
+      <div class="sensor-value cyan" id="valINT">0.0 km</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barINT" style="width:80%"></div></div>
+      <div class="sensor-sub">VLBI BASELINE // PHASE-LOCKED</div>
+    </div>
+    <div class="sensor-cell" id="cellINSAR">
+      <div class="sensor-label">InSAR SAR Sweep</div>
+      <div class="sensor-value" id="valINSAR">0.0 cm</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barINSAR" style="width:25%"></div></div>
+      <div class="sensor-sub">DEFORMATION MAP // mm-RESOLUTION</div>
+    </div>
+    <div class="sensor-cell" id="cellLIGO">
+      <div class="sensor-label">Gravitational Strain</div>
+      <div class="sensor-value magenta" id="valLIGO">0.0e-21</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barLIGO" style="width:15%;background:#ff00ff"></div></div>
+      <div class="sensor-sub">h-STRAIN // 10–2000 Hz BAND</div>
+    </div>
+    <div class="sensor-cell scanning" id="cellCOMMS">
+      <div class="sensor-label">Comms Relay</div>
+      <div class="sensor-value" id="valCOMMS">70CM–160M</div>
+      <div class="sensor-bar"><div class="sensor-bar-fill" id="barCOMMS" style="width:50%"></div></div>
+      <div class="sensor-sub">FULL SPECTRUM UPLINK ACTIVE</div>
+    </div>
+  </div>
+  <div class="event-log" id="eventLog"></div>
+</div>
+
 <!-- === TELEMETRY WRAPPER === -->
-<div class="telemetry-wrap" id="telemetryScroll">
-<div style="position:relative;">
+<div class="telemetry-wrap" id="telemetryScroll">   <div style="position:relative;">
 
 <table>
   <thead>
@@ -1093,6 +1229,39 @@ loadColWidths();
 initColResize();
 initBandChips();
 initDirToggle();
+
+// ===== SUBSPACE SENSOR ARRAY ENGINE (Theatrical) =====
+(function(){
+'use strict';
+var log=document.getElementById('eventLog');
+if(!log)return;
+function pad(n,w){return String(n).padStart(w||2,'0');}
+function stamp(){var d=new Date();return pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())+':'+pad(d.getUTCSeconds())+'Z';}
+function addEvent(msg,cls){var line=document.createElement('div');line.className='event-line'+(cls?' '+cls:'');line.textContent=stamp()+' // '+msg;log.insertBefore(line,log.firstChild);while(log.children.length>14)log.removeChild(log.lastChild);}
+function setVal(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+function setBar(id,pct,mode){var el=document.getElementById(id);if(!el)return;el.style.width=Math.max(2,Math.min(100,pct))+'%';el.classList.remove('high','critical');if(mode==='high')el.classList.add('high');if(mode==='critical')el.classList.add('critical');}
+function cellState(id,state){var el=document.getElementById(id);if(!el)return;el.classList.remove('scanning','alert');if(state)el.classList.add(state);}
+var ir=7.8,uv=12.4,xray=0.9,sub=4.2,orb=14,relOn=9,relTot=12,int=2400,insar=1.2,ligo=3.4,commsPct=50;
+function walk(v,mn,mx,step){v+=(Math.random()-0.5)*step;if(v<mn)v=mn+Math.random()*step*0.3;if(v>mx)v=mx-Math.random()*step*0.3;return v;}
+setInterval(function(){
+  ir=walk(ir,0.7,980,40);setVal('valIR',(ir<1000?ir.toFixed(2)+' μm':(ir/1000).toFixed(3)+' mm'));setBar('barIR',(ir/1000)*100,ir>700?'high':'');cellState('cellIR',ir>850?'alert':'scanning');
+  uv=walk(uv,0.2,60,3);setVal('valUV',uv.toFixed(1)+' kR');setBar('barUV',(uv/60)*100,uv>45?'high':'');
+  xray=walk(xray,0.1,9.9,0.6);var cls=xray<1?'A':xray<2?'B':xray<4?'C':xray<8?'M':'X';setVal('valXRAY',cls+xray.toFixed(1));setBar('barXRAY',(xray/10)*100,cls==='M'?'high':cls==='X'?'critical':'');cellState('cellXRAY',cls==='X'?'alert':cls==='M'?'scanning':'');
+  sub=walk(sub,0.5,9.5,0.8);setVal('valSUB','TLY '+sub.toFixed(2));setBar('barSUB',(sub/10)*100,'');
+  if(Math.random()<0.15)orb=Math.max(3,Math.min(48,orb+(Math.random()<0.5?-1:1)));setVal('valORB',orb+' TGT');setBar('barORB',(orb/48)*100,'');
+  if(Math.random()<0.1){relOn=Math.max(4,Math.min(relTot,relOn+(Math.random()<0.5?-1:1)));if(relOn<=5)addEvent('RELAY NODE DEGRADED // MESH REROUTING','warn');}setVal('valREL',relOn+'/'+relTot+' ONLINE');setBar('barREL',(relOn/relTot)*100,relOn<=6?'high':'');
+  int=walk(int,400,12000,300);setVal('valINT',(int>=1000?(int/1000).toFixed(2)+'e3 km':int.toFixed(0)+' km'));setBar('barINT',(int/12000)*100,'');
+  insar=walk(insar,-4,4,0.4);setVal('valINSAR',(insar>=0?'+':'')+insar.toFixed(2)+' cm');setBar('barINSAR',(Math.abs(insar)/4)*100,Math.abs(insar)>3?'high':'');
+  ligo=walk(ligo,0.1,9.9,1.2);setVal('valLIGO',ligo.toFixed(1)+'e-21');setBar('barLIGO',(ligo/10)*100,ligo>8?'critical':ligo>6?'high':'');cellState('cellLIGO',ligo>8?'alert':ligo>6?'scanning':'');
+  commsPct=walk(commsPct,5,95,8);var bl=commsPct>70?'70CM–2M':commsPct>40?'HF BANDS':'160M–80M';setVal('valCOMMS',bl);setBar('barCOMMS',commsPct,'');
+},1400);
+var EVENTS=[['SUBSPACE HARMONIC DETECTED // SOURCE BEARING 047 MARK 2',''],['IONOSPHERIC DUCT CONFIRMED // 20M DX PATH OPEN',''],['PHOTON COUNT SPIKE // LYMAN-ALPHA TRANSIENT','warn'],['ORBITAL CONJUNCTION WARNING // TCA +00:42:11','warn'],['InSAR PHASE UNWRAP COMPLETE // GRID FM05 STABLE',''],['VLBI CORRELATION LOCK // FRINGE PEAK 98.4%',''],['MICROLENSING ANOMALY // MAGNIFICATION 1.003','warn'],['DILITIUM RESONANCE NOMINAL // RELAY HANDSHAKE OK',''],['GRAVITATIONAL WAVE CANDIDATE // SNR 8.2 // VERIFYING','crit'],['SOLAR PROTON FLUX ELEVATED // HF ABSORPTION LIKELY','warn'],['SUBSPACE RELAY #7 REACQUIRED // LATENCY 0.4 ms',''],['COSMIC RAY MUON BURST // SHIELDING NOMINAL',''],['QUANTUM DECODER CACHE FLUSH // INTEGRATION RESET',''],['TERRESTRIAL NOISE FLOOR -174 dBm/Hz // TEXTBOOK',''],['SPECTRAL LINE AT 21cm HYDROGEN // NATURAL ORIGIN','']];
+function fireEvent(){var e=EVENTS[Math.floor(Math.random()*EVENTS.length)];addEvent(e[0],e[1]);setTimeout(fireEvent,6000+Math.random()*8000);}
+setTimeout(fireEvent,2500);
+addEvent('SUBSPACE ARRAY POWER-ON // SELF-TEST INITIATED');
+setTimeout(function(){addEvent('SENSORS ONLINE // MULTI-SPECTRUM LOCK ACQUIRED');},1200);
+setTimeout(function(){addEvent('ANSI-TLY CALIBRATION VERIFIED // BETA FIVE LINK UP');},2400);
+})();   
 </script>
 </body>
 </html>
