@@ -105,7 +105,7 @@ tr.lore td:last-child{color:#00e5ff;font-weight:bold;}
 /* === TELEMETRY TABLE (sticky header, scrollable body) === */
 .telemetry-wrap{
   position:relative;
-  max-height:calc(8 * 22px); /* ~176px = 8 rows threshold */
+  max-height:calc(4 * 22px + 8 * 22px); /* header + 4 lore + 8 telemetry = ~264px */
   overflow-y:auto;
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
