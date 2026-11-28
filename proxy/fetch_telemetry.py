@@ -20,7 +20,7 @@ QSO_TOTAL = 124
 QSO_CONFIRMED_QRZ = 100
 SNR_MIN = -24
 SNR_MAX = 24
-LAST_SECONDS = 3600        # 1 hour window
+LAST_SECONDS = 7200        # 2 hour window
 
 FICTIONAL_STATIONS = [
     {"call": "NCC-1701", "grid": "GSO-FM05", "band": "ALL", "db": None, "freq": None, "dxcc": "USS ENTERPRISE", "status": "UPLINK ACTIVE", "lore": True},
@@ -36,51 +36,86 @@ HEADERS = {
 
 # ─── FETCH ────────────────────────────────────────────────────────────
 
-def fetch_spots():
+def fetch_rx():
     """Query PSKReporter for spots where K2VG is the receiver (RX view)."""
     url = (
         f"https://retrieve.pskreporter.info/query"
         f"?receiverCallsign={STATION_CALL}"
         f"&flowStartSeconds=-{LAST_SECONDS}"
-        f"&rronly=1"
-        f"&rptlimit=200"
+        f"&rronly=1&rptlimit=200&mode=FT8"
     )
-    print(f"Query: {url}")
+    print(f"RX Query: {url}")
     req = urllib.request.Request(url, headers=HEADERS)
     with urllib.request.urlopen(req, timeout=30) as resp:
         data = resp.read()
-    print(f"Received {len(data)} bytes")
+    print(f"RX: Received {len(data)} bytes")
     return data
 
-def parse_spots(xml_bytes):
-    """Parse <receptionReport> elements into track dicts."""
+def fetch_tx():
+    """Query PSKReporter for spots where K2VG is the sender (TX view)."""
+    url = (
+        f"https://retrieve.pskreporter.info/query"
+        f"?senderCallsign={STATION_CALL}"
+        f"&flowStartSeconds=-{LAST_SECONDS}"
+        f"&rronly=1&rptlimit=200&mode=FT8"
+    )
+    print(f"TX Query: {url}")
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        data = resp.read()
+    print(f"TX: Received {len(data)} bytes")
+    return data
+
+# ─── PARSE ────────────────────────────────────────────────────────────
+
+def _safe_int(val, default=0):
+    try:
+        return int(val)
+    except (ValueError, TypeError):
+        return default
+
+def parse_spots(xml_bytes, direction):
+    """Parse <receptionReport> elements into track dicts.
+    direction: 'rx' if K2VG is receiver, 'tx' if K2VG is sender.
+    """
     root = ET.fromstring(xml_bytes)
     tracks = []
     seen = set()
     for rpt in root.iter("receptionReport"):
-        call = rpt.get("senderCallsign", "")
+        # Direction-aware field selection
+        if direction == "rx":
+            call = rpt.get("senderCallsign", "")
+            grid = rpt.get("senderLocator", "") or "????"
+            dxcc = rpt.get("senderDXCC", "")
+            dxcc_code = rpt.get("senderDXCCCode", "")
+        else:
+            call = rpt.get("receiverCallsign", "")
+            grid = rpt.get("receiverLocator", "") or "????"
+            dxcc = rpt.get("receiverDXCC", "")
+            dxcc_code = rpt.get("receiverDXCCCode", "")
+
         if not call or call in seen:
             continue
         seen.add(call)
-        freq_str = rpt.get("frequency", "0")
-        try:
-            freq_hz = int(freq_str)
-        except (ValueError, TypeError):
-            freq_hz = 0
-        grid = rpt.get("senderLocator", "") or "????"
-        dxcc_code = rpt.get("senderDXCCcode", "") or call[:2]
-        snr = rpt.get("sNR")
-        db = int(snr) if snr is not None else 0
+
+        freq_hz = _safe_int(rpt.get("frequency", "0"))
+        db = _safe_int(rpt.get("sNR", "0"))
+        ts_ms = _safe_int(rpt.get("flowStartSeconds", "0")) * 1000
+
         tracks.append({
             "call": call,
-            "grid": grid,
+            "grid": grid[:4],
             "band": None,
             "freq": freq_hz / 1e6,
             "db": db,
-            "dxcc": dxcc_code,
+            "dxcc": dxcc or dxcc_code,
+            "dxcc_code": dxcc_code,
+            "timestamp": ts_ms,
+            "direction": direction,
+            "status": "SPOTTED",
             "lore": False,
         })
-    print(f"Parsed {len(tracks)} unique senders")
+    print(f"Parsed {len(tracks)} unique spots ({direction.upper()})")
     return tracks
 
 # ─── MAIN ─────────────────────────────────────────────────────────────
@@ -88,12 +123,23 @@ def parse_spots(xml_bytes):
 def main():
     status = "ONLINE"
     tracks = []
+    errors = []
 
     try:
-        xml_bytes = fetch_spots()
-        tracks = parse_spots(xml_bytes)
+        rx_bytes = fetch_rx()
+        tracks.extend(parse_spots(rx_bytes, "rx"))
     except Exception as e:
-        print(f"FETCH ERROR: {e}", file=sys.stderr)
+        print(f"RX FETCH ERROR: {e}", file=sys.stderr)
+        errors.append("RX")
+
+    try:
+        tx_bytes = fetch_tx()
+        tracks.extend(parse_spots(tx_bytes, "tx"))
+    except Exception as e:
+        print(f"TX FETCH ERROR: {e}", file=sys.stderr)
+        errors.append("TX")
+
+    if errors:
         status = "DEGRADED"
 
     output = {
@@ -125,7 +171,7 @@ def main():
         f.write(json.dumps(output))
         f.write(";")
 
-    print(f"Done: {len(tracks)} real tracks, status={status}")
+    print(f"Done: {len(tracks)} real tracks, status={status}, errors={errors or 'none'}")
 
     if status == "DEGRADED":
         sys.exit(1)
