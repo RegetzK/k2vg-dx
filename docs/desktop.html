@@ -93,19 +93,14 @@ body::after{
 .controls button.polling{background:#00ff66;color:#000}
 .controls button.armed{background:#00ff66;color:#000}
 
-/* === LORE TABLE (above scroll, no header) === */
-.lore-table-wrap{
-  margin-bottom:0;
-}
-.lore-table-wrap table{
-  border:none;
-  margin:0;
-}
-.lore-table-wrap td{
-  border:none;
-  padding:2px 6px;
-  white-space:nowrap;
-}
+/* === MERGED CONSOLE TABLE (sticky header, lore + telemetry in one table) === */
+tr.lore td{border-color:#0a3d1f;}
+tr.lore td:nth-child(1),
+tr.lore td:nth-child(2),
+tr.lore td:nth-child(5){color:#00ff66;font-weight:bold;}
+tr.lore td:nth-child(3),
+tr.lore td:nth-child(4){color:#7cffb2;}
+tr.lore td:last-child{color:#00e5ff;font-weight:bold;}
 
 /* === TELEMETRY TABLE (sticky header, scrollable body) === */
 .telemetry-wrap{
@@ -292,21 +287,8 @@ td.utc-red{color:#ff5252;font-weight:bold;}
   <button id="pollNow">Poll Now</button>
 </div>
 
-<div style="overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%">
-<!-- LORE TABLE (above scroll, no header, no scrollbar) -->
-<div class="lore-table-wrap">
-<table>
-  <tbody>
-    <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>—</td><td>—</td><td>UPLINK ACTIVE</td></tr>
-    <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>—</td><td>—</td><td>MONITORING 🖖</td></tr>
-    <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
-    <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
-  </tbody>
-</table>
-</div>
-
-<!-- TELEMETRY TABLE (sticky header, scrollable body) -->
 <div class="telemetry-wrap" id="telemetryScroll">
+
 <table>
   <thead>
     <tr>
@@ -321,10 +303,13 @@ td.utc-red{color:#ff5252;font-weight:bold;}
     </tr>
   </thead>
   <tbody id="telemetryBody">
-    <!-- telemetry rows injected here by JS -->
+  <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>—</td><td>—</td><td>UPLINK ACTIVE</td></tr>
+  <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>—</td><td>—</td><td>MONITORING 🖖</td></tr>
+  <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
+  <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
+  <!-- telemetry rows injected here by JS -->
   </tbody>
 </table>
-</div>
 <div class="status-bar">
   <span id="status">INITIALIZING...</span>
   <span id="timestamp">--:--:--Z</span>
@@ -609,6 +594,16 @@ function formatUtc(ts){
   }catch(e){return'—';}
 }
 
+function getStardate(){
+  const now=new Date();
+  const year=now.getUTCFullYear();
+  const start=new Date(Date.UTC(year,0,1));
+  const t=new Date(Date.UTC(year,now.getUTCMonth(),now.getUTCDate()));
+  const dayOfYear=Math.round((t.getTime()-start.getTime())/86400000)+1;
+  const frac=(dayOfYear-1+now.getUTCHours()/24+now.getUTCMinutes()/1440)/365;
+  return (year-2323+frac).toFixed(2);
+}
+
 // ===== MAIN LOAD =====
 async function load(){
   try{
@@ -617,6 +612,7 @@ async function load(){
     const d=await r.json();
     const tb=document.getElementById('telemetryBody');
     tb.querySelectorAll('tr.telemetry').forEach(r=>r.remove());
+    const loreRows=[...tb.querySelectorAll('tr.lore')];
     const tracks=d.telemetry.dx_tracks||[];
     const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX);
     filtered.sort(function(a,b){
@@ -675,10 +671,10 @@ async function load(){
       statusTd.textContent=t.status||'—';
       tr.appendChild(statusTd);
 
-      tb.appendChild(tr);
-    }
+      if(loreRows.length){loreRows[loreRows.length-1].after(tr);}else{tb.appendChild(tr);}
+         }
+         seenKeys.clear();
 
-    seenKeys.clear();
     currentKeys.forEach(k=>seenKeys.add(k));
 
     if(!sliced.length){
@@ -687,19 +683,14 @@ async function load(){
       const td=document.createElement('td');
       td.colSpan=8;
       td.className='empty-state';
-      td.textContent=getEmptyStateMsg()+'// STANDING BY FOR DIRECTIVE';
-      tr.appendChild(td);
-      tb.appendChild(tr);
+      td.textContent=getEmptyStateMsg()+'// STANDING BY...';
+      if(loreRows.length){loreRows[loreRows.length-1].after(tr);}else{tb.appendChild(tr);}
     }
 
     // Overflow fade detection
     const wrap=document.getElementById('telemetryScroll');
     if(wrap){
-      if(wrap.scrollHeight>wrap.clientHeight){
-        wrap.classList.add('has-overflow');
-      }else{
-        wrap.classList.remove('has-overflow');
-      }
+      updateOverflowFade();
     }
 
     const now=Date.now();
@@ -725,11 +716,33 @@ async function load(){
     }else if(hadNew&&audioArmed){
       playAlert();
     }
+
   }catch(e){
     document.getElementById('status').textContent='DEGRADED';
     document.getElementById('status').className='degraded';
   }
+  // Always render stardate — survives telemetry failure
+  try{
+    document.getElementById('timestamp').textContent='STARDATE '+getStardate();
+  }catch(e){}
 }
+
+function updateOverflowFade(){
+  const w=document.getElementById('telemetryScroll');
+  if(!w)return;
+  const more=w.scrollHeight-w.scrollTop-w.clientHeight>2;
+  w.classList.toggle('has-overflow',more);
+}
+document.getElementById('telemetryScroll').addEventListener('scroll',updateOverflowFade);
+window.addEventListener('resize',updateOverflowFade);
+
+
+function scheduleRefresh(){
+  if(refreshTimer)clearTimeout(refreshTimer);
+  refreshTimer=setTimeout(load, parseInt(document.getElementById('refreshInterval').value)||300000);
+}
+
+
 scheduleRefresh();
 loadColWidths();
 initColResize();
