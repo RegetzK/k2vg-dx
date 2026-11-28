@@ -43,8 +43,9 @@ body::after{
   -webkit-backface-visibility:hidden;
   -webkit-transform:translateZ(0);
 }
-@keyframes warnFade{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes warnFade{0%,100%{opacity:1}0%,100%{opacity:1}50%{opacity:0.3}}
 @keyframes degradedPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes cyanPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.03);opacity:0.85}}
 .controls{
   display:flex;
   align-items:center;
@@ -86,34 +87,110 @@ body::after{
   letter-spacing:1px;
   text-transform:uppercase;
   cursor:pointer;
+  font-family:monospace;
 }
 .controls button:hover{background:#f1c40f}
 .controls button.polling{background:#00ff66;color:#000}
 .controls button.armed{background:#00ff66;color:#000}
-table{
-  border-collapse:collapse;
+
+/* === LORE TABLE (above scroll, no header) === */
+.lore-table-wrap{
+  margin-bottom:0;
+}
+.lore-table-wrap table{
+  border:none;
+  margin:0;
+}
+.lore-table-wrap td{
+  border:none;
+  padding:2px 6px;
+  white-space:nowrap;
+}
+
+/* === TELEMETRY TABLE (sticky header, scrollable body) === */
+.telemetry-wrap{
+  position:relative;
+  max-height:calc(8 * 22px); /* ~176px = 8 rows threshold */
+  overflow-y:auto;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
   border:1px solid #00ff66;
+  scrollbar-width:thin;
+  scrollbar-color:#00ff66 #0b0c10;
+}
+.telemetry-wrap::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+.telemetry-wrap::-webkit-scrollbar-track{
+  background:#0b0c10;
+  border-radius:4px;
+}
+.telemetry-wrap::-webkit-scrollbar-thumb{
+  background:#00ff66;
+  border-radius:4px;
+}
+.telemetry-wrap::-webkit-scrollbar-thumb:hover{
+  background:#00cc52;
+}
+/* Bottom fade clue: "more below" */
+.telemetry-wrap::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:30px;
+  background:linear-gradient(transparent,#000 80%);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.3s ease;
+  z-index:2;
+}
+.telemetry-wrap.has-overflow::after{
+  opacity:1;
+}
+.telemetry-wrap table{
+  border-collapse:collapse;
   width:100%;
   font-family:monospace;
-  font-size:18px;
+  font-size:14px;
+  min-width:610px; /* 8 cols × ~76px minimum */
 }
-th,td{
+.telemetry-wrap th{
+  position:sticky;
+  top:0;
+  z-index:10;
+  border-bottom:2px solid #00ff66;
+  border-top:none;
+  border-left:none;
+  border-right:none;
+  color:#00ff66;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  background:#0b0c10;
+  padding:4px 6px;
+  white-space:nowrap;
+  cursor:col-resize;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.telemetry-wrap th:hover{
+  background:#12141c;
+}
+.telemetry-wrap td{
   border:1px solid #1f2937;
-  padding:3px 6px;
+  padding:2px 6px;
   text-align:left;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  max-width:140px;
+  max-width:160px;
+  line-height:18px;
 }
-th{
-  border-bottom:2px solid #00ff66;
-  color:#00ff66;
-  font-size:12px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  background:#0b0c10;
+.telemetry-wrap tbody tr:hover{
+  background:#12141c;
 }
+/* Lore rows (in telemetry table, below header) */
 tr.lore td{
   color:#00ff66;
   font-weight:bold;
@@ -121,16 +198,30 @@ tr.lore td{
 tr.lore td:last-child{
   color:#00e5ff;
 }
+/* Telemetry rows */
 tr.telemetry td{
   color:#f4f4f4;
 }
 tr.telemetry td.snr{
   color:#ffcc00;
 }
+/* ZL magenta highlight (on top of region color) */
 tr.zl td{
   color:#ff00ff;
   font-weight:bold;
 }
+/* Region color tags */
+td.region-AS{color:#00e5ff;font-weight:bold;}
+td.region-AF{color:#ffab40;font-weight:bold;}
+td.region-OC{color:#69f0ae;font-weight:bold;}
+td.region-EU{color:#ea80fc;font-weight:bold;}
+td.region-SA{color:#ff8a65;font-weight:bold;}
+td.region-NA{color:#78909c;}
+td.region-???{color:#78909c;}
+/* Age coloring for UTC column */
+td.utc-green{color:#69f0ae;}
+td.utc-amber{color:#ffab40;}
+td.utc-red{color:#ff5252;font-weight:bold;}
 .empty-state{
   color:#666666;
   text-align:center;
@@ -149,8 +240,6 @@ tr.zl td{
 .status-bar .live{color:#00ff66}
 .status-bar .degraded{color:#ff0000;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,0,0,0.7)}
 .status-bar .stale{color:#ff6b6b;font-weight:bold;animation:degradedPulse 1.2s infinite ease-in-out;text-shadow:0 0 8px rgba(255,107,107,0.7)}
-@keyframes cyanPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.03);opacity:0.85}}
-@keyframes clickFlash{0%,100%{opacity:1}50%{opacity:0.3}}  
 .snr-note{
   font-family:monospace;
   font-size:9px;
@@ -175,9 +264,9 @@ tr.zl td{
   .controls input[type=range]{width:70px}
   .controls button{padding:4px 8px;font-size:9px}
   .controls select{font-size:11px;padding:3px 6px}
-  table{font-size:13px}
-  th,td{font-size:12px;padding:2px 4px;max-width:100px}
-  th{font-size:10px}
+  .telemetry-wrap table{font-size:11px;min-width:500px}
+  .telemetry-wrap th{font-size:9px;padding:3px 4px}
+  .telemetry-wrap td{font-size:10px;padding:1px 4px;max-width:120px}
   .status-bar{font-size:9px}
   .snr-note{font-size:8px}
 }
@@ -204,26 +293,38 @@ tr.zl td{
 </div>
 
 <div style="overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%">
+<!-- LORE TABLE (above scroll, no header, no scrollbar) -->
+<div class="lore-table-wrap">
 <table>
-  <thead>
-    <tr>
-      <th>CALL</th>
-      <th>GRID</th>
-      <th>BAND</th>
-      <th>SNR</th>
-      <th>DXCC</th>
-      <th>STATUS</th>
-    </tr>
-  </thead>
   <tbody>
-    <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>UPLINK ACTIVE</td></tr>
-    <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN 🖖</td><td>MONITORING</td></tr>
-    <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORED</td></tr>
-    <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>MONITORED</td></tr>
+    <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>—</td><td>—</td><td>UPLINK ACTIVE</td></tr>
+    <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>—</td><td>—</td><td>MONITORING 🖖</td></tr>
+    <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
+    <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
   </tbody>
 </table>
 </div>
 
+<!-- TELEMETRY TABLE (sticky header, scrollable body) -->
+<div class="telemetry-wrap" id="telemetryScroll">
+<table>
+  <thead>
+    <tr>
+      <th data-col="call" style="width:100px">CALL</th>
+      <th data-col="grid" style="width:70px">GRID</th>
+      <th data-col="band" style="width:55px">BAND</th>
+      <th data-col="snr" style="width:55px">SNR</th>
+      <th data-col="dxcc" style="width:140px">DXCC</th>
+      <th data-col="region" style="width:55px">REGION</th>
+      <th data-col="utc" style="width:140px">UTC</th>
+      <th data-col="status" style="width:100px">STATUS</th>
+    </tr>
+  </thead>
+  <tbody id="telemetryBody">
+    <!-- telemetry rows injected here by JS -->
+  </tbody>
+</table>
+</div>
 <div class="status-bar">
   <span id="status">INITIALIZING...</span>
   <span id="timestamp">--:--:--Z</span>
@@ -278,20 +379,135 @@ const SNR_MIN=-35;
 const SNR_MAX=24;
 const MAX_ROWS=20;
 const STALE_THRESHOLD_MS=3600000;
+const SCROLL_ROW_HEIGHT=22;
 let refreshTimer=null;
 
-function getStardate(){
-  const now=new Date();
-  const year=now.getUTCFullYear();
-  const start=new Date(Date.UTC(year,0,0));
-  const diff=now-start;
-  const oneDay=1000*60*60*24;
-  const day=Math.floor(diff/oneDay);
-  const hour=String(now.getUTCHours()).padStart(2,'0');
-  const min=String(now.getUTCMinutes()).padStart(2,'0');
-  return `${year}.${String(day).padStart(3,'0')}.${hour}${min}`;
+// ===== ALERT STATE =====
+const seenKeys=new Set();
+let firstLoadDone=false;
+
+// ===== DXCC PREFIX → COUNTRY (ported from k2vg_dx_tracker.py) =====
+const PREFIX_COUNTRY={
+"K":"United States","W":"United States","N":"United States",
+"AA":"United States","AB":"United States","AC":"United States","AD":"United States","AE":"United States","AF":"United States","AG":"United States","AH":"United States","AI":"United States","AJ":"United States","AK":"United States","AL":"United States",
+"KA":"United States","KB":"United States","KC":"United States","KD":"United States","KE":"United States","KF":"United States","KG":"United States","KI":"United States","KJ":"United States","KK":"United States","KL":"United States","KM":"United States","KN":"United States","KO":"United States","KP":"United States","KQ":"United States","KR":"United States","KS":"United States","KT":"United States","KU":"United States","KV":"United States","KW":"United States","KX":"United States","KY":"United States","KZ":"United States",
+"WA":"United States","WB":"United States","WC":"United States","WD":"United States","WE":"United States","WF":"United States","WG":"United States","WH":"United States","WI":"United States","WJ":"United States","WK":"United States","WL":"United States","WM":"United States","WN":"United States","WO":"United States","WP":"United States","WQ":"United States","WR":"United States","WS":"United States","WT":"United States","WU":"United States","WV":"United States","WW":"United States","WX":"United States","WY":"United States","WZ":"United States",
+"NA":"United States","NB":"United States","NC":"United States","ND":"United States","NE":"United States","NF":"United States","NG":"United States","NH":"United States","NI":"United States","NJ":"United States","NK":"United States","NL":"United States","NM":"United States","NN":"United States","NO":"United States","NP":"United States","NQ":"United States","NR":"United States","NS":"United States","NT":"United States","NU":"United States","NV":"United States","NW":"United States","NX":"United States","NY":"United States","NZ":"United States",
+"VE":"Canada","VF":"Canada","VG":"Canada","VH":"Canada","VI":"Canada","VA":"Canada","VO":"Canada","VY":"Canada",
+"XE":"Mexico","XF":"Mexico","XG":"Mexico","XH":"Mexico",
+"CU":"Cuba","CV":"Haiti","CW":"Dominican Republic","BV":"Bermuda",
+"PY":"Brazil","PP":"Brazil","PQ":"Brazil","PR":"Brazil","PS":"Brazil","PT":"Brazil","PU":"Brazil","PV":"Brazil","PW":"Brazil","PX":"Brazil","PZ":"Brazil",
+"LU":"Argentina","LW":"Argentina","LV":"Argentina","LO":"Argentina","LP":"Argentina","LQ":"Argentina","LR":"Argentina","LS":"Argentina","LT":"Argentina",
+"CE":"Chile","CX":"Chile","HC":"Peru","OA":"Peru","OB":"Peru","OC":"Peru","OD":"Peru",
+"HK":"Colombia","HI":"Colombia","YV":"Venezuela","TC":"Ecuador",
+"OE":"Austria","OF":"Finland","OG":"Finland","OH":"Finland","OI":"Finland","OJ":"Finland","YL":"Finland","YO":"Finland",
+"EA":"Spain","EB":"Spain","EC":"Spain","ED":"Spain","EE":"Spain","EF":"Spain","EG":"Spain","EH":"Spain","LE":"Spain","LF":"Spain","LG":"Spain","LH":"Spain","LI":"Spain","LJ":"Spain","LK":"Spain","LL":"Spain","LM":"Spain","LN":"Spain",
+"EI":"Ireland","EJ":"Ireland",
+"F":"France","FA":"France","FB":"France","FC":"France","FD":"France","FE":"France","FF":"France","FG":"France","FH":"France","FI":"France","FJ":"France","FL":"France","FM":"France","FN":"France","FP":"France","FQ":"France","FR":"France","FS":"France","FT":"France","FU":"France","FV":"France","FX":"France","FY":"France","FZ":"France",
+"G":"United Kingdom","GB":"United Kingdom","GD":"United Kingdom","GI":"Gibraltar","GM":"Gibraltar","GN":"Gibraltar","GO":"Gibraltar","GP":"Gibraltar","GQ":"Gibraltar","GR":"Gibraltar","GS":"Gibraltar","GT":"Gibraltar","GU":"Gibraltar","GV":"Gibraltar","GW":"Gibraltar","GX":"Gibraltar","GY":"Gibraltar","GZ":"Gibraltar",
+"HA":"Hungary","HE":"Hungary","HF":"Hungary","HG":"Hungary","HH":"Hungary","HB":"Peru",
+"IA":"Italy","IB":"Italy","IC":"Italy","ID":"Italy","IE":"Italy","IF":"Italy","IG":"Italy","IH":"Italy","II":"Italy","IJ":"Italy","IK":"Italy","IL":"Italy","IM":"Italy","IN":"Italy","IO":"Italy","IP":"Italy","IQ":"Italy","IR":"Italy","IT":"Italy","IU":"Italy","IV":"Italy","IW":"Italy","IX":"Italy","IY":"Italy","IZ":"Italy","IS":"Iceland",
+"LA":"Liechtenstein","LB":"Liechtenstein","LC":"Liechtenstein","LD":"Liechtenstein",
+"LX":"Luxembourg","LY":"Luxembourg","LZ":"Luxembourg",
+"MA":"Malta","MB":"Malta","MC":"Malta","MD":"Malta","ME":"Malta","MF":"Malta","MG":"Malta","MH":"Malta","MI":"Malta","MJ":"Malta","MK":"Malta","ML":"Malta","MM":"Malta","MN":"Malta","MO":"Malta","MP":"Malta","MQ":"Malta","MR":"Malta","MS":"Malta","MT":"Malta","MU":"Malta","MV":"Malta","MW":"Malta","MX":"Malta","MY":"Malta","MZ":"Malta",
+"OK":"Czech Republic","OM":"Slovakia","ON":"Slovakia","OO":"Slovakia","OP":"Slovakia","OR":"Slovakia","OS":"Slovakia","OT":"Slovakia","OU":"Slovakia","OV":"Slovakia","OW":"Slovakia","OX":"Slovakia","OY":"Slovakia","OZ":"Slovakia",
+"PA":"Netherlands","PB":"Netherlands","PC":"Netherlands","PD":"Netherlands","PE":"Netherlands","PF":"Netherlands","PG":"Netherlands","PH":"Netherlands","PI":"Netherlands","PK":"Netherlands",
+"PL":"Poland","PM":"Poland","PN":"Poland","PO":"Poland","SP":"Poland","SQ":"Poland","SR":"Poland","SS":"Poland","ST":"Poland","SU":"Poland",
+"RA":"Russia","RB":"Russia","RC":"Russia","RD":"Russia","RE":"Russia","RF":"Russia","RG":"Russia","RH":"Russia","RI":"Russia","RJ":"Russia","RK":"Russia","RL":"Russia","RM":"Russia","RN":"Russia","RO":"Russia","RP":"Russia","RQ":"Russia","RR":"Russia","RS":"Russia","RT":"Russia","RU":"Russia","RV":"Russia","RW":"Russia","RX":"Russia","RY":"Russia","RZ":"Russia",
+"UA":"Russia","UB":"Russia","UC":"Russia","UD":"Russia","UE":"Russia","UF":"Russia","UG":"Russia","UH":"Russia","UI":"Russia","UJ":"Russia","UK":"Russia","UL":"Russia","UM":"Russia","UN":"Russia","UO":"Russia","UP":"Russia","UQ":"Russia","UR":"Russia","US":"Russia","UT":"Russia","UU":"Russia","UV":"Russia","UW":"Russia","UX":"Russia","UY":"Russia","UZ":"Russia",
+"SM":"Sweden","SN":"Sweden","SO":"Sweden","SV":"Sweden","SW":"Sweden","SX":"Sweden","SY":"Sweden","SZ":"Sweden",
+"TA":"Turkey","TB":"Turkey","TD":"Turkey","TE":"Turkey","TF":"Turkey","TG":"Turkey","TH":"Turkey","TJ":"Turkey","TK":"Turkey","TL":"Turkey","TM":"Turkey","TN":"Turkey","TO":"Turkey","TP":"Turkey","TQ":"Turkey","TR":"Turkey","TS":"Turkey","TT":"Turkey","TU":"Turkey","TV":"Turkey","TW":"Turkey","TX":"Turkey","TY":"Turkey","TZ":"Turkey",
+"YU":"Serbia",
+"ET":"Ethiopia","ZA":"Algeria","7O":"Sudan","7P":"Sudan","7Q":"Sudan","7X":"Sudan","S5":"Sudan","8Q":"Uganda","9G":"Kenya","9H":"Kenya","9J":"Kenya","9L":"Kenya","9Q":"Kenya","9U":"Kenya","9X":"Kenya","C5":"Mauritania","C9":"Mauritania","D2":"DR Congo","D4":"DR Congo","D6":"DR Congo",
+"ZS":"South Africa","ZR":"South Africa","ZT":"South Africa","ZU":"South Africa","ZV":"South Africa","ZW":"South Africa","ZX":"South Africa","ZY":"South Africa","ZZ":"South Africa",
+"VK":"Australia","VJ":"Australia","VL":"Australia","ZL":"New Zealand","ZM":"New Zealand","ZK":"New Zealand","YJ":"Fiji","KH":"Hawaii","FK":"Norway","FO":"Norway","FW":"Norway",
+"JA":"Japan","JB":"Japan","JC":"Japan","JD":"Japan","JE":"Japan","JF":"Japan","JG":"Japan","JH":"Japan","JI":"Japan","JJ":"Japan","JK":"Japan","JL":"Japan","JM":"Japan","JN":"Japan","JO":"Japan","JP":"Japan","JQ":"Japan","JR":"Japan","JS":"Japan","JT":"Japan","JU":"Japan","JV":"Japan","JW":"Japan","JX":"Japan","JY":"Japan","JZ":"Japan",
+"7J":"Japan","7K":"Japan","7L":"Japan","7M":"Japan","7N":"Japan",
+"DU":"Germany","BA":"China","BB":"China","BC":"China","BD":"China","BY":"China","BS":"China","BT":"China",
+"HS":"Thailand","HZ":"Thailand","HL":"South Korea","HM":"South Korea","VT":"Vietnam","VU":"India",
+"YA":"Pakistan","XW":"Pakistan","XU":"Pakistan",
+"YB":"Indonesia","YC":"Indonesia","YD":"Indonesia","YE":"Indonesia","YF":"Indonesia","YG":"Indonesia","YH":"Indonesia","YI":"Indonesia","YK":"Indonesia","YM":"Indonesia","YN":"Indonesia","YP":"Indonesia","YQ":"Indonesia","YR":"Indonesia","YS":"Indonesia","YT":"Indonesia","YW":"Indonesia","YX":"Indonesia","YY":"Indonesia","YZ":"Indonesia",
+"9M":"Malaysia","9V":"Malaysia","9W":"Malaysia","9K":"Malaysia","A4":"Jordan","A6":"Kuwait","A7":"Lebanon","A9":"Lebanon","A5":"Oman","AP":"India","4J":"Bahrain","4L":"Qatar","4S":"Qatar","4X":"Qatar","9N":"Nepal"
+};
+
+function callsignToCountry(call){
+  if(!call)return'—';
+  try{
+    call=call.toUpperCase().split('/')[0].trim();
+    if(!call)return'—';
+    for(const len of[3,2,1]){
+      if(call.length>=len){
+        const c=PREFIX_COUNTRY[call.substring(0,len)];
+        if(c)return c;
+      }
+    }
+    return'—';
+  }catch(e){return'—';}
 }
 
+// ===== DXCC NAME → CONTINENT (ported from DXCC_REGION_MAP) =====
+const DXCC_REGION_MAP={
+"United States":"NA","Canada":"NA","Mexico":"NA","Cuba":"NA","Haiti":"NA","Dominican Republic":"NA","Puerto Rico":"NA","Jamaica":"NA","Bahamas":"NA","Turks and Caicos":"NA","US Virgin Islands":"NA","British Virgin Islands":"NA","Aruba":"NA","Bermuda":"NA","Guam":"NA","Saint Kitts and Nevis":"NA","Antigua and Barbuda":"NA","Saint Lucia":"NA","Grenada":"NA","Barbados":"NA","Trinidad and Tobago":"NA","Hawaii":"NA",
+"Brazil":"SA","Argentina":"SA","Chile":"SA","Peru":"SA","Colombia":"SA","Venezuela":"SA","Ecuador":"SA","Bolivia":"SA","Paraguay":"SA","Uruguay":"SA","Guyana":"SA","Suriname":"SA","Falkland Islands":"SA","French Guiana":"SA",
+"Germany":"EU","France":"EU","Italy":"EU","Spain":"EU","United Kingdom":"EU","Netherlands":"EU","Poland":"EU","Sweden":"EU","Norway":"EU","Denmark":"EU","Finland":"EU","Iceland":"EU","Ireland":"EU","Portugal":"EU","Austria":"EU","Switzerland":"EU","Belgium":"EU","Czech Republic":"EU","Czechia":"EU","Slovakia":"EU","Hungary":"EU","Romania":"EU","Bulgaria":"EU","Greece":"EU","Croatia":"EU","Serbia":"EU","Montenegro":"EU","Albania":"EU","Slovenia":"EU","Lithuania":"EU","Latvia":"EU","Estonia":"EU","Belarus":"EU","Ukraine":"EU","Moldova":"EU","Russia":"EU","Turkey":"EU","Cyprus":"EU","Malta":"EU","Luxembourg":"EU","Liechtenstein":"EU","Gibraltar":"EU",
+"Australia":"OC","New Zealand":"OC","Fiji":"OC","Papua New Guinea":"OC","Solomon Islands":"OC","Vanuatu":"OC","Samoa":"OC","Tonga":"OC","Kiribati":"OC","Tuvalu":"OC","Nauru":"OC","Marshall Islands":"OC","Micronesia":"OC","Palau":"OC","American Samoa":"OC","Cook Islands":"OC","French Polynesia":"OC","New Caledonia":"OC",
+"South Africa":"AF","Kenya":"AF","Egypt":"AF","Nigeria":"AF","Ghana":"AF","Tanzania":"AF","Ethiopia":"AF","Sudan":"AF","Uganda":"AF","Morocco":"AF","Algeria":"AF","Tunisia":"AF","Libya":"AF","Mauritania":"AF","Mali":"AF","Senegal":"AF","Guinea":"AF","Sierra Leone":"AF","Liberia":"AF","Cameroon":"AF","DR Congo":"AF","Congo":"AF","Angola":"AF","Zambia":"AF","Zimbabwe":"AF","Botswana":"AF","Namibia":"AF","Mozambique":"AF","Madagascar":"AF","Mauritius":"AF","Seychelles":"AF",
+"Japan":"AS","India":"AS","China":"AS","Indonesia":"AS","Philippines":"AS","Thailand":"AS","Vietnam":"AS","South Korea":"AS","North Korea":"AS","Malaysia":"AS","Singapore":"AS","Pakistan":"AS","Bangladesh":"AS","Sri Lanka":"AS","Myanmar":"AS","Cambodia":"AS","Laos":"AS","Mongolia":"AS","Kazakhstan":"AS","Iran":"AS","Iraq":"AS","Saudi Arabia":"AS","United Arab Emirates":"AS","Qatar":"AS","Bahrain":"AS","Oman":"AS","Yemen":"AS","Jordan":"AS","Kuwait":"AS","Lebanon":"AS","Israel":"AS","Nepal":"AS","Maldives":"AS"
+};
+
+// ===== ITU PREFIX → CONTINENT FALLBACK (condensed ranges) =====
+const ITU_PREFIX_REGION={
+"AA":"NA","AB":"NA","AC":"NA","AD":"NA","AE":"NA","AF":"NA","AG":"NA","AH":"NA","AI":"NA","AJ":"NA","AK":"NA","AL":"NA","AM":"NA","AN":"NA","AO":"NA","AP":"NA","AQ":"NA","AR":"NA","AT":"NA","AU":"NA","AV":"NA","AW":"NA","AX":"NA",
+"KA":"NA","KB":"NA","KC":"NA","KD":"NA","KE":"NA","KF":"NA","KG":"NA","KI":"NA","KJ":"NA","KK":"NA","KL":"NA","KM":"NA","KN":"NA","KO":"NA","KP":"NA","KQ":"NA","KR":"NA","KS":"NA","KT":"NA","KU":"NA","KV":"NA","KW":"NA","KX":"NA","KY":"NA","KZ":"NA",
+"WA":"NA","WB":"NA","WC":"NA","WD":"NA","WE":"NA","WF":"NA","WG":"NA","WH":"NA","WI":"NA","WJ":"NA","WK":"NA","WL":"NA","WM":"NA","WN":"NA","WO":"NA","WP":"NA","WQ":"NA","WR":"NA","WS":"NA","WT":"NA","WU":"NA","WV":"NA","WW":"NA","WX":"NA","WY":"NA","WZ":"NA",
+"NA":"NA","NB":"NA","NC":"NA","ND":"NA","NE":"NA","NF":"NA","NG":"NA","NH":"NA","NI":"NA","NJ":"NA","NK":"NA","NL":"NA","NM":"NA","NN":"NA","NO":"NA","NP":"NA","NQ":"NA","NR":"NA","NS":"NA","NT":"NA","NU":"NA","NV":"NA","NW":"NA","NX":"NA","NY":"NA","NZ":"NA",
+"VE":"NA","VF":"NA","VG":"NA","VH":"NA","VI":"NA","VA":"NA","VO":"NA","VY":"NA",
+"XE":"NA","XF":"NA","XG":"NA","XH":"NA",
+"CU":"NA","CV":"NA","CW":"NA","BV":"NA",
+"AY":"SA","AZ":"SA","CA":"SA","CB":"SA","CC":"SA","CD":"SA","CE":"SA","CF":"SA","CG":"SA","CH":"SA","CI":"SA","CJ":"SA","CK":"SA","CL":"SA","CM":"SA","CN":"SA","CO":"SA","CP":"SA","CQ":"SA","CR":"SA","CS":"SA","CT":"SA","CX":"SA","HC":"SA","HD":"SA","HJ":"SA","HK":"SA","OA":"SA","OB":"SA","OC":"SA","OD":"SA","OE":"SA","OF":"SA","OG":"SA","PJ":"SA","PP":"SA","PQ":"SA","PR":"SA","PS":"SA","PT":"SA","PU":"SA","PV":"SA","PW":"SA","PX":"SA","PY":"SA","PZ":"SA","SA":"SA","SB":"SA","SC":"SA","SD":"SA","SE":"SA","SF":"SA","SG":"SA","SH":"SA","SI":"SA","SJ":"SA","SK":"SA","SL":"SA","TI":"SA","YV":"SA",
+"BA":"AS","BB":"AS","BC":"AS","BD":"AS","BY":"AS","DU":"AS","HL":"AS","HM":"AS","HS":"AS","HZ":"AS","JA":"AS","JB":"AS","JC":"AS","JD":"AS","JE":"AS","JF":"AS","JG":"AS","JH":"AS","JI":"AS","JJ":"AS","JK":"AS","JL":"AS","JM":"AS","JN":"AS","JO":"AS","JP":"AS","JQ":"AS","JR":"AS","JS":"AS","JT":"AS","JU":"AS","JV":"AS","JW":"AS","JX":"AS","JY":"AS","JZ":"AS","KH":"OC","VT":"AS","VU":"AS","YA":"AS","YB":"AS","YC":"AS","YD":"AS","YE":"AS","YF":"AS","YG":"AS","YH":"AS","YI":"AS","YK":"AS","YM":"AS","YN":"AS","YP":"AS","YQ":"AS","YR":"AS","YS":"AS","YT":"AS","YW":"AS","YX":"AS","YY":"AS","YZ":"AS","BE":"EU","BF":"EU","BG":"EU","BH":"EU","BI":"EU","BJ":"EU","BK":"EU","BL":"EU","BM":"EU","BN":"EU","BO":"EU","BP":"EU","BQ":"EU","BR":"EU","BS":"EU","BT":"EU","BU":"EU","BV":"EU","BW":"EU","BX":"EU","BZ":"EU","CY":"EU","CZ":"EU","DA":"EU","DB":"EU","DC":"EU","DD":"EU","DE":"EU","DF":"EU","DG":"EU","DH":"EU","DI":"EU","DJ":"EU","DK":"EU","DL":"EU","DM":"EU","DN":"EU","DO":"EU","DP":"EU","DQ":"EU","DR":"EU","DS":"EU","DT":"EU","DV":"EU","DW":"EU","DX":"EU","DY":"EU","DZ":"EU","EA":"EU","EB":"EU","EC":"EU","ED":"EU","EE":"EU","EF":"EU","EG":"EU","EH":"EU","EI":"EU","EJ":"EU","EK":"EU","EL":"EU","EM":"EU","EN":"EU","EO":"EU","EP":"EU","EQ":"EU","ER":"EU","ES":"EU","ET":"AF","EU":"EU","EV":"EU","EW":"EU","EX":"EU","EY":"EU","EZ":"EU","FA":"EU","FB":"EU","FC":"EU","FD":"EU","FE":"EU","FF":"EU","FG":"EU","FH":"EU","FI":"EU","FJ":"EU","FL":"EU","FM":"EU","FN":"EU","FP":"EU","FQ":"EU","FR":"EU","FS":"EU","FT":"EU","FU":"EU","FV":"EU","FX":"EU","FY":"EU","FZ":"EU","FK":"OC","FO":"OC","FW":"OC","HA":"EU","HB":"EU","HE":"EU","HF":"EU","HG":"EU","HH":"EU","HI":"OC","IA":"EU","IB":"EU","IC":"EU","ID":"EU","IE":"EU","IF":"EU","IG":"EU","IH":"EU","II":"EU","IJ":"EU","IK":"EU","IL":"EU","IM":"EU","IN":"EU","IO":"EU","IP":"EU","IQ":"EU","IR":"EU","IS":"EU","IT":"EU","IU":"EU","IV":"EU","IW":"EU","IX":"EU","IY":"EU","IZ":"EU","LA":"EU","LB":"EU","LC":"EU","LE":"EU","LF":"EU","LG":"EU","LH":"EU","LI":"EU","LJ":"EU","LK":"EU","LL":"EU","LM":"EU","LN":"EU","LV":"EU","LW":"EU","LX":"EU","LY":"EU","LZ":"EU","MA":"EU","MB":"EU","MC":"EU","MD":"EU","ME":"EU","MF":"EU","MG":"EU","MH":"EU","MI":"EU","MJ":"EU","MK":"EU","ML":"EU","MM":"EU","MN":"EU","MO":"EU","MP":"EU","MQ":"EU","MR":"EU","MS":"EU","MT":"EU","MU":"EU","MV":"EU","MW":"EU","MX":"EU","MY":"EU","MZ":"EU","OH":"EU","OI":"EU","OJ":"EU","OK":"EU","OM":"EU","ON":"EU","OO":"EU","OP":"EU","OR":"EU","OS":"EU","OT":"EU","OU":"EU","OV":"EU","OW":"EU","OX":"EU","OY":"EU","OZ":"EU","PA":"EU","PB":"EU","PC":"EU","PD":"EU","PE":"EU","PF":"EU","PG":"EU","PH":"EU","PI":"EU","PK":"EU","PL":"EU","PM":"EU","PN":"EU","PO":"EU","RA":"EU","RB":"EU","RC":"EU","RD":"EU","RE":"EU","RF":"EU","RG":"EU","RH":"EU","RI":"EU","RJ":"EU","RK":"EU","RL":"EU","RM":"EU","RN":"EU","RO":"EU","RP":"EU","RQ":"EU","RR":"EU","RS":"EU","RT":"EU","RU":"EU","RV":"EU","RW":"EU","RX":"EU","RY":"EU","RZ":"EU","SM":"EU","SN":"EU","SO":"EU","SP":"EU","SQ":"EU","SR":"EU","SS":"EU","ST":"EU","SU":"EU","SV":"EU","SW":"EU","SX":"EU","SY":"EU","SZ":"EU","TA":"EU","TB":"EU","TC":"EU","TD":"EU","TE":"EU","TF":"EU","TG":"EU","TH":"EU","TJ":"EU","TK":"EU","TL":"EU","TM":"EU","TN":"EU","TO":"EU","TP":"EU","TQ":"EU","TR":"EU","TS":"EU","TT":"EU","TU":"EU","TV":"EU","TW":"EU","TX":"EU","TY":"EU","TZ":"EU","UA":"EU","UB":"EU","UC":"EU","UD":"EU","UE":"EU","UF":"EU","UG":"EU","UH":"EU","UI":"EU","UJ":"EU","UK":"EU","UL":"EU","UM":"EU","UN":"EU","UO":"EU","UP":"EU","UQ":"EU","UR":"EU","US":"EU","UT":"EU","UU":"EU","UV":"EU","UW":"EU","UX":"EU","UY":"EU","UZ":"EU","YL":"EU","YO":"EU","YU":"EU","ZA":"AF","ZB":"EU","ZC":"EU","ZD":"EU","ZE":"EU","ZF":"EU","ZG":"EU","ZH":"EU","ZI":"EU","ZJ":"EU","ZN":"EU","ZO":"EU","ZP":"EU","ZQ":"EU","ZR":"AF","ZS":"AF","ZT":"AF","ZU":"AF","ZV":"AF","ZW":"AF","ZX":"AF","ZY":"AF","ZZ":"AF","ZK":"OC","ZL":"OC","ZM":"OC","VJ":"OC","VK":"OC","VL":"OC","YJ":"OC","GA":"AF","GB":"AF","GC":"AF","GD":"AF","GE":"AF","GF":"AF","GG":"AF","GH":"AF","GI":"AF","GJ":"AF","GK":"AF","GL":"AF","GM":"AF","GN":"AF","GO":"AF","GP":"AF","GQ":"AF","GR":"AF","GS":"AF","GT":"AF","GU":"AF","GV":"AF","GW":"AF","GX":"AF","GY":"AF","GZ":"AF"
+};
+
+function callsignToRegion(call){
+  if(!call)return'???';
+  try{
+    call=call.toUpperCase().split('/')[0].trim();
+    if(!call)return'???';
+    for(const len of[2,1]){
+      if(call.length>=len){
+        const r=ITU_PREFIX_REGION[call.substring(0,len)];
+        if(r)return r;
+      }
+    }
+    return'???';
+  }catch(e){return'???';}
+}
+
+function dxccToRegion(name){
+  if(!name)return'???';
+  return DXCC_REGION_MAP[name.trim()]||'???';
+}
+
+function resolveRegion(spot){
+  if(spot.region)return spot.region;
+  if(spot.dxcc){const r=dxccToRegion(spot.dxcc);if(r!=='???')return r;}
+  return callsignToRegion(spot.call);
+}
+
+function resolveDxcc(spot){
+  if(spot.dxcc)return spot.dxcc;
+  return callsignToCountry(spot.call);
+}
+
+function formatDxccDisplay(spot){
+  const name=resolveDxcc(spot);
+  const code=spot.dxcc_code||'';
+  if(name==='—')return'—';
+  if(code&&code!=='—')return name+' ['+code+']';
+  return name;
+}
+
+// ===== BAND HELPERS =====
 function bandFromFreq(mhz){
   if(mhz>=1.8&&mhz<2)return'🌑 160M';
   if(mhz>=3.5&&mhz<4)return'🌑 80M';
@@ -306,91 +522,217 @@ function bandFromFreq(mhz){
   if(mhz>=50&&mhz<54)return'⚡ 6M';
   return Math.round(mhz)+'M';
 }
-function iaruRegion(grid){
-  const c=grid.substring(0,2);
-  const col=parseInt(c[0],36);
-  if(col<=18)return'R1';
-  if(col<=22)return'R2';
-  return'R3';
-}
+
 function isZL(grid){
-  return grid && (grid.startsWith('RF')||grid.startsWith('RE')||grid.startsWith('QF')||grid.startsWith('QG'));
-}
-function getEmptyStateMsg(){
-  const hour=new Date().getHours();
-  if(hour>=6&&hour<18)return '// SCANNING IONOSPHERIC LAYERS // SOLAR FLUX NOMINAL //';
-  if(hour>=18||hour<6)return '// MONITORING NIGHTSIDE PROPAGATION // D-LAYER COLLAPSED //';
-  return '// TERMINATOR CROSSING DETECTED // OPTIMIZE FOR DX //';
+  return grid&&(grid.startsWith('RF')||grid.startsWith('RE')||grid.startsWith('QF')||grid.startsWith('QG'));
 }
 
+function getEmptyStateMsg(){
+  const hour=new Date().getHours();
+  if(hour>=6&&hour<18)return'// SCANNING IONOSPHERIC LAYERS // SOLAR FLUX NOMINAL //';
+  if(hour>=18||hour<6)return'// MONITORING NIGHTSIDE PROPAGATION // D-LAYER COLLAPSED //';
+  return'// TERMINATOR CROSSING DETECTED // OPTIMIZE FOR DX //';
+}
+
+// ===== COLUMN WIDTH PERSISTENCE =====
+const COL_WIDTHS_KEY='k2vg_col_widths';
+function saveColWidths(){
+  const ths=document.querySelectorAll('.telemetry-wrap th');
+  const w={};
+  ths.forEach(th=>{
+    const key=th.getAttribute('data-col');
+    if(key)w[key]=th.style.width;
+  });
+  try{localStorage.setItem(COL_WIDTHS_KEY,JSON.stringify(w));}catch(e){}
+}
+function loadColWidths(){
+  try{
+    const raw=localStorage.getItem(COL_WIDTHS_KEY);
+    if(!raw)return;
+    const w=JSON.parse(raw);
+    const ths=document.querySelectorAll('.telemetry-wrap th');
+    ths.forEach(th=>{
+      const key=th.getAttribute('data-col');
+      if(key&&w[key])th.style.width=w[key];
+    });
+  }catch(e){}
+}
+
+// ===== COLUMN DRAG-RESIZE =====
+let dragTh=null,dragStartX=0,dragStartW=0;
+function initColResize(){
+  const ths=document.querySelectorAll('.telemetry-wrap th');
+  ths.forEach(th=>{
+    th.addEventListener('mousedown',function(e){
+      dragTh=this;
+      dragStartX=e.clientX;
+      dragStartW=this.offsetWidth;
+      document.body.style.cursor='col-resize';
+      document.body.style.userSelect='none';
+    });
+  });
+  document.addEventListener('mousemove',function(e){
+    if(!dragTh)return;
+    const diff=e.clientX-dragStartX;
+    const newW=Math.max(40,dragStartW+diff);
+    dragTh.style.width=newW+'px';
+  });
+  document.addEventListener('mouseup',function(){
+    if(dragTh){saveColWidths();dragTh=null;}
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+  });
+}
+
+// ===== AGE COLORING =====
+function utcAgeClass(ts){
+  if(!ts)return'';
+  try{
+    const then=new Date(ts).getTime();
+    const now=Date.now();
+    const diff=(now-then)/1000;
+    if(diff<=900)return'utc-green';
+    if(diff<=3600)return'utc-amber';
+    return'utc-red';
+  }catch(e){return'';}
+}
+
+function formatUtc(ts){
+  if(!ts)return'—';
+  try{
+    const d=new Date(ts);
+    if(isNaN(d.getTime()))return'—';
+    const h=String(d.getUTCHours()).padStart(2,'0');
+    const m=String(d.getUTCMinutes()).padStart(2,'0');
+    const s=String(d.getUTCSeconds()).padStart(2,'0');
+    return h+':'+m+':'+s+'Z';
+  }catch(e){return'—';}
+}
+
+// ===== MAIN LOAD =====
 async function load(){
   try{
     const r=await fetch('../data/telemetry.json?t='+Date.now());
     if(!r.ok)throw r.status;
     const d=await r.json();
-    const tb=document.querySelector('tbody');
+    const tb=document.getElementById('telemetryBody');
     tb.querySelectorAll('tr.telemetry').forEach(r=>r.remove());
     const tracks=d.telemetry.dx_tracks||[];
-    const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX).slice(0,MAX_ROWS);
+    const filtered=tracks.filter(t=>!t.lore&&t.db>=SNR_MIN&&t.db<=SNR_MAX);
+    filtered.sort(function(a,b){
+      if(!a.timestamp&&b.timestamp)return 1;
+      if(a.timestamp&&!b.timestamp)return -1;
+      if(!a.timestamp&&!b.timestamp)return 0;
+      return new Date(b.timestamp)-new Date(a.timestamp);
+    });
+    const sliced=filtered.slice(0,MAX_ROWS);
+
+    const currentKeys=new Set(sliced.map(t=>(t.call||'')+'|'+(t.band||bandFromFreq(t.freq))));
     let hadNew=false;
-    for(const t of filtered){
-      const reg=iaruRegion(t.grid);
+    for(const t of sliced){
+      const key=(t.call||'')+'|'+(t.band||bandFromFreq(t.freq));
+      if(!seenKeys.has(key))hadNew=true;
+    }
+
+    for(const t of sliced){
+      const region=resolveRegion(t);
       const zl=isZL(t.grid)?' zl':'';
       const tr=document.createElement('tr');
       tr.className='telemetry'+zl;
-      [t.call,t.grid,(t.band||bandFromFreq(t.freq)),t.db+'dB',(t.dxcc||t.call.substring(0,2)),reg].forEach((v,i)=>{
-        const td=document.createElement('td');
-        if(i===3)td.className='snr';
-        td.textContent=v;
-        tr.appendChild(td);
-      });
+
+      const callTd=document.createElement('td');
+      callTd.textContent=t.call||'—';
+      tr.appendChild(callTd);
+
+      const gridTd=document.createElement('td');
+      gridTd.textContent=t.grid||'—';
+      tr.appendChild(gridTd);
+
+      const bandTd=document.createElement('td');
+      bandTd.textContent=t.band||bandFromFreq(t.freq)||'—';
+      tr.appendChild(bandTd);
+
+      const snrTd=document.createElement('td');
+      snrTd.className='snr';
+      snrTd.textContent=t.db!==null&&t.db!==undefined?t.db+'dB':'—';
+      tr.appendChild(snrTd);
+
+      const dxccTd=document.createElement('td');
+      dxccTd.textContent=formatDxccDisplay(t);
+      tr.appendChild(dxccTd);
+
+      const regionTd=document.createElement('td');
+      regionTd.className='region-'+region;
+      regionTd.textContent=region;
+      tr.appendChild(regionTd);
+
+      const utcTd=document.createElement('td');
+      utcTd.className=utcAgeClass(t.timestamp);
+      utcTd.textContent=formatUtc(t.timestamp);
+      tr.appendChild(utcTd);
+
+      const statusTd=document.createElement('td');
+      statusTd.textContent=t.status||'—';
+      tr.appendChild(statusTd);
+
       tb.appendChild(tr);
     }
-    if(!filtered.length){
+
+    seenKeys.clear();
+    currentKeys.forEach(k=>seenKeys.add(k));
+
+    if(!sliced.length){
       const tr=document.createElement('tr');
       tr.className='telemetry';
       const td=document.createElement('td');
-      td.colSpan=6;
+      td.colSpan=8;
       td.className='empty-state';
       td.textContent=getEmptyStateMsg()+'// STANDING BY FOR DIRECTIVE';
       tr.appendChild(td);
       tb.appendChild(tr);
     }
+
+    // Overflow fade detection
+    const wrap=document.getElementById('telemetryScroll');
+    if(wrap){
+      if(wrap.scrollHeight>wrap.clientHeight){
+        wrap.classList.add('has-overflow');
+      }else{
+        wrap.classList.remove('has-overflow');
+      }
+    }
+
     const now=Date.now();
     const lastUpdate=new Date(d.timestamp).getTime();
     const stalenessMinutes=(now-lastUpdate)/60000;
     const statusEl=document.getElementById('status');
     const timestampEl=document.getElementById('timestamp');
-    timestampEl.textContent=`STARDATE ${getStardate()} // ${d.timestamp||'--:--:--Z'}`;
+    timestampEl.textContent='STARDATE '+getStardate()+' // '+(d.timestamp||'--:--:--Z');
     if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
-      statusEl.textContent='ONLINE';
-      statusEl.className='live';
-    } else if(stalenessMinutes>60){
-      statusEl.textContent='TIMESTAMP ('+stalenessMinutes.toFixed(1)+'m)';
-      statusEl.className='stale';
-    } else if(d.telemetry.status==='DEGRADED'){
-      statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED';
-      statusEl.className='degraded';
-    } else {
-      statusEl.textContent=d.telemetry.status||'ONLINE';
-      statusEl.className='live';
+      statusEl.textContent='ONLINE';statusEl.className='live';
+    }else if(stalenessMinutes>60){
+      statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';statusEl.className='stale';
+    }else if(d.telemetry.status==='DEGRADED'){
+      statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED';statusEl.className='degraded';
+    }else{
+      statusEl.textContent=d.telemetry.status||'ONLINE';statusEl.className='live';
     }
-    const zlPresent=filtered.some(t=>isZL(t.grid));
+    const zlPresent=sliced.some(t=>isZL(t.grid));
     if(zlPresent){statusEl.textContent='TARGET LOCKED // REPORT TO GARY SEVEN';statusEl.className='live';}
-    if(hadNew&&audioArmed)playAlert();
+
+    if(!firstLoadDone){
+      firstLoadDone=true;
+    }else if(hadNew&&audioArmed){
+      playAlert();
+    }
   }catch(e){
     document.getElementById('status').textContent='DEGRADED';
     document.getElementById('status').className='degraded';
   }
 }
-function scheduleRefresh(){
-  if(refreshTimer)clearInterval(refreshTimer);
-  const ms=parseInt(document.getElementById('refreshInterval').value);
-  refreshTimer=setInterval(load,ms);
-}
-document.getElementById('refreshInterval').addEventListener('change',scheduleRefresh);
-load();
 scheduleRefresh();
+loadColWidths();
+initColResize();
 </script>
 <div style="text-align:center; margin-top:16px">
   <a href="https://www.qrz.com/db/K2VG" target="_top" style="display:inline-block; background:#00e5ff; color:#000000; font-family:monospace; font-size:12px; font-weight:bold; letter-spacing:2px; text-decoration:none; border:1px solid #00e5ff; padding:10px 24px; border-radius:4px; box-shadow:0 0 12px rgba(0,229,255,0.5), 0 0 28px rgba(0,229,255,0.3); animation:cyanPulse 1.5s infinite ease-in-out; -webkit-backface-visibility:hidden; -webkit-transform:translateZ(0); will-change:transform,opacity;">[   <span style="color:#ffff00 !important;font-size:12px;font-weight:bold;animation:clickFlash 0.8s infinite alternate;-webkit-backface-visibility:hidden;-webkit-transform:translateZ(0)">CLICK HERE</span>   ] // RETURN TO BETA FIVE COMM-STATION</a>
