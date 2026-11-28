@@ -742,7 +742,7 @@ function scheduleRefresh(){
   refreshTimer=setTimeout(load, parseInt(document.getElementById('refreshInterval').value)||300000);
 }
 
-
+load();
 scheduleRefresh();
 loadColWidths();
 initColResize();
