@@ -105,7 +105,7 @@ tr.lore td:last-child{color:#00e5ff;font-weight:bold;}
 /* === TELEMETRY TABLE (sticky header, scrollable body) === */
 .telemetry-wrap{
   position:relative;
-  max-height:calc(4 * 22px + 8 * 22px); /* header + 4 lore + 8 telemetry = ~264px */
+  max-height:calc(4 * 22px + 12 * 22px); /* header + 4 lore + 12 telemetry = ~352px */
   overflow-y:auto;
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -355,29 +355,6 @@ td.utc-red{color:#ff5252;font-weight:bold;}
   <button id="pollNow">Poll Now</button>
 </div>
 
-<div class="telemetry-wrap" id="telemetryScroll">
-
-<table>
-  <thead>
-    <tr>
-      <th data-col="call" style="width:100px">CALL</th>
-      <th data-col="grid" style="width:70px">GRID</th>
-      <th data-col="band" style="width:55px">BAND</th>
-      <th data-col="snr" style="width:55px">SNR</th>
-      <th data-col="dxcc" style="width:140px">DXCC</th>
-      <th data-col="region" style="width:55px">REGION</th>
-      <th data-col="utc" style="width:140px">UTC</th>
-      <th data-col="status" style="width:100px">STATUS</th>
-    </tr>
-  </thead>
-  <tbody id="telemetryBody">
-  <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>—</td><td>—</td><td>UPLINK ACTIVE</td></tr>
-  <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>—</td><td>—</td><td>MONITORING 🖖</td></tr>
-  <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
-  <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
-  <!-- telemetry rows injected here by JS -->
-  </tbody>
-</table>
 <!-- === SUBSPACE SENSOR ARRAY (Theatrical — Public Build Only) === -->
 <div class="subspace-array" id="subspaceArray">
   <div class="subspace-title">◈ SUBSPACE SENSOR ARRAY // MULTI-SPECTRUM &amp; GRAVITATIONAL WAVE MONITORING ◈</div>
@@ -445,9 +422,34 @@ td.utc-red{color:#ff5252;font-weight:bold;}
   </div>
   <div class="event-log" id="eventLog"></div>
 </div>
+
+<div class="telemetry-wrap" id="telemetryScroll">   
+
+<table>
+  <thead>
+    <tr>
+      <th data-col="call" style="width:100px">CALL</th>
+      <th data-col="grid" style="width:70px">GRID</th>
+      <th data-col="band" style="width:55px">BAND</th>
+      <th data-col="snr" style="width:55px">SNR</th>
+      <th data-col="dxcc" style="width:140px">DXCC</th>
+      <th data-col="region" style="width:55px">REGION</th>
+      <th data-col="utc" style="width:140px">UTC</th>
+      <th data-col="status" style="width:100px">STATUS</th>
+    </tr>
+  </thead>
+  <tbody id="telemetryBody">
+  <tr class="lore"><td>NCC-1701</td><td>GSO-FM05</td><td>ALL</td><td>LOCK</td><td>USS ENTERPRISE</td><td>—</td><td>—</td><td>UPLINK ACTIVE</td></tr>
+  <tr class="lore"><td>N/A</td><td>40 ERIDANI A</td><td>ALL</td><td>STATIC</td><td>VULCAN</td><td>—</td><td>—</td><td>MONITORING 🖖</td></tr>
+  <tr class="lore"><td>IC/MIL/GOV COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
+  <tr class="lore"><td>CIV WEB/DARK WEB/COMMS</td><td>ALL</td><td>ALL</td><td>SCAN</td><td>EARTH</td><td>—</td><td>—</td><td>MONITORED</td></tr>
+  <!-- telemetry rows injected here by JS -->
+  </tbody>
+
+</table>
   <span id="status">INITIALIZING...</span>
   <span id="timestamp">--:--:--Z</span>
-</div>
+</div>   
 
 <div class="snr-note">SNR RANGE -35 TO +24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) & QUANTUM DECODING VS SINGLE-PASS DECODERS</div>
 
