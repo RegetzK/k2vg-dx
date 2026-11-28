@@ -315,7 +315,7 @@ td.utc-red{color:#ff5252;font-weight:bold;}
   <span id="timestamp">--:--:--Z</span>
 </div>
 
-<div class="snr-note">// SNR RANGE -35 TO +24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) & QUANTUM DECODING VS SINGLE-PASS DECODERS</div>
+<div class="snr-note">SNR RANGE -35 TO +24 dB: ACCOUNTS FOR MULTI-CYCLE INTEGRATION GAIN (~3-5 dB) & QUANTUM DECODING VS SINGLE-PASS DECODERS</div>
 
 <div class="prime-directive">PRIME DIRECTIVE EXCEPTION ACTIVE // INTERVENTION AUTHORIZED</div>
 
@@ -702,7 +702,7 @@ async function load(){
     if(d.telemetry.status==='ONLINE'&&stalenessMinutes<=60){
       statusEl.textContent='ONLINE';statusEl.className='live';
     }else if(stalenessMinutes>60){
-      statusEl.textContent='DATA STALE ('+stalenessMinutes.toFixed(1)+'m)';statusEl.className='stale';
+      statusEl.textContent='MONITORING... ('+stalenessMinutes.toFixed(1)+'m)';statusEl.className='stale';
     }else if(d.telemetry.status==='DEGRADED'){
       statusEl.textContent='SUPERVISOR INTERVENTION REQUIRED';statusEl.className='degraded';
     }else{
