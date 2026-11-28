@@ -828,7 +828,7 @@ function showPopover(row,spot){
   const popover=document.getElementById('spotPopover');
   if(!popover)return;
   document.getElementById('popCall').textContent=spot.call||'—';
-  document.getElementById('popFreq').textContent=spot.freq?(spot.freq/1e6).toFixed(3)+' MHz':'—';
+  document.getElementById('popFreq').textContent=spot.freq?spot.freq.toFixed(3)+' MHz':'—';
   document.getElementById('popMode').textContent=spot.mode||'—';
   document.getElementById('popGrid').textContent=spot.grid||'—';
   document.getElementById('popDxcc').textContent=formatDxccDisplay(spot);
@@ -889,8 +889,9 @@ async function load(){
 
     // Band filter (Top 5 #3)
     filtered=filtered.filter(t=>{
-      const band=t.band||bandFromFreq(t.freq);
-      return activeBands.has(band);
+      const raw=t.band||bandFromFreq(t.freq)||'';
+      const m=raw.match(/(\d+)M/);
+      return m&&activeBands.has(m[1]+'M');
     });
 
     // Sort: newest first, null-safe
