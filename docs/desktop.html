@@ -601,7 +601,7 @@ function getStardate(){
   const t=new Date(Date.UTC(year,now.getUTCMonth(),now.getUTCDate()));
   const dayOfYear=Math.round((t.getTime()-start.getTime())/86400000)+1;
   const frac=(dayOfYear-1+now.getUTCHours()/24+now.getUTCMinutes()/1440)/365;
-  return (year-2323+frac).toFixed(2);
+  return (year-2267+frac).toFixed(2);
 }
 
 // ===== MAIN LOAD =====
